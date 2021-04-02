@@ -8,11 +8,11 @@ on:
   pull_request:
     branches: [ development,main ]
   workflow_dispatch:
-    branches: [ development,main]
+    branches: [ development,main ]
 
 jobs:
   build:
-    runs-on: [ self-hosted ]
+    runs-on: [ java ]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -20,4 +20,4 @@ jobs:
         with:
           java-version: 11
       - name: Build
-        run: ./mvnw verify -B
+        run: mvn package -B

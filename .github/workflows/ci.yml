@@ -28,7 +28,7 @@ jobs:
           name: dci.jar
           path: target/dci-*.jar
           retention-days: 1
-  docker-build:
+  container-build:
     runs-on: [ podman ]
     needs: java-build
     steps:

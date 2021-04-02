@@ -1,0 +1,87 @@
+/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.mission-catalogue-view {
+  display: block;
+  height: 100%;
+}
+
+.mission-catalogue-view vaadin-grid {
+  height: 100%;
+  line-height: var(--lumo-line-height-m);
+}
+
+.mission-catalogue-view vaadin-grid,
+.mission-catalogue-view vaadin-grid-cell-content {
+  background-color: var(--lumo-contrast-10pct);
+}
+
+.mission-catalogue-view .card {
+  background-color: var(--lumo-base-color);
+  border-radius: var(--lumo-border-radius);
+  box-shadow: var(--lumo-box-shadow-xs);
+  padding: calc(var(--lumo-space-s) * 1.5) var(--lumo-space-m);
+}
+
+.mission-catalogue-view img {
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: var(--lumo-size-m);
+  margin-right: calc(var(--lumo-space-s) * 1.5);
+  width: var(--lumo-size-m);
+}
+
+.mission-catalogue-view .header {
+  align-items: baseline;
+}
+
+.mission-catalogue-view .name {
+  font-size: var(--lumo-font-size-s);
+  font-weight: bold;
+  margin-right: var(--lumo-space-s);
+}
+
+.mission-catalogue-view .date {
+  color: var(--lumo-tertiary-text-color);
+  font-size: var(--lumo-font-size-xs);
+}
+
+.mission-catalogue-view .post {
+  color: var(--lumo-secondary-text-color);
+  font-size: var(--lumo-font-size-s);
+  margin-bottom: var(--lumo-space-s);
+  white-space: normal;
+}
+
+.mission-catalogue-view .actions {
+  align-items: center;
+}
+
+.mission-catalogue-view iron-icon {
+  color: var(--lumo-tertiary-text-color);
+  height: calc(var(--lumo-icon-size-s) * 0.8);
+  margin-right: var(--lumo-space-s);
+  width: calc(var(--lumo-icon-size-s) * 0.8);
+}
+
+.mission-catalogue-view .likes,
+.mission-catalogue-view .comments,
+.mission-catalogue-view .shares {
+  color: var(--lumo-tertiary-text-color);
+  font-size: var(--lumo-font-size-xs);
+  margin-right: var(--lumo-space-l);
+}

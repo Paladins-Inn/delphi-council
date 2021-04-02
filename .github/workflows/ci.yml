@@ -46,8 +46,9 @@ jobs:
       - name: Buildah
         id: build-container
         uses: redhat-actions/buildah-build@v2
-        dockerfiles: |
-          ./Dockerfile
+        with:
+          dockerfiles: |
+            ./Dockerfile
       - name: Push To quay
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2

@@ -45,7 +45,7 @@ RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
     && chmod 540 /deployments/run-java.sh \
     && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
 
-COPY /home/runner/_work/delphi-council/delphi-council/dci-0.1.0-SNAPSHOT.jar /deployments/app.jar
+COPY dci-0.1.0-SNAPSHOT.jar /deployments/app.jar
 RUN chown 1001 /deployments/app.jar
 
 EXPOSE 8080

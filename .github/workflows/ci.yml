@@ -4,13 +4,15 @@ name: Quarkus Codestart CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ development,main ]
   pull_request:
-    branches: [ master ]
+    branches: [ development,main ]
+  workflow_dispatch:
+    branches: [ development,main]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted ]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11

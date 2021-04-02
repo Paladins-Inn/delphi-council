@@ -1,30 +1,55 @@
-# Stage that builds the application, a prerequisite for the running stage
-FROM maven:3-jdk-11 as build
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get update -qq && apt-get install -qq --no-install-recommends nodejs
-
-# Stop running as root at this point
-RUN useradd -m myuser
-WORKDIR /usr/src/app/
-RUN chown myuser:myuser /usr/src/app/
-USER myuser
-
-# Copy pom.xml and prefetch dependencies so a repeated build can continue from the next step with existing dependencies
-COPY --chown=myuser pom.xml ./
-RUN mvn dependency:go-offline -Pproduction
-
-# Copy all needed project files to a folder
-COPY --chown=myuser:myuser src src
-COPY --chown=myuser:myuser frontend frontend
-COPY --chown=myuser:myuser package.json pnpm-lock.yaml webpack.config.js ./
+# Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-# Build the production package, assuming that we validated the version before so no need for running tests again
-RUN mvn clean package -DskipTests -Pproduction
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 
-# Running stage: the part that is used for running the application
-FROM openjdk:11
-COPY --from=build /usr/src/app/target/*.jar /usr/app/app.jar
-USER 1001
+LABEL io.k8s.description="This is a discord bot and connected webservice for supporting RPG tabletop games online without providing a VTT."
+LABEL io.k8s.display-name="TOMB Discord Bot"
+LABEL io.openshift.expose-services="8080/TCP"
+LABEL io.openshift.tags="quarkus rpg discord"
+LABEL maintainer="Kaiserpfalz EDV-Service"
+LABEL summary="Provides a supporting system for online tabletop RPG playing."
+LABEL vendor="Kaiserpfalz EDV-Service"
+LABEL version="1.2.0-SNAPSHOT"
+
+
+ARG JAVA_PACKAGE=java-11-openjdk-headless
+ARG RUN_JAVA_VERSION=1.3.8
+
+ENV LANG='en_GB.UTF-8' LANGUAGE='en_GB:en'
+
+# Install java and the run-java script
+# Also set up permissions for user `1001`
+RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
+    && microdnf update \
+    && microdnf clean all \
+    && mkdir /deployments \
+    && chown 1001 /deployments \
+    && chmod "g+rwX" /deployments \
+    && chown 1001:root /deployments \
+    && curl https://repo1.maven.org/maven2/io/fabric8/run-java-sh/${RUN_JAVA_VERSION}/run-java-sh-${RUN_JAVA_VERSION}-sh.sh -o /deployments/run-java.sh \
+    && chown 1001 /deployments/run-java.sh \
+    && chmod 540 /deployments/run-java.sh \
+    && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
+
+RUN mv dci.jar /deployments/app.jar
+RUN chown 1001 /deployments/app.jar
+
 EXPOSE 8080
-CMD java -jar /usr/app/app.jar
+EXPOSE 8443
+USER $UID
+
+ENTRYPOINT [ "/deployments/run-java.sh" ]

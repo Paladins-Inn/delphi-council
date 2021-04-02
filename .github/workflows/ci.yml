@@ -1,6 +1,6 @@
 ## This is basic continuous integration build for your Quarkus application.
 
-name: Quarkus Codestart CI
+name: Build delphi council information system
 
 on:
   push:
@@ -14,10 +14,50 @@ jobs:
   build:
     runs-on: [ java ]
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout sources
+        id: checkout-sources
+        uses: actions/checkout@v2
       - name: Set up JDK 11
+        id: setup-java
         uses: actions/setup-java@v1
         with:
           java-version: 11
       - name: Build
+        id: build-java
         run: mvn package -B
+      - name: Upload Artifact
+        id: upload-jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: dci.jar
+          path: target/dci-*.jar
+          retention-days: 1
+  docker-build:
+    runs-on: [ podman ]
+    steps:
+      - name: checkout sources
+        id: checkout-sources
+        uses: actions/checkout
+      - name: retrieve jar
+        id: retrieve-jar
+        uses: actions/download-artifact@v2
+        with:
+          name: dci.jar
+      - name: Buildah
+        id: build-container
+        uses: redhat-actions/buildah-build@v2
+        image: ${{ env.IMAGE_NAME }}
+        tags: ${{ env.IMAGE_TAGS }}
+        dockerfiles: |
+          ./Dockerfile
+      - name: Push To quay
+        id: push-to-quay
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: $${ steps.build-image.outputs.tags }}
+          registry: ${{ secrets.QUAY_REPO }}
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_TOKEN }}
+      - name: Use the image
+        run: echo "New image has been pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"

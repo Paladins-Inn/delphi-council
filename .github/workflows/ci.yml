@@ -1,6 +1,6 @@
 ## This is basic continuous integration build for your Quarkus application.
 
-name: Build delphi council information system
+name: CI
 
 on:
   push:
@@ -46,8 +46,6 @@ jobs:
       - name: Buildah
         id: build-container
         uses: redhat-actions/buildah-build@v2
-        image: ${{ env.IMAGE_NAME }}
-        tags: ${{ env.IMAGE_TAGS }}
         dockerfiles: |
           ./Dockerfile
       - name: Push To quay

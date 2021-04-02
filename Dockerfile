@@ -17,13 +17,13 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 
 LABEL io.k8s.description="This is a discord bot and connected webservice for supporting RPG tabletop games online without providing a VTT."
-LABEL io.k8s.display-name="TOMB Discord Bot"
+LABEL io.k8s.display-name="Delphi Council Storm Knight Information System"
 LABEL io.openshift.expose-services="8080/TCP"
-LABEL io.openshift.tags="quarkus rpg discord"
+LABEL io.openshift.tags="spring-boot rpg"
 LABEL maintainer="Kaiserpfalz EDV-Service"
-LABEL summary="Provides a supporting system for online tabletop RPG playing."
+LABEL summary="Provides a supporting system for Torganized Play Germany."
 LABEL vendor="Kaiserpfalz EDV-Service"
-LABEL version="1.2.0-SNAPSHOT"
+LABEL version="0.1.0-SNAPSHOT"
 
 
 ARG JAVA_PACKAGE=java-11-openjdk-headless
@@ -45,11 +45,10 @@ RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
     && chmod 540 /deployments/run-java.sh \
     && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
 
-RUN mv dci.jar /deployments/app.jar
-RUN chown 1001 /deployments/app.jar
+RUN mv dci.jar /deployments/app.jar \
+    && chown 1001 /deployments/app.jar
 
 EXPOSE 8080
-EXPOSE 8443
 USER $UID
 
 ENTRYPOINT [ "/deployments/run-java.sh" ]

@@ -17,7 +17,6 @@
 
 package de.paladinsinn.delphicouncil.views.main;
 
-import ch.carnet.kasparscherrer.LanguageSelect;
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -28,7 +27,6 @@ import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
@@ -48,7 +46,6 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import de.codecamp.vaadin.serviceref.ServiceRef;
-import de.paladinsinn.delphicouncil.app.i18n.I18nSelector;
 import de.paladinsinn.delphicouncil.app.i18n.Translator;
 import de.paladinsinn.delphicouncil.data.person.Person;
 import de.paladinsinn.delphicouncil.data.person.PersonRepository;
@@ -94,8 +91,6 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
     private VerticalLayout logo;
     private H1 titleBar, systemName;
     private Div claim;
-    private Anchor logout;
-    private LanguageSelect languageSelect;
     private Avatar avatar;
 
 
@@ -107,7 +102,6 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         }
 
         setLocale(VaadinSession.getCurrent().getLocale());
-        languageSelect = new I18nSelector();
 
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
@@ -181,10 +175,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         claim.setText(translator.get().getMessage(this, "view.description", getLocale()));
         logo.add(systemName, claim);
 
-        logout = new Anchor("/logout", translator.get().getTranslation("buttons.logout.caption", getLocale()));
-        logout.setClassName("highlight router-link");
-
-        layout.add(logoLayout, logout, languageSelect, menu);
+        layout.add(logoLayout, menu);
         return layout;
     }
 
@@ -271,8 +262,6 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         Locale locale = event.getLocale();
 
         setLocale(locale);
-
-        logout.setText(translator.get().getTranslation("buttons.logout.caption", locale));
     }
 
     public void setLocale(@NotNull final Locale locale) {

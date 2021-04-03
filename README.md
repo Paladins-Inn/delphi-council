@@ -23,9 +23,16 @@ tl;dr (ok, only the bullshit bingo words):
 ## Distribution
 The software is distributed via quay.io. You find the images as
 
-- quay.io/klenkes74/delphi-council:0.1.0 (bleeding edge)
+- quay.io/klenkes74/delphi-council-is:0.1.0-SNAPSHOT (bleeding edge)
 
 The images are prepared for consumption by OpenShift 3.11, so they run without any problems on kubernetes, too.
+
+## Installation
+You can install the software via helm:
+
+```
+helm upgrade --install delphi-council-is helm/delphi-council-is --namespace <target namespace>
+```
 
 
 ## Development notes

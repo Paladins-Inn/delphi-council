@@ -22,7 +22,7 @@ jobs:
           java-version: 11
       - name: Build
         id: build-java
-        run: mvn package -B
+        run: mvn package -B -Pproduction
       - name: Upload Artifact
         id: upload-jar
         uses: actions/upload-artifact@v2

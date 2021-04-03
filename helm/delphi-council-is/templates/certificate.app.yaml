@@ -1,0 +1,26 @@
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  namespace: "{{ .Release.Namespace }}"
+  name: "{{ .Chart.Name }}-app-cert"
+  labels:
+    app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/component: "app"
+    app.kubernetes-io/part-of: "{{ .Chart.Name }}"
+    app.kuberentes.io/managed-by: "helm"
+spec:
+  acme:
+    config:
+      - dns01:
+          provider: kaiserpfalz-edv
+        domains:
+          - "{{ .Values.app.route }}"
+  commonName: "{{ .Values.app.route }}"
+  dnsNames:
+    - "{{ .Values.app.route }}"
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  secretName: "{{ .Chart.Name }}-app-tls"

@@ -1,0 +1,30 @@
+---
+app:
+  route: www.delphi-council.org
+  image:
+    repo: quay.io/klenkes74
+    name: delphi-council-is
+    tag: 0.1.0-SNAPSHOT
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+
+db:
+  image:
+    repo: docker-registry.default.svc:5000/openshift
+    name: mariadb
+    tag: latest
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  storagesize: 2Gi
+  name: dcis
+  rootpassword: changeme
+  user: dcis
+  password: changeme

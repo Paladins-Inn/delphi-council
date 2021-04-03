@@ -1,0 +1,77 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: "{{ .Release.Namespace }}"
+  name: "{{ .Chart.Name }}-db"
+  labels:
+    db.kubernetes.io/name: "{{ .Chart.Name }}"
+    db.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    db.kubernetes.io/component: "db"
+    db.kubernetes-io/part-of: "{{ .Chart.Name }}"
+    db.kuberentes.io/managed-by: "helm"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      db.kubernetes.io/name: "{{ .Chart.Name }}"
+      db.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+      db.kubernetes.io/component: "db"
+      db.kubernetes-io/part-of: "{{ .Chart.Name }}"
+      db.kuberentes.io/managed-by: "helm"
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: "{{ .Chart.Name }}-db"
+      labels:
+        db.kubernetes.io/name: "{{ .Chart.Name }}"
+        db.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+        db.kubernetes.io/component: "db"
+        db.kubernetes-io/part-of: "{{ .Chart.Name }}"
+        db.kuberentes.io/managed-by: "helm"
+    spec:
+      containers:
+      - name: "{{ .Chart.Name }}-db"
+        image: "{{ .Values.db.image.repo }}/{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: {{ .Values.db.limits.cpu }}
+            memory: {{ .Values.db.limits.memory }}
+          requests:
+            cpu: {{ .Values.db.requests.cpu }}
+            memory: {{ .Values.db.requests.memory }}
+        env:
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              key: database-user
+              name: delphi-council-is-db
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: database-password
+              name: delphi-council-is-db
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: database-root-password
+              name: delphi-council-is-db
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database-name
+              name: delphi-council-is-db
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql/data
+          name: mariadb-data
+      volumes:
+      - name: mariadb-data
+        persistentVolumeClaim:
+          claimName: delphi-council-db
+      terminationGracePeriodSeconds: 30

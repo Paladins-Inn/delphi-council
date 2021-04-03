@@ -9,6 +9,8 @@ on:
 jobs:
   java-build:
     runs-on: [ java ]
+    env:
+      VERSION: 0.1.0-SNAPSHOT
     steps:
       - name: Checkout sources
         id: checkout-sources
@@ -26,11 +28,14 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dci.jar
-          path: target/dci-*.jar
+          path: target/dci-${{ env.VERSION }}.jar
           retention-days: 1
   container-build:
     runs-on: [ podman ]
     needs: java-build
+    env:
+      VERSION: 0.1.0-SNAPSHOT
+      IMAGE: delphi-council-is
     steps:
       - name: checkout sources
         id: checkout-sources
@@ -44,16 +49,16 @@ jobs:
         id: build-container
         uses: redhat-actions/buildah-build@v2
         with:
-          image: delphi-council-is
-          tags: 0.1.0-SNAPSHOT
+          image: ${{ env.IMAGE }}
+          tags: ${{ env.VERSION }}
           dockerfiles: |
             ./Dockerfile
       - name: Push To quay
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
+          image: ${{ env.IMAGE }}
+          tags: ${{ env.VERSION }}
           registry: ${{ secrets.QUAY_REPO }}
           username: ${{ secrets.QUAY_USER }}
           password: ${{ secrets.QUAY_TOKEN }}

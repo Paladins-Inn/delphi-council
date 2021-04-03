@@ -25,11 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * ConfigureUIServiceInitListener --
@@ -41,6 +41,9 @@ import java.security.Principal;
 @Component
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigureUIServiceInitListener.class);
+
+    private static final List<String> ALLOWED_PATHS = Arrays.asList("images", "img", "icons", "api");
+
 
     @Override
     public void serviceInit(ServiceInitEvent event) {
@@ -61,6 +64,12 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
         LOG.trace("Check security. ui={}, location={}", event.getUI().getId(), event.getLocation().getPath());
 
         if (!SecurityUtils.isUserLoggedIn()) {
+            String[] firstUrlPath = event.getLocation().getPath().split("/");
+            if (firstUrlPath.length > 2 && ALLOWED_PATHS.contains(firstUrlPath)) {
+                LOG.info("Request for: resource={}", event.getLocation().getPath());
+                return;
+            }
+
             LOG.debug("User tries to login. Everything is fine with not being logged in.");
 
             if (!event.getLocation().getPath().equals(SecurityConfiguration.LOGIN_URL.substring(1))) {

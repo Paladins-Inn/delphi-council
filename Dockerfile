@@ -38,9 +38,9 @@ ENV LANG='en_GB.UTF-8' \
 #    && microdnf update \
 RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
     && microdnf clean all \
-    && mkdir /deployments \
-    && chmod "g+rwX" /deployments \
-    && chown 1001:root /deployments \
+    && mkdir -p /deployments/config \
+    && chmod "g+rwX" -R /deployments \
+    && chown 1001:root -R /deployments \
     && curl https://repo1.maven.org/maven2/io/fabric8/run-java-sh/${RUN_JAVA_VERSION}/run-java-sh-${RUN_JAVA_VERSION}-sh.sh -o /deployments/run-java.sh \
     && chown 1001 /deployments/run-java.sh \
     && chmod 540 /deployments/run-java.sh \

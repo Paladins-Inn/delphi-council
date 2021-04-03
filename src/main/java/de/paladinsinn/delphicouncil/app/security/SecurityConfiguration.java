@@ -99,6 +99,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // the robots exclusion standard
                 "/robots.txt",
 
+                // Actuator and API
+                "/api/**",
+                "/actuator/**",
+
                 // web application manifest
                 "/manifest.webmanifest",
                 "/sw.js",

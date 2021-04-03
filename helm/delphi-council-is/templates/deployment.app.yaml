@@ -77,7 +77,7 @@ spec:
           successThreshold: 1
           timeoutSeconds: 5
         volumeMounts:
-        - mountPath: /depolymnts/config/application.properties
+        - mountPath: /depolyments/config/application.properties
           name: config-volume
           subPath: application.properities
       volumes:

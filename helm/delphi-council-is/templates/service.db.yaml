@@ -10,19 +10,17 @@ metadata:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "db"
-    app.kubernetes-io/part-of: "{{ .Chart.Name }}"
-    app.kuberentes.io/managed-by: "helm"
+    app.kubernetes.io/part-of: "{{ .Chart.Name }}"
 spec:
   type: ClusterIP
   sessionAffinity: None
   ports:
-    - name: mariadb
+    - name: 3306-tcp
       port: 3306
       protocol: TCP
       targetPort: 3306
   selector:
-    app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "db"
-    app.kubernetes-io/part-of: "{{ .Chart.Name }}"
-    app.kuberentes.io/managed-by: "helm"
+    app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"

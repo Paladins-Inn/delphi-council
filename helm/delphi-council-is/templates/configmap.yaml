@@ -7,9 +7,8 @@ metadata:
   labels:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-    app.kubernetes.io/component: "{{ .Chart.Name }}"
-    app.kubernetes-io/part-of: "{{ .Chart.Name }}"
-    app.kuberentes.io/managed-by: "helm"
+    app.kubernetes.io/component: "app"
+    app.kubernetes.io/part-of: "{{ .Chart.Name }}"
 data:
   application.properties: |
     #
@@ -40,7 +39,7 @@ data:
     logging.level.liquibase=info
     logging.level.org.springframework.security=info
     
-    spring.datasource.url=jdbc:mariadb://${DELPHI_COUNCIL_IS_DB_SERVICE_HOST}:${DELPHI_COUNCIL_IS_DB_SERVICE_PORT}/${DB_DATABASE}
+    spring.datasource.url=jdbc:mariadb://delphi-council-is-db:3306/${DB_DATABASE}
     spring.datasource.username=${DB_USER}
     spring.datasource.password=${DB_PASSWORD}
     spring.liquibase.enabled=true

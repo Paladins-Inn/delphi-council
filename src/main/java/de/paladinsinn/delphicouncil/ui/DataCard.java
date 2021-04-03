@@ -19,7 +19,6 @@ package de.paladinsinn.delphicouncil.ui;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -178,6 +177,7 @@ public class DataCard extends HorizontalLayout implements Serializable, AutoClos
         layout.getThemeList().add("spacing-s");
         layout.setSpacing(false);
         layout.setPadding(false);
+        layout.setWidth(100, PERCENTAGE);
 
         if (dataHeader != null)
             data.remove(dataHeader);
@@ -213,6 +213,7 @@ public class DataCard extends HorizontalLayout implements Serializable, AutoClos
         layout.getThemeList().add("spacing-s");
         layout.setSpacing(false);
         layout.setPadding(false);
+        layout.setWidth(100, PERCENTAGE);
 
         if (dataDescription != null)
             data.remove(dataDescription);
@@ -249,6 +250,7 @@ public class DataCard extends HorizontalLayout implements Serializable, AutoClos
         layout.getThemeList().add("spacing-s");
         layout.setSpacing(false);
         layout.setPadding(false);
+        layout.setWidth(100, PERCENTAGE);
 
         if (dataFooter != null)
             data.remove(dataFooter);

@@ -81,17 +81,12 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
 
     @Autowired
     private ServiceRef<Translator> translator;
-    private final Set<Component> translatables = new HashSet<>();
 
     @Autowired
     private PersonRepository personRepository;
 
     private Tabs menu;
-    private HorizontalLayout logoLayout;
-    private VerticalLayout logo;
-    private H1 titleBar, systemName;
-    private Div claim;
-    private Avatar avatar;
+    private H1 titleBar;
 
 
     @PostConstruct
@@ -122,7 +117,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        avatar = createAvatar(authentication);
+        Avatar avatar = createAvatar(authentication);
         layout.add(avatar);
 
         return layout;
@@ -137,10 +132,8 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         ContextMenu menu = new ContextMenu();
         menu.setTarget(result);
 
-        MenuItem languageSwitch = menu.addItem(getTranslation("avatar.menu.switch_language"),
-                e -> {
-                    Notification.show("Wanted to switch language.");
-                }
+        MenuItem languageSwitch = menu.addItem(getTranslation("avatar.menu.account-settings"),
+                e -> Notification.show("Settings not implemented yet.")
         );
         languageSwitch.setEnabled(false);
 
@@ -162,16 +155,16 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         layout.setSpacing(false);
         layout.getThemeList().set("spacing-s", true);
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
-        logoLayout = new HorizontalLayout();
+        HorizontalLayout logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         logoLayout.add(new Image("images/logo.png", "Delphi Council Information System logo"));
 
-        logo = new VerticalLayout();
+        VerticalLayout logo = new VerticalLayout();
         logoLayout.add(logo);
 
-        systemName = new H1(translator.get().getMessage(this, "view.title", getLocale()));
-        claim = new Div();
+        H1 systemName = new H1(translator.get().getMessage(this, "view.title", getLocale()));
+        Div claim = new Div();
         claim.setText(translator.get().getMessage(this, "view.description", getLocale()));
         logo.add(systemName, claim);
 

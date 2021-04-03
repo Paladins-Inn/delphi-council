@@ -101,11 +101,11 @@ public class MissionCatalogueView extends Div implements Serializable, AutoClose
         Span title = new Span(getTranslation("mission.title.card", getLocale(), mission.getTitle()));
         title.setClassName("name");
         title.setMinWidth(300, PIXELS);
-        title.setWidth(20, PERCENTAGE);
+        title.setWidth(40, PERCENTAGE);
 
-        Span clearance = new Span(getTranslation("torg.clearance.card", getLocale(), mission.getClearance()));
+        Span clearance = new Span(getTranslation("torg.clearance.card", getLocale(), getTranslation("torg.clearance." + mission.getClearance().name(), getLocale())));
         clearance.setClassName("date");
-        clearance.setMinWidth(100, PIXELS);
+        clearance.setMinWidth(150, PIXELS);
         clearance.setWidth(20, PERCENTAGE);
 
         Span code = new Span(getTranslation("mission.code.card", getLocale(), mission.getCode()));
@@ -115,8 +115,9 @@ public class MissionCatalogueView extends Div implements Serializable, AutoClose
 
 
         card.addHeader(title, code, clearance);
-        card.getHeader().setFlexGrow(10, code);
-        card.getHeader().setFlexGrow(90, title);
+        card.getHeader().setFlexGrow(100, title);
+        card.getHeader().setFlexGrow(1, code);
+        card.getHeader().setFlexGrow(1, clearance);
 
         // Main text
         FlexLayout description = new FlexLayout();
@@ -134,7 +135,7 @@ public class MissionCatalogueView extends Div implements Serializable, AutoClose
         Span publication = new Span();
         publication.setClassName("name");
         publication.setMinWidth(300, PIXELS);
-        publication.setWidth(20, PERCENTAGE);
+        publication.setWidth(40, PERCENTAGE);
         if (mission.getPublication() != null && !mission.getPublication().isBlank()) {
             publication.setText(getTranslation("mission.publication.card", getLocale(), mission.getPublication()));
         }
@@ -142,15 +143,17 @@ public class MissionCatalogueView extends Div implements Serializable, AutoClose
         Span created = new Span(getTranslation("db.entry.created.title", getLocale(), mission.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE)));
         created.addClassName("date");
         created.setMinWidth(150, PIXELS);
-        created.setWidth(10, PERCENTAGE);
+        created.setWidth(20, PERCENTAGE);
 
         Span modified = new Span(getTranslation("db.entry.modified.title", getLocale(), mission.getModified().format(DateTimeFormatter.ISO_LOCAL_DATE)));
         modified.addClassName("date");
         modified.setMinWidth(150, PIXELS);
-        modified.setWidth(10, PERCENTAGE);
+        modified.setWidth(20, PERCENTAGE);
 
         card.addFooter(publication, created, modified);
         card.getFooter().setFlexGrow(100, publication);
+        card.getFooter().setFlexGrow(1, created);
+        card.getFooter().setFlexGrow(1, modified);
 
         for (MissionReport r : mission.getReports()) {
             LOG.debug("Adding Link to mission report. mission={}, report={}", mission.getId(), r.getId());

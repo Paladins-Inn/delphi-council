@@ -23,10 +23,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.http.CacheControl;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.vaadin.artur.helpers.LaunchUtil;
 
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The entry point of the Spring Boot application.

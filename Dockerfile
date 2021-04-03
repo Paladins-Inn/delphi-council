@@ -35,8 +35,8 @@ ENV LANG='en_GB.UTF-8' \
 
 # Install java and the run-java script
 # Also set up permissions for user `1001`
-#    && microdnf update \
 RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
+    && microdnf update \
     && microdnf clean all \
     && mkdir -p /deployments/config \
     && chmod "g+rwX" -R /deployments \

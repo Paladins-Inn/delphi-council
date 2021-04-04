@@ -1,0 +1,236 @@
+
+body {
+  background-image: url('../img/bg.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  margin-top: 10px !important;
+  color: #00ff00;
+  font-family: 'VT323', monospace;
+}
+
+.block {
+    box-shadow: 2px 2px 5px #00FF00;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 2px solid #00FF00;
+    /* border-radius: 10px; */
+    background-color: rgba(0,0,0,0.8);
+    font-family: 'VT323', monospace;
+}
+
+.regeln {
+    font-family: Helvetica,Arial;
+    font-size: large;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.regeln h1, h2, h3 {
+    font-family: 'VT323', monospace;
+}
+
+.sr_table_block {
+  box-shadow: 2px 2px 5px #00FF00;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 15px;
+    padding: 0px;
+    border: 2px solid #00FF00;
+    background-color: rgba(0,0,0,0.8);
+    font-family: 'VT323', monospace;
+}
+
+.sr_table {
+  width: 100%;
+}
+
+.sr_rule_table {
+  width: 100%;
+  font-family: Helvetica,Arial;
+  font-size: large;
+}
+
+.sr_rule_table td {
+  border: solid 1px green;
+}
+.sr_rule_table th {
+  border: solid 1px green;
+}
+.ajax-data {
+  cursor: help;
+  font-weight: bold ;
+}
+
+.sr_table th {
+  font-size: x-large;
+  padding: 10px;
+}
+
+.sr_table td {
+  font-size: x-large;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.regeln td {
+    font-size: large;
+    border: 1px solid #00AA00;
+}
+
+.sr_table tbody tr:nth-child(odd)  {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.sr_table tbody tr:hover  {
+  background-color: rgba(0,255,0,0.4);
+}
+
+.sr_button_box {
+  margin-right: 20px;
+    text-align: right;
+    margin-left: 20px;
+}
+
+.sr_button_box a{
+  color: #00ff00;
+  background-color: rgba(0,0,0,0.8);
+  cursor: pointer;
+}
+
+h1[contentEditable="true"]{
+  background-color: rgba(0,255,0,0.8);;
+  color: black;
+}
+
+div[contentEditable="true"]{
+  background-color: rgba(0,255,0,0.8);;
+  color: black;
+}
+
+.bg-dark {
+  background-color: rgba(0,0,0,0.8)!Important;
+}
+
+.navbar-dark .navbar-brand {
+  color: #00ff00;
+}  
+
+.navbar-dark .navbar-brand:focus, .navbar-dark .navbar-brand:hover {
+  color: #00aa00;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(0, 255, 0, .5);
+}
+
+.navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav .nav-link:hover {
+  color: rgba(0,255,0,.75);
+}
+
+.dropdown-menu {
+  color: #00ff00;
+  background-color: rgba(0,0,0,0.8);
+  border: 1px solid rgba(0,255,0,0.15);
+}
+
+.dropdown-item:focus, .dropdown-item:hover {
+  color: #00ff00;
+  background-color: transparent;
+}
+
+.dropdown-item {
+  color: #00cc00;
+  background-color: transparent;
+}
+
+.dropdown-divider {
+  border-top: 1px solid #00aa00;
+}
+
+.editor-toolbar.fullscreen {
+    z-index: 2000 !important;
+}
+
+.editor-preview, .editor-preview-side{
+    background: #000000 !important;
+}
+
+/* .CodeMirror {
+    color: #00cc00 !important;
+} */
+
+.editor-preview-active, .editor-preview-active-side {
+    color: #00cc00 !important;      
+}
+
+.trumbowyg-editor {
+    background-color: white !important; 
+}
+
+/* Matrix Skin für Tooltips */
+.tpd-skin-matrix .tpd-content,
+.tpd-skin-matrix .tpd-title,
+.tpd-skin-matrix .tpd-close { 
+    color: #00ff00; 
+    font-family: Helvetica,Arial;
+  }
+.tpd-skin-matrix .tpd-background-content { background-color: #333; }
+.tpd-skin-matrix .tpd-background {
+  border: solid 2px #00ff00;
+}
+.tpd-skin-matrix .tpd-background-title { background-color: #5b45e3; }
+/* line below the title */
+.tpd-skin-matrix .tpd-title-wrapper { border-bottom: 1px solid #2a1fb4; }
+/* shadow */
+.tpd-skin-matrix .tpd-background-shadow { box-shadow: 2px 2px 5px #00FF00; }
+/* spinner */
+.tpd-skin-matrix .tpd-spinner-spin {
+  border-color: rgba(255,255,255,.2);
+  border-left-color: #fff;
+}
+/* links */
+.tpd-skin-matrix a { color: #ddd; }
+.tpd-skin-matrix a:hover { color: #c6c6c6; }
+
+.te-editor {
+    color: black;
+}
+
+.te-preview {
+    color: lime;
+}
+
+.tui-editor-contents p {
+    color: lime;
+}
+
+m {
+    display: block;
+    background: #202020;
+    padding: 10px;
+    border-radius: 15px;
+    margin-right: 200px;
+    margin-bottom: 5px;
+}
+
+m::before {
+    content: url(../img/msg.png);
+}
+
+r {
+    display: block;
+    background: #404040;
+    margin-left: 200px;
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    color: aqua;
+}
+
+r::before {
+    content: url(../img/msg.png);
+}

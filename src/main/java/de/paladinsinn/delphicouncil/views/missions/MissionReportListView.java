@@ -62,7 +62,7 @@ import java.util.*;
 @Route(value = "missionreport/:report?", layout = MainView.class)
 @PageTitle("Mission Reports")
 @CssImport("./views/mission/report-list-view.css")
-@Secured({"PLAYER", "GM", "JUDGE", "ORGA"})
+@Secured({"PLAYER", "GM", "JUDGE", "ORGA", "ADMIN"})
 public class MissionReportListView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MissionReportListView.class);
 

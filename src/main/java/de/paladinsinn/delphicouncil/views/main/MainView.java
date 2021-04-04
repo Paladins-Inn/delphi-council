@@ -54,6 +54,7 @@ import de.paladinsinn.delphicouncil.views.dashboard.DashboardView;
 import de.paladinsinn.delphicouncil.views.missions.MissionListView;
 import de.paladinsinn.delphicouncil.views.players.PersonListView;
 import de.paladinsinn.delphicouncil.views.stormknights.StormKnightsListView;
+import de.paladinsinn.delphicouncil.views.tools.ThreatCardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,6 +195,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         allTabs.add(MissionListView.class);
         allTabs.add(StormKnightsListView.class);
         allTabs.add(PersonListView.class);
+        allTabs.add(ThreatCardView.class);
         allTabs.add(AboutView.class);
 
         String role = readRoleFromAuthentication(authentication);

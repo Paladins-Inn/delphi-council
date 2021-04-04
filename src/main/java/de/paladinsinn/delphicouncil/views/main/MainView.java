@@ -20,6 +20,7 @@ package de.paladinsinn.delphicouncil.views.main;
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -65,6 +66,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+
+import static com.vaadin.flow.component.Unit.PIXELS;
 
 /**
  * MainScreen -- The main view is a top-level placeholder for other views.
@@ -158,7 +161,10 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         HorizontalLayout logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        logoLayout.add(new Image("images/logo.png", "Delphi Council Information System logo"));
+        Image logoImage = new Image("/images/logo.png", "Delphi Council");
+        logoImage.setMaxWidth(50, PIXELS);
+        logoImage.setMaxHeight(50, PIXELS);
+        logoLayout.add(logoImage);
 
         VerticalLayout logo = new VerticalLayout();
         logoLayout.add(logo);

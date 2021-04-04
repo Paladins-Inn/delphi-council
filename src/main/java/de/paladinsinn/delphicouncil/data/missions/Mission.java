@@ -88,7 +88,7 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
     @OneToMany(
             targetEntity = MissionReport.class,
             fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
             mappedBy = "mission",
             orphanRemoval = true
     )

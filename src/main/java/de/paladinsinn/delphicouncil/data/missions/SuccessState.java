@@ -17,6 +17,11 @@
 
 package de.paladinsinn.delphicouncil.data.missions;
 
+import com.vaadin.flow.data.provider.ListDataProvider;
+import de.paladinsinn.delphicouncil.data.Clearance;
+
+import java.util.Arrays;
+
 /**
  * SuccessState --
  *
@@ -27,5 +32,9 @@ public enum SuccessState {
     FAILED,
     SUCCESS,
     GOOD,
-    OUTSTANDING
+    OUTSTANDING;
+
+    public ListDataProvider<SuccessState> dataProvider() {
+        return new ListDataProvider<>(Arrays.asList(FAILED, SUCCESS, GOOD, OUTSTANDING));
+    }
 }

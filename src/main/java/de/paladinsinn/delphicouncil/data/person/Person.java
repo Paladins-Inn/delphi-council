@@ -87,7 +87,8 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
             targetEntity = Operative.class,
             mappedBy = "player",
             fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
+
             orphanRemoval = true
     )
     private Set<Operative> operatives = new HashSet<>();
@@ -96,7 +97,8 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
             targetEntity = MissionReport.class,
             mappedBy = "gameMaster",
             fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
+
             orphanRemoval = true
     )
     private Set<MissionReport> reports = new HashSet<>();

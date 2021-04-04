@@ -22,6 +22,7 @@ import com.vaadin.flow.i18n.I18NProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -39,6 +40,7 @@ import java.util.*;
  * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-27
  */
+@Scope("singleton")
 public class Translator implements I18NProvider, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Translator.class);
 

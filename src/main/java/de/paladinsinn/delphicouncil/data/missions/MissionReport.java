@@ -50,7 +50,7 @@ import java.util.StringJoiner;
 @Setter
 public class MissionReport extends AbstractRevisionedEntity implements Comparable<MissionReport> {
     @ManyToOne(
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
             fetch = FetchType.EAGER,
             optional = false,
             targetEntity = Mission.class
@@ -64,7 +64,7 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
     private Mission mission;
 
     @ManyToOne(
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
             fetch = FetchType.EAGER,
             optional = false,
             targetEntity = Person.class
@@ -79,7 +79,7 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
     private Person gameMaster;
 
     @ManyToMany(
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
             fetch = FetchType.EAGER,
             targetEntity = Operative.class
     )

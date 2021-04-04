@@ -36,6 +36,8 @@ import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.missions.MissionReportRepository;
 import de.paladinsinn.delphicouncil.data.operative.Operative;
 import de.paladinsinn.delphicouncil.views.main.MainView;
+import de.paladinsinn.delphicouncil.ui.forms.missions.MissionEditForm;
+import de.paladinsinn.delphicouncil.ui.forms.missions.MissionGroupReportEditForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +65,9 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
 
     @Autowired
     private MissionEditForm missionForm;
+
+    @Autowired
+    private MissionGroupReportEditForm missionReportForm;
 
     @Autowired
     private ServiceRef<MissionReportRepository> missionReportRepository;
@@ -101,6 +106,7 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
 
         this.report = report;
         missionForm.setMission(report.getMission());
+        missionReportForm.setMissionReport(report);
 
         translate();
     }
@@ -111,6 +117,8 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
         LOG.trace("Locale change event. view={}, locale={}, event={}", this, event.getLocale(), event);
 
         setLocale(event.getLocale());
+        missionForm.setLocale(event.getLocale());
+        missionReportForm.setLocale(event.getLocale());
         translate();
     }
 
@@ -139,13 +147,13 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
 
         LOG.trace("Rebuild Mission Report Data Tab. view={}", this);
         Tab reportTab = new Tab(getTranslation("missionreport.editor.title"));
-        Div reportForm = new Div();
+        missionReportForm.translate();
 
         // ordering tabs
         Map<Tab, Component> selectableTabs = new HashMap<>();
         List<Tab> tabList = new ArrayList<>();
         selectableTabs.put(missionTab, missionForm);
-        selectableTabs.put(reportTab, reportForm);
+        selectableTabs.put(reportTab, missionReportForm);
         tabList.add(missionTab);
         tabList.add(reportTab);
 

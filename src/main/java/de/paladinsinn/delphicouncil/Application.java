@@ -41,7 +41,7 @@ public class Application extends SpringBootServletInitializer {
         LaunchUtil.launchBrowserInDevelopmentMode(SpringApplication.run(Application.class, args));
     }
 
-    @WebServlet(urlPatterns = "/*", name = "slot", asyncSupported = true, initParams = {
+    @WebServlet(urlPatterns = {"/ui/*", "/VAADIN/*"}, name = "dcis", asyncSupported = true, initParams = {
             @WebInitParam(name = Constants.I18N_PROVIDER, value = "com.vaadin.example.ui.TranslationProvider") })
     public class ApplicationServlet extends VaadinServlet {
     }

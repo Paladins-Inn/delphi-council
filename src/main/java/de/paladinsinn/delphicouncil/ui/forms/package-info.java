@@ -15,25 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.delphicouncil.views.about;
-
-import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.PageTitle;
-import de.paladinsinn.delphicouncil.views.main.MainView;
-import com.vaadin.flow.component.dependency.CssImport;
-
-@Route(value = "about", layout = MainView.class)
-@PageTitle("About")
-@CssImport("./views/about/about-view.css")
-public class AboutView extends Div {
-
-    public AboutView() {
-        addClassName("about-view");
-        add(new Text("Content placeholder"));
-
-
-    }
-
-}
+/**
+ * forms -- Package containing special forms for the DCIS.
+ *
+ * This package contains the forms used for data input.
+ *
+ * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 0.1.0  2021-04-04
+ */
+package de.paladinsinn.delphicouncil.ui.forms;

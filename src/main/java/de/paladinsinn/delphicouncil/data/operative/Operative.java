@@ -65,7 +65,8 @@ public class Operative extends AbstractEntity {
     @ManyToOne(
             targetEntity = Person.class,
             fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
+
             optional = false
     )
     @JoinColumn(
@@ -78,7 +79,8 @@ public class Operative extends AbstractEntity {
 
     @ManyToMany(
             fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
+
             targetEntity = MissionReport.class
     )
     @JoinTable(

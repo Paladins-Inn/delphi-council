@@ -17,14 +17,20 @@
 
 package de.paladinsinn.delphicouncil.data.missions;
 
+import com.vaadin.flow.component.ComponentEventListener;
+import de.paladinsinn.delphicouncil.app.events.MissionGroupReportSaveEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class MissionReportService extends CrudService<MissionReport, UUID> {
+public class MissionReportService extends CrudService<MissionReport, UUID> implements ComponentEventListener<MissionGroupReportSaveEvent> {
+    private static final Logger LOG = LoggerFactory.getLogger(MissionReportService.class);
 
     private final MissionReportRepository repository;
 
@@ -37,4 +43,28 @@ public class MissionReportService extends CrudService<MissionReport, UUID> {
         return repository;
     }
 
+
+    @Override
+    public void onComponentEvent(MissionGroupReportSaveEvent event) {
+        MissionReport data = event.getReport();
+
+        try {
+            repository.saveAndFlush(data);
+            LOG.info("Saved mission report. data={}", data);
+
+            event.getSource().displayNote(
+                    "input.data.saved.success",
+                    "missionreport.editor.title"
+            );
+        } catch (Exception e) {
+            LOG.error("Could not save mission report. data=" + data, e);
+
+            event.getSource().displayNote(
+                    "input.data.saved.failed",
+                    "missionreport.editor.title",
+                    data.getId(),
+                    e.getLocalizedMessage()
+            );
+        }
+    }
 }

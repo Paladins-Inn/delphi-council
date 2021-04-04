@@ -19,7 +19,7 @@ package de.paladinsinn.delphicouncil.data.missions;
 
 import com.sun.istack.NotNull;
 import de.paladinsinn.delphicouncil.data.AbstractRevisionedEntity;
-import de.paladinsinn.delphicouncil.data.operative.Operative;
+import de.paladinsinn.delphicouncil.data.operative.OperativeReport;
 import de.paladinsinn.delphicouncil.data.person.Person;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,17 +78,14 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
     @Audited
     private Person gameMaster;
 
-    @ManyToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
+    @OneToMany(
+            targetEntity = OperativeReport.class,
+            mappedBy = "report",
             fetch = FetchType.EAGER,
-            targetEntity = Operative.class
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
+            orphanRemoval = true
     )
-    @JoinTable(
-            name = "MISSIONREPORTS_OPERATIVES",
-            joinColumns = @JoinColumn(name = "MISSIONREPORT_ID"),
-            inverseJoinColumns = @JoinColumn(name = "OPERATIVE_ID")
-    )
-    private Set<Operative> operatives = new HashSet<>();
+    private Set<OperativeReport> operatives = new HashSet<>();
 
     @Column(name = "MISSION_DATE", nullable = false)
     @Audited
@@ -121,16 +118,18 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
         }
     }
 
-    public void addOperative(Operative operative) {
+    public void addOperativeReport(OperativeReport operative) {
         if (operative != null && !operatives.contains(operative)) {
-            operative.addMissionReport(this);
+            operative.setMissionReport(this);
+
             operatives.add(operative);
         }
     }
 
-    public void removeOperative(Operative operative) {
+    public void removeOperative(OperativeReport operative) {
         if (operative != null && operatives.contains(operative)) {
-            operative.removeMissionReport(this);
+            operative.setMissionReport(null);
+
             operatives.remove(operative);
         }
     }

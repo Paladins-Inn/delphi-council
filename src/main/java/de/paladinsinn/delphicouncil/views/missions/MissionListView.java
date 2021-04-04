@@ -44,7 +44,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import javax.annotation.PostConstruct;
-import java.awt.*;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -63,11 +62,11 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  */
 @Route(value = "mission", layout = MainView.class)
 @PageTitle("Mission Catalogue")
-@CssImport("./views/missioncatalogue/mission-catalogue-view.css")
-public class MissionCatalogueView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
+@CssImport("./views/mission/list-view.css")
+public class MissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
     public static final Long serial = 1L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(MissionCatalogueView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MissionListView.class);
 
     private final HashSet<TranslatableComponent> translatables = new HashSet<>();
     private Locale locale;
@@ -164,7 +163,7 @@ public class MissionCatalogueView extends Div implements Serializable, AutoClose
                             r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
                             r.getGameMaster().getUsername()
                     ),
-                    MissionReportView.class,
+                    MissionReportListView.class,
                     new RouteParameters("report", r.getId().toString())
             );
 
@@ -230,8 +229,8 @@ public class MissionCatalogueView extends Div implements Serializable, AutoClose
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MissionCatalogueView)) return false;
-        MissionCatalogueView that = (MissionCatalogueView) o;
+        if (!(o instanceof MissionListView)) return false;
+        MissionListView that = (MissionListView) o;
         return getLocale().equals(that.getLocale());
     }
 
@@ -242,7 +241,7 @@ public class MissionCatalogueView extends Div implements Serializable, AutoClose
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", MissionCatalogueView.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", MissionListView.class.getSimpleName() + "[", "]")
                 .add("locale=" + locale)
                 .toString();
     }

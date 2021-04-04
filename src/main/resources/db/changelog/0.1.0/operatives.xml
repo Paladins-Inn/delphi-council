@@ -28,19 +28,16 @@
                              primaryKey="true" primaryKeyName="OPERATIVES_PK"
                 />
             </column>
-
             <column name="VERSION" type="INT" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-
-
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
                 <constraints nullable="false"
                              unique="true" uniqueConstraintName="OPERATIVES_REVID_UK"
                 />
             </column>
-
             <column name="REVISIONED" type="TIMESTAMP"/>
+
 
             <column name="PERSON_ID" type="VARCHAR(36)">
                 <constraints nullable="false"
@@ -50,10 +47,14 @@
             </column>
 
 
+            <column name="NAME" type="VARCHAR(100)">
+                <constraints nullable="false"
+                             unique="true" uniqueConstraintName="OPERATIVE_NAME_UK"
+                />
+            </column>
             <column name="FIRST_NAME" type="VARCHAR(100)">
                 <constraints nullable="true"/>
             </column>
-
             <column name="LAST_NAME" type="VARCHAR(100)">
                 <constraints nullable="true"/>
             </column>
@@ -65,6 +66,8 @@
             <column name="CLEARANCE" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="AVATAR" type="tinyblob"/>
 
             <column name="CREATED" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -85,6 +88,7 @@
             <column name="REVTYPE" type="TINYINT"/>
 
             <column name="PERSON_ID" type="VARCHAR(36)"/>
+            <column name="NAME" type="VARCHAR(100)"/>
             <column name="LAST_NAME" type="VARCHAR(100)"/>
             <column name="FIRST_NAME" type="VARCHAR(100)"/>
             <column name="COSM" type="VARCHAR(20)"/>
@@ -129,21 +133,11 @@
     </changeSet>
 
     <changeSet id="operatives-data" author="rlichti">
-        <loadData tableName="OPERATIVES"
-                  file="operatives.csv" relativeToChangelogFile="true" separator=";">
-            <column name="ID"/>
-            <column name="PERSON_ID"/>
-            <column name="LAST_NAME"/>
-            <column name="FIRST_NAME"/>
-            <column name="COSM"/>
-            <column name="CLEARANCE"/>
-            <column name="CREATED"/>
-            <column name="MODIFIED"/>
-        </loadData>
+        <loadData tableName="OPERATIVES" file="operatives.csv" relativeToChangelogFile="true"/>
 
         <sql>
-            INSERT INTO OPERATIVES_AUD(ID,REVTYPE,PERSON_ID,LAST_NAME,FIRST_NAME,CLEARANCE,COSM) SELECT
-            u.ID,0,u.PERSON_ID,u.LAST_NAME,u.FIRST_NAME,u.CLEARANCE,u.COSM FROM OPERATIVES u;
+            INSERT INTO OPERATIVES_AUD(ID,REVTYPE,PERSON_ID,NAME,LAST_NAME,FIRST_NAME,CLEARANCE,COSM) SELECT
+            u.ID,0,u.PERSON_ID,u.NAME,u.LAST_NAME,u.FIRST_NAME,u.CLEARANCE,u.COSM FROM OPERATIVES u;
             INSERT INTO REVINFO(REV,REVTSTMP) SELECT u.REV,1615716576979 FROM OPERATIVES_AUD u;
         </sql>
 

@@ -25,7 +25,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
@@ -54,8 +53,8 @@ import java.util.Locale;
 @PageTitle("Persons")
 @CssImport("./views/players/players-view.css")
 @Secured({"ADMIN","ORGA","JUDGE"})
-public class PersonsView extends Div implements AfterNavigationObserver, LocaleChangeObserver {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonsView.class);
+public class PersonListView extends Div implements AfterNavigationObserver, LocaleChangeObserver {
+    private static final Logger LOG = LoggerFactory.getLogger(PersonListView.class);
 
     @Autowired
     private ServiceRef<PersonRepository> repository;

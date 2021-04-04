@@ -15,36 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.arbiter-management-view {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-}
+package de.paladinsinn.delphicouncil.data.operative;
 
-.arbiter-management-view .grid-wrapper {
-  flex-grow: 1;
-  width: 100%;
-}
+import org.springframework.data.jpa.repository.JpaRepository;
 
-.arbiter-management-view .full-size {
-  width: 100%;
-  height: 100%;
-}
+import java.util.UUID;
 
-.arbiter-management-view #editor-layout {
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-}
+public interface OperativeReportRepository extends JpaRepository<OperativeReport, UUID> {
 
-.arbiter-management-view #editor {
-  padding: var(--lumo-space-l);
-  flex-grow: 1;
-}
-
-.arbiter-management-view #button-layout {
-  width: 100%;
-  flex-wrap: wrap;
-  background-color: var(--lumo-contrast-5pct);
-  padding: var(--lumo-space-s) var(--lumo-space-l);
 }

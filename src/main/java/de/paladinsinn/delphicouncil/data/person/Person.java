@@ -21,6 +21,7 @@ import com.sun.istack.NotNull;
 import de.paladinsinn.delphicouncil.data.AbstractRevisionedEntity;
 import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.operative.Operative;
+import de.paladinsinn.delphicouncil.data.operative.OperativeReport;
 import liquibase.util.MD5Util;
 import lombok.Getter;
 import lombok.Setter;
@@ -184,8 +185,8 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
     }
 
 
-    public Set<MissionReport> getOperativeReports() {
-        SortedSet<MissionReport> result = new ConcurrentSkipListSet<>();
+    public Set<OperativeReport> getOperativeReports() {
+        SortedSet<OperativeReport> result = new ConcurrentSkipListSet<>();
 
         operatives.forEach(operative -> result.addAll(operative.getReports()));
 

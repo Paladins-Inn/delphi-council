@@ -147,15 +147,12 @@
                              primaryKey="true" primaryKeyName="MISSIONREPORTS_PK"
                 />
             </column>
-
             <column name="VERSION" type="INT" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-
-
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
                 <constraints nullable="false"
-                             unique="true" uniqueConstraintName="PERSONS_REVID_UK"
+                             unique="true" uniqueConstraintName="MISSIONREPORTS_REVID_UK"
                 />
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>
@@ -184,7 +181,6 @@
             </column>
 
             <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
-
             <column name="NOTES" type="VARCHAR(4000)"/>
 
             <column name="CREATED" type="TIMESTAMP">
@@ -234,16 +230,8 @@
         </rollback>
     </changeSet>
     <changeSet id="missionreports-data" author="rlichti">
-        <loadData tableName="MISSIONREPORTS"
-                  file="missionreports.csv" relativeToChangelogFile="true" separator=";">
-            <column name="ID"/>
-            <column name="MISSION_ID"/>
-            <column name="GM_ID"/>
-            <column name="ACHIEVEMENTS"/>
-            <column name="NOTES"/>
-            <column name="CREATED"/>
-            <column name="MODIFIED"/>
-        </loadData>
+        <loadData tableName="MISSIONREPORTS" file="missionreports.csv"
+                  relativeToChangelogFile="true"/>
 
         <sql>
             INSERT INTO MISSIONREPORTS_AUD(ID,REVTYPE,MISSION_ID,GM_ID,OBJECTIVES_MET,ACHIEVEMENTS,NOTES)
@@ -259,6 +247,30 @@
 
     <changeSet id="missions-oeratives" author="rlichti">
         <createTable tableName="MISSIONREPORTS_OPERATIVES">
+            <column name="ID" type="VARCHAR(36)">
+                <constraints nullable="false"
+                             unique="true" uniqueConstraintName="MISSIONREPORTS_OPERATIVES_ID_UK"
+                             primaryKey="true" primaryKeyName="MMISSIONREPORTS_OPERATIVES_PK"
+                />
+            </column>
+            <column name="VERSION" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
+                <constraints nullable="false"
+                             unique="true" uniqueConstraintName="MISSIONREPORTS_OPERATIVES_REVID_UK"
+                />
+            </column>
+            <column name="REVISIONED" type="TIMESTAMP"/>
+
+            <column name="CREATED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFIED" type="TIMESTAMP"/>
+
+            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
+            <column name="NOTES" type="VARCHAR(4000)"/>
+
             <column name="MISSIONREPORT_ID" type="VARCHAR(36)">
                 <constraints nullable="false"
                              foreignKeyName="REP_OPER_MISS_FK"
@@ -273,6 +285,10 @@
             </column>
         </createTable>
         <createTable tableName="MISSIONREPORTS_OPERATIVES_AUD">
+            <column name="ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
             <column name="REV" type="INT" defaultValueSequenceNext="hibernate_sequence">
                 <constraints nullable="false"/>
             </column>
@@ -280,6 +296,9 @@
 
             <column name="MISSIONREPORT_ID" type="VARCHAR(36)"/>
             <column name="OPERATIVE_ID" type="VARCHAR(36)"/>
+
+            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
+            <column name="NOTES" type="VARCHAR(4000)"/>
         </createTable>
 
 
@@ -290,21 +309,16 @@
 
         <rollback>
             <dropTable tableName="MISSIONREPORTS_OPERATIVES_AUD"/>
-
-            <dropIndex tableName="MISSIONREPORTS_OPERATIVES" indexName="MISSIONREPORTS_OPERATIVES_UK"/>
             <dropTable tableName="MISSIONREPORTS_OPERATIVES"/>
         </rollback>
     </changeSet>
     <changeSet id="missions-operatives-data" author="rlichti">
-        <loadData tableName="MISSIONREPORTS_OPERATIVES"
-                  file="missionreports_operatives.csv" relativeToChangelogFile="true" separator=";">
-            <column name="MISSIONREPORT_ID"/>
-            <column name="OPERATIVE_ID"/>
-        </loadData>
+        <loadData tableName="MISSIONREPORTS_OPERATIVES" file="missionreports_operatives.csv"
+                  relativeToChangelogFile="true"/>
 
         <sql>
-            INSERT INTO MISSIONREPORTS_OPERATIVES_AUD(REVTYPE,MISSIONREPORT_ID,OPERATIVE_ID)
-            SELECT 0,MISSIONREPORT_ID,OPERATIVE_ID FROM MISSIONREPORTS_OPERATIVES;
+            INSERT INTO MISSIONREPORTS_OPERATIVES_AUD(ID,REVTYPE,MISSIONREPORT_ID,OPERATIVE_ID)
+            SELECT ID,0,MISSIONREPORT_ID,OPERATIVE_ID FROM MISSIONREPORTS_OPERATIVES;
             INSERT INTO REVINFO(REV,REVTSTMP) SELECT REV,1615716576979 FROM MISSIONREPORTS_OPERATIVES_AUD;
         </sql>
 

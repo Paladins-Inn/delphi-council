@@ -60,8 +60,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
-public class MissionEditForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionEditForm.class);
+public class MissionForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(MissionForm.class);
     public static final int DEFAULT_PAYMENT = 250;
 
     /** service for writing data to. */
@@ -100,7 +100,7 @@ public class MissionEditForm extends Composite<Div> implements LocaleChangeObser
     private boolean initialized = false;
 
     @Autowired
-    public MissionEditForm(
+    public MissionForm(
             @NotNull final MissionService missionService
     ) {
         this.missionService = missionService;

@@ -35,9 +35,12 @@ import de.paladinsinn.delphicouncil.app.i18n.TranslatableComponent;
 import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.missions.MissionReportRepository;
 import de.paladinsinn.delphicouncil.data.operative.Operative;
+import de.paladinsinn.delphicouncil.data.operative.OperativeReport;
+import de.paladinsinn.delphicouncil.data.operative.OperativeReportService;
+import de.paladinsinn.delphicouncil.ui.forms.missions.OperativeReportForm;
 import de.paladinsinn.delphicouncil.views.main.MainView;
-import de.paladinsinn.delphicouncil.ui.forms.missions.MissionEditForm;
-import de.paladinsinn.delphicouncil.ui.forms.missions.MissionGroupReportEditForm;
+import de.paladinsinn.delphicouncil.ui.forms.missions.MissionForm;
+import de.paladinsinn.delphicouncil.ui.forms.missions.MissionReportForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,20 +61,24 @@ import java.util.*;
  */
 @Route(value = "missionreport/:report?", layout = MainView.class)
 @PageTitle("Mission Reports")
-@CssImport("./views/missionreport/missionreport-view.css")
+@CssImport("./views/mission/report-list-view.css")
 @Secured({"PLAYER", "GM", "JUDGE", "ORGA"})
-public class MissionReportView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionReportView.class);
+public class MissionReportListView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(MissionReportListView.class);
 
     @Autowired
-    private MissionEditForm missionForm;
+    private MissionForm missionForm;
 
     @Autowired
-    private MissionGroupReportEditForm missionReportForm;
+    private MissionReportForm missionReportForm;
 
     @Autowired
     private ServiceRef<MissionReportRepository> missionReportRepository;
 
+    @Autowired
+    private OperativeReportService operativeReportService;
+
+    /** The mission report to be edited. */
     private MissionReport report;
 
     private Locale locale;
@@ -159,22 +166,24 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
 
         // Now the tabs for the Storm Knights
         if (report != null) {
-            for (Operative o : report.getOperatives()) {
-                if (!canViewOperative(userDetails, o)) {
+            for (OperativeReport o : report.getOperatives()) {
+                if (!canViewOperative(userDetails, o.getOperative())) {
                     LOG.debug(
-                            "Person is not allowed to display operative. view={}, user='{}', operative='{}, {}'",
+                            "Person is not allowed to display operative. view={}, user='{}', operative='{}'",
                             this,
                             userDetails.getName(),
-                            o.getLastName(), o.getFirstName()
+                            o.getOperative().getName()
                     );
                 } else {
-                    LOG.debug("Adding tab for operative. view={}, operative='{}, {}'", this, o.getLastName(), o.getFirstName());
+                    LOG.debug("Adding tab for operative. view={}, operative='{}'", this, o.getOperative().getName());
 
                     Tab tab = new Tab(getTranslation("missionreport.operative.title",
-                            o.getLastName(), o.getFirstName().charAt(0) + "."));
-                    Div c = new Div();
+                            o.getOperative().getName()));
 
-                    selectableTabs.put(tab, c);
+                    OperativeReportForm operatorReportForm = new OperativeReportForm(operativeReportService);
+                    operatorReportForm.setReport(o);
+
+                    selectableTabs.put(tab, operatorReportForm);
                     tabList.add(tab);
                 }
             }
@@ -184,26 +193,28 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
         tabs.setSelectedTab(missionTab);
         add(tabs);
 
+
+        selectableTabs.values().forEach(p -> {
+            p.setVisible(false);
+            add(p);
+        });
+        selectableTabs.get(tabs.getSelectedTab()).setVisible(true);
+
         tabs.addSelectedChangeListener(event -> {
-
             selectableTabs.values().forEach(p -> p.setVisible(false));
-
-            Component selectedPage = selectableTabs.get(tabs.getSelectedTab());
-            selectedPage.setVisible(true);
+            selectableTabs.get(tabs.getSelectedTab()).setVisible(true);
         });
 
-        selectableTabs.values().forEach(this::add);
     }
 
 
     private boolean canViewOperative(Authentication userDetails, Operative operative) {
-        return userDetails != null
-                && (
+        return userDetails != null && (
                 operative.getPlayer().getName().equals(userDetails.getName())
-                        || report.getGameMaster().getName().equals(userDetails.getName())
-                        || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ORGA"))
-                        || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))
-                        || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("JUDGE"))
+                || report.getGameMaster().getName().equals(userDetails.getName())
+                || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ORGA"))
+                || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))
+                || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("JUDGE"))
         );
     }
 

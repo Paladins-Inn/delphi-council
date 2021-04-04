@@ -19,7 +19,7 @@ package de.paladinsinn.delphicouncil.app.events;
 
 import com.vaadin.flow.component.ComponentEvent;
 import de.paladinsinn.delphicouncil.data.missions.Mission;
-import de.paladinsinn.delphicouncil.ui.forms.missions.MissionEditForm;
+import de.paladinsinn.delphicouncil.ui.forms.missions.MissionForm;
 
 /**
  * MissionSaveEvent --
@@ -27,7 +27,7 @@ import de.paladinsinn.delphicouncil.ui.forms.missions.MissionEditForm;
  * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-04
  */
-public class MissionSaveEvent extends ComponentEvent<MissionEditForm> {
+public class MissionSaveEvent extends ComponentEvent<MissionForm> {
     /**
      * Creates a new event using the given source and indicator whether the
      * event originated from the client side or the server side.
@@ -35,7 +35,7 @@ public class MissionSaveEvent extends ComponentEvent<MissionEditForm> {
      * @param source     the source component
      * @param fromClient <code>true</code> if the event originated from the client
      */
-    public MissionSaveEvent(MissionEditForm source, boolean fromClient) {
+    public MissionSaveEvent(MissionForm source, boolean fromClient) {
         super(source, fromClient);
     }
 

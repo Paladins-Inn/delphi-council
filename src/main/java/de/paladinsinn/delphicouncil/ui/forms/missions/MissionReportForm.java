@@ -64,8 +64,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
-public class MissionGroupReportEditForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionGroupReportEditForm.class);
+public class MissionReportForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(MissionReportForm.class);
 
     /** Tanslator (needed for the datepicker). */
     private final Translator translator;
@@ -102,7 +102,7 @@ public class MissionGroupReportEditForm extends Composite<Div> implements Locale
 
 
     @Autowired
-    public MissionGroupReportEditForm(
+    public MissionReportForm(
             @NotNull final Translator translator,
             @NotNull final MissionReportService reportService
     ) {

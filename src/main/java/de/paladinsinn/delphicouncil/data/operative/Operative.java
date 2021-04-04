@@ -18,7 +18,8 @@
 package de.paladinsinn.delphicouncil.data.operative;
 
 import com.sun.istack.NotNull;
-import de.paladinsinn.delphicouncil.data.AbstractEntity;
+import com.vaadin.flow.server.StreamResource;
+import de.paladinsinn.delphicouncil.data.AbstractRevisionedEntity;
 import de.paladinsinn.delphicouncil.data.Clearance;
 import de.paladinsinn.delphicouncil.data.Cosm;
 import de.paladinsinn.delphicouncil.data.missions.MissionReport;
@@ -28,6 +29,8 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +46,11 @@ import java.util.Set;
 )
 @Getter
 @Setter
-public class Operative extends AbstractEntity {
+public class Operative extends AbstractRevisionedEntity {
+    @Column(name = "NAME", length = 100, nullable = false)
+    @Audited
+    private String name;
+
     @Column(name = "LAST_NAME", length = 100, nullable = false)
     @Audited
     private String lastName;
@@ -77,35 +84,52 @@ public class Operative extends AbstractEntity {
     @Audited
     private Person player;
 
-    @ManyToMany(
+    @OneToMany(
+            targetEntity = OperativeReport.class,
+            mappedBy = "operative",
             fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
-
-            targetEntity = MissionReport.class
+            orphanRemoval = true
     )
-    @JoinTable(
-            name = "MISSIONREPORTS_OPERATIVES",
-            inverseJoinColumns = @JoinColumn(name = "MISSIONREPORT_ID"),
-            joinColumns = @JoinColumn(name = "OPERATIVE_ID")
-    )
-    private Set<MissionReport> reports = new HashSet<>();
+    private Set<OperativeReport> reports = new HashSet<>();
 
     @Column(name = "DELETED")
     @Audited
     private OffsetDateTime deleted;
 
+    @Column(name = "AVATAR")
+    private byte[] avatar;
 
-    public void addMissionReport(@NotNull MissionReport report) {
+
+    public void addReport(@NotNull OperativeReport report) {
         if (report != null & !reports.contains(report)) {
-            report.addOperative(this);
             reports.add(report);
+
+            report.setOperative(this);
         }
     }
 
-    public void removeMissionReport(@NotNull MissionReport report) {
+    public void removeReport(@NotNull OperativeReport report) {
         if (report != null && reports.contains(report)) {
-            report.removeOperative(this);
             reports.remove(report);
+
+            report.setOperative(null);
         }
+    }
+
+    public StreamResource getAvatar() {
+        if (avatar != null) {
+            return new StreamResource(getId().toString() + "png", () -> new ByteArrayInputStream(avatar));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param data data to read.
+     * @throws IOException If the data can't be read.
+     */
+    public void setAvatar(InputStream data) throws IOException {
+        avatar = data.readAllBytes();
     }
 }

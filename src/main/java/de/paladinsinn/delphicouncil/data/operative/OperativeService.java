@@ -18,9 +18,15 @@
 package de.paladinsinn.delphicouncil.data.operative;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,4 +43,95 @@ public class OperativeService extends CrudService<Operative, UUID> {
         return repository;
     }
 
+    public List<Operative> findAll() {
+        return repository.findAll();
+    }
+
+    public List<Operative> findAll(Sort sort) {
+        return repository.findAll(sort);
+    }
+
+    public List<Operative> findAllById(Iterable<UUID> uuids) {
+        return repository.findAllById(uuids);
+    }
+
+    public <S extends Operative> List<S> saveAll(Iterable<S> entities) {
+        return repository.saveAll(entities);
+    }
+
+    public void flush() {
+        repository.flush();
+    }
+
+    public <S extends Operative> S saveAndFlush(S entity) {
+        return repository.saveAndFlush(entity);
+    }
+
+    public void deleteInBatch(Iterable<Operative> entities) {
+        repository.deleteInBatch(entities);
+    }
+
+    public void deleteAllInBatch() {
+        repository.deleteAllInBatch();
+    }
+
+    public Operative getOne(UUID uuid) {
+        return repository.getOne(uuid);
+    }
+
+    public <S extends Operative> List<S> findAll(Example<S> example) {
+        return repository.findAll(example);
+    }
+
+    public <S extends Operative> List<S> findAll(Example<S> example, Sort sort) {
+        return repository.findAll(example, sort);
+    }
+
+    public Page<Operative> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    public <S extends Operative> S save(S entity) {
+        return repository.save(entity);
+    }
+
+    public Optional<Operative> findById(UUID uuid) {
+        return repository.findById(uuid);
+    }
+
+    public boolean existsById(UUID uuid) {
+        return repository.existsById(uuid);
+    }
+
+    public void deleteById(UUID uuid) {
+        repository.deleteById(uuid);
+    }
+
+    public void delete(Operative entity) {
+        repository.delete(entity);
+    }
+
+    public void deleteAll(Iterable<? extends Operative> entities) {
+        repository.deleteAll(entities);
+    }
+
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
+    public <S extends Operative> Optional<S> findOne(Example<S> example) {
+        return repository.findOne(example);
+    }
+
+    public <S extends Operative> Page<S> findAll(Example<S> example, Pageable pageable) {
+        return repository.findAll(example, pageable);
+    }
+
+    public <S extends Operative> long count(Example<S> example) {
+        return repository.count(example);
+    }
+
+    public <S extends Operative> boolean exists(Example<S> example) {
+        return repository.exists(example);
+    }
 }

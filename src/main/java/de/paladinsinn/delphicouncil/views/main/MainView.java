@@ -20,7 +20,6 @@ package de.paladinsinn.delphicouncil.views.main;
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -52,9 +51,9 @@ import de.paladinsinn.delphicouncil.data.person.Person;
 import de.paladinsinn.delphicouncil.data.person.PersonRepository;
 import de.paladinsinn.delphicouncil.views.about.AboutView;
 import de.paladinsinn.delphicouncil.views.dashboard.DashboardView;
-import de.paladinsinn.delphicouncil.views.missions.MissionCatalogueView;
-import de.paladinsinn.delphicouncil.views.players.PersonsView;
-import de.paladinsinn.delphicouncil.views.stormknights.StormKnightsView;
+import de.paladinsinn.delphicouncil.views.missions.MissionListView;
+import de.paladinsinn.delphicouncil.views.players.PersonListView;
+import de.paladinsinn.delphicouncil.views.stormknights.StormKnightsListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,9 +191,9 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
 
         ArrayList<Class<? extends Component>> allTabs = new ArrayList<>();
         allTabs.add(DashboardView.class);
-        allTabs.add(MissionCatalogueView.class);
-        allTabs.add(StormKnightsView.class);
-        allTabs.add(PersonsView.class);
+        allTabs.add(MissionListView.class);
+        allTabs.add(StormKnightsListView.class);
+        allTabs.add(PersonListView.class);
         allTabs.add(AboutView.class);
 
         String role = readRoleFromAuthentication(authentication);

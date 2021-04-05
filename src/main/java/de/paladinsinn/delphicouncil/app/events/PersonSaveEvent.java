@@ -43,6 +43,6 @@ public class PersonSaveEvent extends ComponentEvent<PersonForm> {
      * @return the mission report to be saved.
      */
     public Person getPerson() {
-        return getSource().getPerson().orElseThrow();
+        return getSource().getData().orElseThrow();
     }
 }

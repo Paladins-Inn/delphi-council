@@ -46,7 +46,7 @@ import java.util.*;
  */
 @Route(value = "person/:id?", layout = MainView.class)
 @PageTitle("Person")
-@CssImport("./views/person/edit-view.css")
+@CssImport("./views/edit-view.css")
 public class PersonEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(PersonEditView.class);
     public static final Long serial = 1L;
@@ -61,7 +61,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
 
     @PostConstruct
     public void init() {
-        addClassName("person-edit-view");
+        addClassName("edit-view");
         setSizeFull();
 
         form = new PersonForm(repository);
@@ -103,7 +103,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
             LOG.warn("Person ID is missing. view={}, person={}", this, personId);
         }
 
-        person.ifPresent(form::setPerson);
+        person.ifPresent(form::setData);
     }
 
 

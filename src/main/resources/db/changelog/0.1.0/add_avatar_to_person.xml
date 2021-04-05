@@ -20,12 +20,11 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-
-    <include file="base.xml" relativeToChangelogFile="true"/>
-    <include file="persons.xml" relativeToChangelogFile="true"/>
-    <include file="operatives.xml" relativeToChangelogFile="true"/>
-    <include file="missions.xml" relativeToChangelogFile="true"/>
-
-    <include file="add_avatar_to_person.xml" relativeToChangelogFile="true"/>
-    <include file="add_name_to_person.xml" relativeToChangelogFile="true"/>
+    <changeSet id="2021-04-05-rlichti1" author="rlichti">
+        <comment>Add blob for avatar and boolean checkbox to allow gravatar usage.</comment>
+        <addColumn tableName="PERSONS">
+            <column name="AVATAR" type="longblob"/>
+            <column name="USE_GRAVATAR" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

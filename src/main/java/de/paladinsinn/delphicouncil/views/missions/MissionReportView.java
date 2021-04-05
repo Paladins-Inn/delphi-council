@@ -61,10 +61,10 @@ import java.util.*;
  */
 @Route(value = "missionreport/:id?", layout = MainView.class)
 @PageTitle("Mission Reports")
-@CssImport("./views/mission/report-list-view.css")
+@CssImport("./views/edit-view.css")
 @Secured({"PLAYER", "GM", "JUDGE", "ORGA", "ADMIN"})
-public class MissionReportListView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionReportListView.class);
+public class MissionReportView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(MissionReportView.class);
 
     @Autowired
     private MissionForm missionForm;

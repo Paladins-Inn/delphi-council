@@ -55,6 +55,20 @@ public enum RoleName {
         );
     }
 
+    /**
+     * Special method for PersonForm.
+     *
+     * @return All roles but GM.
+     */
+    public Set<String> getRoleNamesWithoutGM() {
+        return Sets.newHashSet(
+                PERSON.name(),
+                JUDGE.name(),
+                ORGA.name(),
+                ADMIN.name()
+        );
+    }
+
     public Set<String> getActiveRoleNames(@NotNull final Person person) {
         HashSet<String> result = new HashSet<>(person.getRoles().size());
 

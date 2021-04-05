@@ -24,11 +24,14 @@ import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.server.VaadinSession;
@@ -45,6 +48,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -52,6 +56,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 
+import static com.vaadin.flow.component.Unit.PIXELS;
 import static java.time.ZoneOffset.UTC;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -84,7 +89,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     /**
      * The mission report to edit.
      */
-    private Person person;
+    private Person data;
 
     /**
      * If the form is read-only.
@@ -128,6 +133,13 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
     private final CheckboxGroup<String> status = new CheckboxGroup<>();
 
+    private final CheckboxGroup<String> userChangeableFlags = new CheckboxGroup<>();
+
+    private final Image avatar = new Image();
+    private final MemoryBuffer avatarBuffer = new MemoryBuffer();
+    private final Upload avatarUpload = new Upload(avatarBuffer);
+
+
     private final DateTimePicker lastLogin = new DateTimePicker();
     private final DateTimePicker deleted = new DateTimePicker();
     private final DateTimePicker lastPasswordChange = new DateTimePicker();
@@ -148,7 +160,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
     @PostConstruct
     public void init() {
-        if (person == null) {
+        if (data == null) {
             LOG.debug("Can't initialize without having a mission. form={}", this);
             return;
         }
@@ -194,46 +206,101 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
         status.setReadOnly(!isAdmin && !isOrga && !isJudge);
 
-        roles.setItems(RoleName.PERSON.getRoleNames());
+        userChangeableFlags.setReadOnly(readonly);
+
+        roles.setItems(RoleName.PERSON.getRoleNamesWithoutGM());
         roles.setReadOnly(!isAdmin && !isOrga);
+
+        avatar.setMaxWidth(360, PIXELS);
+        avatar.setMaxHeight(660, PIXELS);
+        avatarUpload.setMaxFiles(1);
+        avatarUpload.setMaxFileSize(16777215);
+        avatarUpload.setDropAllowed(true);
+        avatarUpload.setAcceptedFileTypes("image/png", "image/jpg", "image/jpeg", "image/gif");
+        avatarUpload.addFinishedListener(e -> {
+            try {
+                data.setAvatar(avatarBuffer.getInputStream());
+
+                Notification.show(
+                        getTranslation("input.upload.success", avatarBuffer.getFileName()),
+                        1000,
+                        Notification.Position.BOTTOM_STRETCH
+                );
+            } catch (IOException ioException) {
+                LOG.error(
+                        "Upload of the avatar failed. form={}, file='{}', type='{}'",
+                        this, avatarBuffer.getFileData(), avatarBuffer.getFileData().getMimeType()
+                );
+                Notification.show(
+                        getTranslation("input.upload.failed", ioException.getLocalizedMessage()),
+                        2000,
+                        Notification.Position.BOTTOM_STRETCH
+                );
+            }
+        });
+
 
         save.getStyle().set("marginRight", "10px");
         save.addClickListener(event -> {
-            if (person == null) person = new Person();
+            if (data == null) data = new Person();
 
-            person.setUsername(username.getValue());
+            data.setUsername(username.getValue());
 
             if (!password.isEmpty()) {
-                person.setPassword(password.getValue());
-                person.getStatus().setCredentialsChange();
+                LOG.info("Changing password. form={}, user='{}'", this, data.getUsername());
+                data.setPassword(password.getValue());
             }
 
-            person.setEmail(email.getValue());
+            data.setEmail(email.getValue());
 
-            person.setName(name.getValue());
-            person.setLastname(lastName.getValue());
-            person.setFirstname(firstName.getValue());
+            data.setName(name.getValue());
+            LOG.info("Changing name. form={}, name='{}'", this, data.getName());
 
-            person.getStatus().setLocked(false);
-            person.getStatus().setEnabled(true);
+            data.setLastname(lastName.getValue());
+            data.setFirstname(firstName.getValue());
+
+            data.getStatus().setLocked(false);
+            data.getStatus().setEnabled(true);
             for (String b : status.getValue()) {
                 if (getTranslation("person.status-locked.caption").equals(b)) {
-                    person.getStatus().setLocked(true);
+                    data.getStatus().setLocked(true);
                 } else if (getTranslation("person.status-enabled.caption").equals(b)) {
-                    person.getStatus().setEnabled(true);
+                    data.getStatus().setEnabled(true);
                 }
             }
-            person.getStatus().setLastLogin(lastLogin.getValue().atOffset(UTC));
-            person.getStatus().setCredentialsChange(lastPasswordChange.getValue().atOffset(UTC));
-            person.getStatus().setExpiry(expiryDate.getValue().atOffset(UTC));
+            data.getStatus().setLastLogin(lastLogin.getValue().atOffset(UTC));
+            data.getStatus().setCredentialsChange(lastPasswordChange.getValue().atOffset(UTC));
+            data.getStatus().setExpiry(expiryDate.getValue().atOffset(UTC));
 
-            person.getRoles().clear();
+            data.getRoles().clear();
             for (String b : roles.getValue()) {
-                person.getRoles().add(new Role(RoleName.valueOf(b)));
+                data.getRoles().add(new Role(RoleName.valueOf(b)));
+            }
+
+            Role gmRole = new Role(RoleName.GM);
+            data.disableGravatar();
+            boolean isGm = false,
+                    allowGravatar = false;
+            for (String b : userChangeableFlags.getValue()) {
+                if (getTranslation("person.status-is-gm.caption").equals(b)) {
+                    isGm = true;
+                } else if (getTranslation("person.status-allow-gravatar.caption").equals(b)) {
+                    allowGravatar = true;
+                }
+            }
+            if (isGm) {
+                data.getRoles().add(gmRole);
+            } else {
+                data.getRoles().remove(gmRole);
+            }
+            if (allowGravatar) {
+                data.enableGravatar();
+            } else {
+                data.disableGravatar();
             }
 
             if (deleted.getValue() != null) {
-                person.getStatus().setDeleted(deleted.getValue().atOffset(UTC));
+                data.getStatus().setDeleted(deleted.getValue().atOffset(UTC));
             }
 
             getEventBus().fireEvent(new PersonSaveEvent(this, false));
@@ -249,18 +316,18 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
         initialized = true;
     }
 
-    public void setPerson(@NotNull Person person) {
-        if (this.person != null && this.person.equals(person)) {
+    public void setData(@NotNull Person data) {
+        if (this.data != null && this.data.equals(data)) {
             LOG.info("Person didn't change. Ignoring event. form={}, id={}, name={}",
-                    this, this.person.getId(), this.person.getName());
+                    this, this.data.getId(), this.data.getName());
 
             return;
         }
 
-        this.person = person;
+        this.data = data;
 
-        LOG.debug("Set person. form={}, id={}, name={}",
-                this, this.person.getId(), this.person.getName());
+        LOG.debug("Set data. form={}, id={}, name={}",
+                this, this.data.getId(), this.data.getName());
 
 
         init();
@@ -269,26 +336,38 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     }
 
     private void populate() {
-        if (person == null) {
+        if (data == null) {
             LOG.warn("Tried to polulate form data without a person defined. form={}", this);
             return;
         }
 
-        if (person.getId() != null) {
-            id.setValue(person.getId().toString());
+        if (data.getId() != null) {
+            id.setValue(data.getId().toString());
         }
-        username.setValue(person.getUsername());
-        email.setValue(person.getEmail());
+        username.setValue(data.getUsername());
+        email.setValue(data.getEmail());
 
-        name.setValue(person.getName());
-        lastName.setValue(person.getLastname());
-        firstName.setValue(person.getFirstname());
+        avatar.setSrc(data.getAvatarImage().getSrc());
 
-        lastLogin.setValue(person.getStatus().getLastLogin().toLocalDateTime());
-        expiryDate.setValue(person.getStatus().getExpiry().toLocalDateTime());
-        lastPasswordChange.setValue(person.getStatus().getCredentialsChange().toLocalDateTime());
+        name.setValue(data.getName());
+        lastName.setValue(data.getLastname());
+        firstName.setValue(data.getFirstname());
 
-        roles.setValue(RoleName.PERSON.getActiveRoleNames(person));
+        lastLogin.setValue(data.getStatus().getLastLogin().toLocalDateTime());
+        expiryDate.setValue(data.getStatus().getExpiry().toLocalDateTime());
+        lastPasswordChange.setValue(data.getStatus().getCredentialsChange().toLocalDateTime());
+
+        roles.setValue(RoleName.PERSON.getActiveRoleNames(data));
+
+        if (roles.getValue().contains(RoleName.GM.name())) {
+            userChangeableFlags.add(getTranslation("person.status-is-gm.caption"));
+        }
+        if (data.isGravatarAllowed()) {
+            userChangeableFlags.add(getTranslation("person.status-allow-gravatar.caption"));
+        }
+
+        if (data.getAvatar() != null)
+            avatar.setSrc(data.getAvatar());
 
         calculateReadOnly();
     }
@@ -296,15 +375,15 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     public void initializeReport() {
         LOG.debug("Creating a new person.");
 
-        person = new Person();
-        person.setCreated();
-        person.setModified();
+        data = new Person();
+        data.setCreated();
+        data.setModified();
 
         AccountSecurityStatus status = new AccountSecurityStatus();
         status.setEnabled(true);
         status.setLocked(false);
         status.setExpiry(OffsetDateTime.now(UTC).plusYears(5));
-        person.setStatus(status);
+        data.setStatus(status);
 
         init();
         populate();
@@ -312,8 +391,8 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     }
 
 
-    public Optional<Person> getPerson() {
-        return Optional.ofNullable(person);
+    public Optional<Person> getData() {
+        return Optional.ofNullable(data);
     }
 
 
@@ -338,7 +417,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
         readonly = !userDetails.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ORGA.name()))
                 && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ADMIN.name()))
-                && !(person != null && userDetails.getName().equals(person.getUsername()));
+                && !(data != null && userDetails.getName().equals(data.getUsername()));
 
         isOrga = userDetails.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ORGA.name()));
         isAdmin = userDetails.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ADMIN.name()));
@@ -360,7 +439,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
             return;
         }
 
-        LOG.debug("Building person edit form. form={}, report={}, locale={}", this, person, locale);
+        LOG.debug("Building person edit form. form={}, report={}, locale={}", this, data, locale);
 
         LOG.trace("Remove and add all form elements. form={}", this);
         form.removeAll();
@@ -371,9 +450,9 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
 
         LOG.trace("Adding all form elements. form={}", this);
-        id.setTitle(getTranslation("input.id.caption"));
-        id.setHelperText(getTranslation("input.id.help"));
-        form.addFormItem(id, id.getTitle());
+
+        avatarUpload.setDropLabelIcon(avatar);
+        form.addFormItem(avatarUpload, getTranslation("person.avatar.caption"));
 
         name.setTitle(getTranslation("person.name.caption"));
         name.setHelperText(getTranslation("person.name.help"));
@@ -396,10 +475,10 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
         String statusEnabled = getTranslation("person.status-enabled.caption");
         String statusLocked = getTranslation("person.status-locked.caption");
         HashSet<String> statusOptionsSelected = new HashSet<>(2);
-        if (person.isEnabled()) {
+        if (data.isEnabled()) {
             statusOptionsSelected.add(getTranslation("person.status-enabled.caption"));
         }
-        if (!person.isAccountNonLocked()) {
+        if (!data.isAccountNonLocked()) {
             statusOptionsSelected.add(getTranslation("person.status-locked.caption"));
         }
         status.removeAll();
@@ -407,22 +486,32 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
         status.setValue(statusOptionsSelected);
         form.addFormItem(status, getTranslation("person.status.caption"));
 
+        final String userChangeableFlagIsGm = getTranslation("person.status-is-gm.caption");
+        final String userChangeableFlagAllowGravatar = getTranslation("person.status-allow-gravatar.caption");
+        final HashSet<String> userChangeableFlagSelected = new HashSet<>(2);
+        if (data.isGravatarAllowed()) {
+            userChangeableFlagSelected.add(getTranslation("person.status-allow-gravatar.caption"));
+        }
+        if (roles.getValue().contains(RoleName.GM.name())) {
+            userChangeableFlagSelected.add(getTranslation("person.status-is-gm.caption"));
+        }
+        userChangeableFlags.removeAll();
+        userChangeableFlags.setItems(Arrays.asList(userChangeableFlagIsGm, userChangeableFlagAllowGravatar));
+        userChangeableFlags.setValue(userChangeableFlagSelected);
+        form.addFormItem(userChangeableFlags, getTranslation("person.user-changeable-flags.caption"));
+
         lastName.setTitle(getTranslation("person.last-name.caption"));
         lastName.setHelperText(getTranslation("person.last-name.help"));
         form.addFormItem(lastName, lastName.getTitle());
         firstName.setTitle(getTranslation("person.first-name.caption"));
         firstName.setHelperText(getTranslation("person.first-name.help"));
         form.addFormItem(firstName, firstName.getTitle());
-        deleted.setLabel(getTranslation("person.deleted.caption"));
         deleted.setHelperText(getTranslation("person.deleted.help"));
         form.addFormItem(deleted, deleted.getLabel());
-        expiryDate.setLabel(getTranslation("person.expiry-date.caption"));
         expiryDate.setHelperText(getTranslation("person.expiry-date.help"));
         form.addFormItem(expiryDate, expiryDate.getLabel());
-        lastPasswordChange.setLabel(getTranslation("person.last-password-change.caption"));
         lastPasswordChange.setHelperText(getTranslation("person.last-password-change.help"));
         form.addFormItem(lastPasswordChange, lastPasswordChange.getLabel());
-        lastLogin.setLabel(getTranslation("person.last-login.caption"));
         lastLogin.setHelperText(getTranslation("person.last-login.help"));
         form.addFormItem(lastLogin, lastLogin.getLabel());
 

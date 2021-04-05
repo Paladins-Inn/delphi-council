@@ -239,7 +239,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
                 data.setAvatar(avatarBuffer.getInputStream());
 
                 Notification.show(
-                        getTranslation("input.upload.success", tokenBuffer.getFileName()),
+                        getTranslation("input.upload.success", avatarBuffer.getFileName()),
                         1000,
                         Notification.Position.BOTTOM_STRETCH
                 );
@@ -452,8 +452,9 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
         form.addFormItem(player, getTranslation("operative.player.caption"));
 
         avatarUpload.setDropLabelIcon(avatar);
-        tokenUpload.setDropLabelIcon(token);
         form.addFormItem(avatarUpload, getTranslation("operative.avatar.caption"));
+
+        tokenUpload.setDropLabelIcon(token);
         form.addFormItem(tokenUpload, getTranslation("operative.token.caption"));
 
         // Buttons

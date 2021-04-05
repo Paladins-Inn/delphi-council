@@ -18,11 +18,12 @@
 package de.paladinsinn.delphicouncil.data.person;
 
 import com.sun.istack.NotNull;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.server.StreamResource;
 import de.paladinsinn.delphicouncil.data.AbstractRevisionedEntity;
 import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.operative.Operative;
 import de.paladinsinn.delphicouncil.data.operative.OperativeReport;
-import liquibase.util.MD5Util;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -31,6 +32,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -54,6 +57,10 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class Person extends AbstractRevisionedEntity implements UserDetails {
     public static final int ITERATION_COUNT = 10;
 
+    @Column(name = "NAME", length = 100, nullable = false, unique = true, updatable = true)
+    @Audited
+    private String name;
+
     @Column(name = "USERNAME", length = 20, nullable = false, unique = true, updatable = false)
     @Audited
     private String username;
@@ -76,6 +83,9 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
 
     @Embedded
     private AccountSecurityStatus status = new AccountSecurityStatus();
+
+    @Embedded
+    private AvatarInformation avatar = new AvatarInformation();
 
     @ElementCollection(
             targetClass = Role.class,
@@ -109,21 +119,79 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
 
 
     public String getName() {
-        return status.isAccountNonDeleted() ? username : "-deleted-";
+        return status.isAccountNonDeleted() ? name : "-deleted-";
     }
 
     public void setName(final String name) {
         if (name != null && !name.isBlank() && !"-deleted-".equals(name)) {
-            this.username = name;
+            this.name = name;
+        }
+    }
+
+
+    public String getFirstname() {
+        return status.isAccountNonDeleted() ? firstname : "-deleted-";
+    }
+
+    public void setFirstname(final String name) {
+        if (name != null && !name.isBlank() && !"-deleted-".equals(name)) {
+            this.firstname = name;
+        }
+    }
+
+
+    public String getLastname() {
+        return status.isAccountNonDeleted() ? lastname : "-deleted-";
+    }
+
+    public void setLastname(final String name) {
+        if (name != null && !name.isBlank() && !"-deleted-".equals(name)) {
+            this.lastname = name;
+        }
+    }
+
+
+    public String getUsername() {
+        return status.isAccountNonDeleted() ? username : "-deleted-";
+    }
+
+    public void setUsername(final String username) {
+        if (username != null && !username.isBlank() && !"-deleted-".equals(username)) {
+            this.username = username;
         }
     }
 
     /**
      * <a href="https://www.gravatar.com/">Gravatar</a> delivers an avatar by using the email address.
+     *
      * @return the gravatar of the email address of this user.
      */
     public String getGravatar() {
-        return "https://www.gravatar.com/avatar/" + MD5Util.computeMD5(email.trim());
+        return avatar.getGravatarLink(email);
+    }
+
+    public boolean isGravatarAllowed() {
+        return avatar.isGravatar();
+    }
+
+    public void disableGravatar() {
+        avatar.setGravatar(false);
+    }
+
+    public void enableGravatar() {
+        avatar.setGravatar(true);
+    }
+
+    public Image getAvatarImage() {
+        return avatar.getAvatarImage(getId().toString() + ".png", email);
+    }
+
+    public StreamResource getAvatar() {
+        return avatar.getAvatar(getId() + ".png");
+    }
+
+    public void setAvatar(InputStream stream) throws IOException {
+        avatar.setAvatar(stream);
     }
 
     /**

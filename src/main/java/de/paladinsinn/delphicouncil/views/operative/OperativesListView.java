@@ -35,7 +35,7 @@ import de.paladinsinn.delphicouncil.data.operative.OperativeReport;
 import de.paladinsinn.delphicouncil.data.operative.OperativeService;
 import de.paladinsinn.delphicouncil.ui.DataCard;
 import de.paladinsinn.delphicouncil.views.main.MainView;
-import de.paladinsinn.delphicouncil.views.missions.MissionReportListView;
+import de.paladinsinn.delphicouncil.views.missions.MissionReportView;
 import de.paladinsinn.delphicouncil.views.person.PersonEditView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  */
 @Route(value = "operatives", layout = MainView.class)
 @PageTitle("Storm Knights")
-@CssImport("./views/operative/list-view.css")
+@CssImport("./views/lists-view.css")
 public class OperativesListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
     public static final Long serial = 1L;
 
@@ -79,7 +79,7 @@ public class OperativesListView extends Div implements Serializable, AutoCloseab
 
     @PostConstruct
     public void init() {
-        addClassName("operative-list-view");
+        addClassName("list-view");
         setSizeFull();
         grid.setHeight("100%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
@@ -135,7 +135,7 @@ public class OperativesListView extends Div implements Serializable, AutoCloseab
                             r.getReport().getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
                             r.getReport().getGameMaster().getUsername()
                     ),
-                    MissionReportListView.class,
+                    MissionReportView.class,
                     new RouteParameters("id", r.getReport().getId().toString())
             );
 

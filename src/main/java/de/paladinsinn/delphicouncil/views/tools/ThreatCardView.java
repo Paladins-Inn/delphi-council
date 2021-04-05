@@ -25,7 +25,6 @@ import com.vaadin.flow.router.Route;
 import de.paladinsinn.delphicouncil.views.main.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.annotation.Secured;
 
 import javax.annotation.PostConstruct;
 
@@ -37,8 +36,7 @@ import javax.annotation.PostConstruct;
  */
 @Route(value = "threatcard", layout = MainView.class)
 @PageTitle("Threat Card")
-@CssImport("./views/tools/threat-card-view.css")
-@Secured({"GM","ADMIN","ORGA","JUDGE"})
+@CssImport("./views/tools-view.css")
 public class ThreatCardView extends Div {
     private static final Logger LOG = LoggerFactory.getLogger(ThreatCardView.class);
 

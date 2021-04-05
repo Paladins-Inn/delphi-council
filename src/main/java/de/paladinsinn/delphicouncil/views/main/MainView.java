@@ -63,6 +63,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.PostConstruct;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 import static com.vaadin.flow.component.Unit.PIXELS;
@@ -76,7 +78,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @PWA(name = "Delphi Council Information System", shortName = "DC IS", enableInstallPrompt = false)
 @JsModule("./styles/shared-styles.js")
 @Theme(value = Lumo.class, variant = Lumo.DARK)
-@CssImport("./views/main/main-view.css")
+@CssImport("./views/main-view.css")
 public class MainView extends AppLayout implements LocaleChangeObserver {
     private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
 
@@ -94,7 +96,12 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
     public void init() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
-            LOG.debug("Authenticated user. name={}, authorities={}", authentication.getName(), authentication.getAuthorities());
+            Person person = personRepository.findByUsername(authentication.getName());
+            person.getStatus().setLastLogin(OffsetDateTime.now(ZoneOffset.UTC));
+            person = personRepository.save(person);
+
+            LOG.debug("Authenticated user. name={}, authorities={}, lastLogin={}",
+                    authentication.getName(), authentication.getAuthorities(), person.getStatus().getLastLogin());
         }
 
         setLocale(VaadinSession.getCurrent().getLocale());

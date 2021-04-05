@@ -36,7 +36,7 @@ import de.paladinsinn.delphicouncil.data.person.Person;
 import de.paladinsinn.delphicouncil.data.person.PersonRepository;
 import de.paladinsinn.delphicouncil.ui.DataCard;
 import de.paladinsinn.delphicouncil.views.main.MainView;
-import de.paladinsinn.delphicouncil.views.missions.MissionReportListView;
+import de.paladinsinn.delphicouncil.views.missions.MissionReportView;
 import de.paladinsinn.delphicouncil.views.operative.OperativeEditView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ import static com.vaadin.flow.component.Unit.PERCENTAGE;
 
 @Route(value = "persons", layout = MainView.class)
 @PageTitle("Persons")
-@CssImport("./views/person/persons-view.css")
+@CssImport("./views/lists-view.css")
 @Secured({"ADMIN", "ORGA", "JUDGE"})
 public class PersonListView extends Div implements AfterNavigationObserver, LocaleChangeObserver {
     private static final Logger LOG = LoggerFactory.getLogger(PersonListView.class);
@@ -66,7 +66,7 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
 
     @PostConstruct
     public void init() {
-        addClassName("person-list-view");
+        addClassName("list-view");
         setSizeFull();
 
         grid = new Grid<>();
@@ -80,8 +80,7 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
         DataCard card = new DataCard();
         card.init();
 
-        Image image = new Image();
-        image.setSrc(person.getGravatar());
+        Image image = person.getAvatarImage();
         card.setLogo(image);
 
 
@@ -118,7 +117,7 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
         for (MissionReport r : person.getReports()) {
             RouterLink link = new RouterLink(
                     getTranslation("person.missionreport-link.caption", r.getMission().getCode(), r.getMission().getTitle(), r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE)),
-                    MissionReportListView.class,
+                    MissionReportView.class,
                     new RouteParameters("id", r.getId().toString())
             );
 

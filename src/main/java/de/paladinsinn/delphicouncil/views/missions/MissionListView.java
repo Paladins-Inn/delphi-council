@@ -62,7 +62,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  */
 @Route(value = "mission", layout = MainView.class)
 @PageTitle("Mission Catalogue")
-@CssImport("./views/mission/list-view.css")
+@CssImport("./views/lists-view.css")
 public class MissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
     public static final Long serial = 1L;
 
@@ -78,7 +78,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
 
     @PostConstruct
     public void init() {
-        addClassName("mission-catalogue-view");
+        addClassName("list-view");
         setSizeFull();
         grid.setHeight("100%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
@@ -163,7 +163,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
                             r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
                             r.getGameMaster().getUsername()
                     ),
-                    MissionReportListView.class,
+                    MissionReportView.class,
                     new RouteParameters("id", r.getId().toString())
             );
 

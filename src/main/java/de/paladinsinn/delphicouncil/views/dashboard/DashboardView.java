@@ -18,17 +18,17 @@
 package de.paladinsinn.delphicouncil.views.dashboard;
 
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.PageTitle;
-import de.paladinsinn.delphicouncil.views.main.MainView;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
+import de.paladinsinn.delphicouncil.views.main.MainView;
 
 @Route(value = "", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
 @PageTitle("Dashboard")
-@CssImport("./views/dashboard/dashboard-view.css")
+@CssImport("./views/dashboard-view.css")
 public class DashboardView extends Div {
 
     public DashboardView() {

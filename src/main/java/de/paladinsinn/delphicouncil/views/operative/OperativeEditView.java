@@ -47,7 +47,7 @@ import java.util.*;
  */
 @Route(value = "operative/:id?", layout = MainView.class)
 @PageTitle("Storm Knight")
-@CssImport("./views/operative/edit-view.css")
+@CssImport("./views/edit-view.css")
 public class OperativeEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OperativeEditView.class);
     public static final Long serial = 1L;
@@ -66,7 +66,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
 
     @PostConstruct
     public void init() {
-        addClassName("operative-edit-view");
+        addClassName("edit-view");
         setSizeFull();
 
         form = new OperativeForm(operativeService, personService);

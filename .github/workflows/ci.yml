@@ -10,7 +10,7 @@ jobs:
   java-build:
     runs-on: [ java ]
     env:
-      VERSION: 0.1.0
+      VERSION: 0.2.0-SNAPSHOT
     steps:
       - name: Checkout sources
         id: checkout-sources
@@ -37,7 +37,7 @@ jobs:
     runs-on: [ podman ]
     needs: java-build
     env:
-      VERSION: 0.1.0
+      VERSION: 0.2.0-SNAPSHOT
       IMAGE: delphi-council-is
     steps:
       - name: checkout sources

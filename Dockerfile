@@ -23,7 +23,7 @@ LABEL io.openshift.tags="spring-boot rpg"
 LABEL maintainer="Kaiserpfalz EDV-Service"
 LABEL summary="Provides a supporting system for Torganized Play Germany."
 LABEL vendor="Kaiserpfalz EDV-Service"
-LABEL version="0.1.0"
+LABEL version="0.2.0-SNAPSHOT"
 
 
 ARG JAVA_PACKAGE=java-11-openjdk-headless
@@ -31,7 +31,7 @@ ARG RUN_JAVA_VERSION=1.3.8
 
 ENV LANG='en_GB.UTF-8' \
     LANGUAGE='en_GB:en' \
-    VERSION='0.1.0'
+    VERSION='0.2.0-SNAPSHOT'
 
 # Install java and the run-java script
 # Also set up permissions for user `1001`

@@ -4,7 +4,7 @@ app:
   image:
     repo: quay.io/klenkes74
     name: delphi-council-is
-    tag: 0.1.0-SNAPSHOT
+    tag: 0.2.0-SNAPSHOT
   requests:
     cpu: 1000m
     memory: 2Gi

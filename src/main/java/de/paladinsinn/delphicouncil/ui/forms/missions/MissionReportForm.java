@@ -144,7 +144,7 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         // TODO 2021-04-04 rlichti Add the min date with rule: either current date or current mission report saved date (whichever is an earlier date)
         successState.setAllowCustomValue(false);
         successState.setRequired(true);
-        successState.setRequired(readonly);
+        successState.setReadOnly(readonly);
         successState.setDataProvider(SuccessState.FAILED.dataProvider());
         achievements.addClassName("long-text");
         achievements.setClearButtonVisible(true);

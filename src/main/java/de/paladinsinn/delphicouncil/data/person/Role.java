@@ -39,6 +39,17 @@ public class Role implements GrantedAuthority {
     @Enumerated(EnumType.STRING)
     private RoleName storedRole;
 
+    /**
+     * @deprecated only used by JPA.
+     */
+    @Deprecated
+    public Role() {
+    }
+
+    public Role(@NotNull final RoleName role) {
+        storedRole = role;
+    }
+
     @Override
     public String getAuthority() {
         return storedRole.name();

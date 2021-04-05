@@ -17,6 +17,12 @@
 
 package de.paladinsinn.delphicouncil.data.person;
 
+import com.sun.istack.NotNull;
+import org.apache.commons.compress.utils.Sets;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public enum RoleName {
     /**
      * Torg player.
@@ -37,5 +43,25 @@ public enum RoleName {
     /**
      * Campaign admin team.
      */
-    ADMIN
+    ADMIN;
+
+    public Set<String> getRoleNames() {
+        return Sets.newHashSet(
+                PERSON.name(),
+                GM.name(),
+                JUDGE.name(),
+                ORGA.name(),
+                ADMIN.name()
+        );
+    }
+
+    public Set<String> getActiveRoleNames(@NotNull final Person person) {
+        HashSet<String> result = new HashSet<>(person.getRoles().size());
+
+        for (Role r : person.getRoles()) {
+            result.add(r.getAuthority());
+        }
+
+        return result;
+    }
 }

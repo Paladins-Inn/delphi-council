@@ -18,8 +18,8 @@
 package de.paladinsinn.delphicouncil.app.events;
 
 import com.vaadin.flow.component.ComponentEvent;
-import de.paladinsinn.delphicouncil.data.operative.OperativeReport;
-import de.paladinsinn.delphicouncil.ui.forms.operatives.OperativeReportForm;
+import de.paladinsinn.delphicouncil.data.person.Person;
+import de.paladinsinn.delphicouncil.ui.forms.persons.PersonForm;
 
 /**
  * MissionGrouPReportSaveEvent --
@@ -27,7 +27,7 @@ import de.paladinsinn.delphicouncil.ui.forms.operatives.OperativeReportForm;
  * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-04
  */
-public class OperatorReportSaveEvent extends ComponentEvent<OperativeReportForm> {
+public class PersonSaveEvent extends ComponentEvent<PersonForm> {
     /**
      * Creates a new event using the given source and indicator whether the
      * event originated from the client side or the server side.
@@ -35,14 +35,14 @@ public class OperatorReportSaveEvent extends ComponentEvent<OperativeReportForm>
      * @param source     the source component
      * @param fromClient <code>true</code> if the event originated from the client
      */
-    public OperatorReportSaveEvent(OperativeReportForm source, boolean fromClient) {
+    public PersonSaveEvent(PersonForm source, boolean fromClient) {
         super(source, fromClient);
     }
 
     /**
      * @return the mission report to be saved.
      */
-    public OperativeReport getReport() {
-        return getSource().getReport().orElseThrow();
+    public Person getPerson() {
+        return getSource().getPerson().orElseThrow();
     }
 }

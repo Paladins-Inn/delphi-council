@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.delphicouncil.views.players;
+package de.paladinsinn.delphicouncil.views.person;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -28,15 +28,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import de.codecamp.vaadin.serviceref.ServiceRef;
+import de.paladinsinn.delphicouncil.data.operative.Operative;
 import de.paladinsinn.delphicouncil.data.person.Person;
 import de.paladinsinn.delphicouncil.data.person.PersonRepository;
 import de.paladinsinn.delphicouncil.ui.DataCard;
 import de.paladinsinn.delphicouncil.views.main.MainView;
+import de.paladinsinn.delphicouncil.views.stormknights.OperativeEditView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,26 +45,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 
 import javax.annotation.PostConstruct;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
-@Route(value = "players", layout = MainView.class)
+import static com.vaadin.flow.component.Unit.PERCENTAGE;
+
+@Route(value = "persons", layout = MainView.class)
 @PageTitle("Persons")
-@CssImport("./views/players/players-view.css")
-@Secured({"ADMIN","ORGA","JUDGE"})
+@CssImport("./views/person/persons-view.css")
+@Secured({"ADMIN", "ORGA", "JUDGE"})
 public class PersonListView extends Div implements AfterNavigationObserver, LocaleChangeObserver {
     private static final Logger LOG = LoggerFactory.getLogger(PersonListView.class);
+    private static final Long serial = 1L;
 
     @Autowired
     private ServiceRef<PersonRepository> repository;
 
     private Grid<Person> grid;
 
-    private Locale locale;
-
     @PostConstruct
     public void init() {
-        addClassName("players-view");
+        addClassName("person-list-view");
         setSizeFull();
 
         grid = new Grid<>();
@@ -83,11 +81,45 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
         image.setSrc(person.getGravatar());
         card.setLogo(image);
 
-        Span name = new Span(person.getName());
+
+        Span name = new Span(getTranslation("person.title.card", person.getName()));
         name.addClassName("name");
-        Span date = new Span(person.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        name.setMinWidth(40, PERCENTAGE);
+
+        Span date = new Span(getTranslation("db.entry.created.title", person.getCreated()));
         date.addClassName("date");
+        date.setMinWidth(15, PERCENTAGE);
+
         card.addHeader(name, date);
+        card.getHeader().setFlexGrow(100, name);
+
+        Span username = new Span(getTranslation("person.username.card", person.getUsername()));
+        username.addClassName("name");
+        username.setMinWidth(40, PERCENTAGE);
+
+        Span modified = new Span(getTranslation("db.entry.modified.title", person.getModified()));
+        modified.addClassName("date");
+        modified.setMinWidth(15, PERCENTAGE);
+
+        card.addFooter(username, modified);
+        card.getFooter().setFlexGrow(100, username);
+
+        RouterLink editButton = new RouterLink(
+                getTranslation("buttons.edit.caption"),
+                PersonEditView.class,
+                new RouteParameters("id", person.getId().toString())
+        );
+        card.addMargin(editButton);
+
+
+        for (Operative o : person.getOperatives()) {
+            RouterLink link = new RouterLink(
+                    getTranslation("person.operative-link.caption", o.getName()),
+                    OperativeEditView.class,
+                    new RouteParameters("id", o.getId().toString())
+            );
+            card.addMargin(link);
+        }
 
         return card;
     }
@@ -113,7 +145,5 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
     @Override
     public void localeChange(LocaleChangeEvent event) {
         LOG.trace("New locale. view={}, locale={}", this, event.getLocale());
-
-        this.locale = event.getLocale();
     }
 }

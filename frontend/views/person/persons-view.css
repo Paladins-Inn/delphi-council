@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.players-view {
+.person-list-view {
   display: block;
   height: 100%;
 }
 
-.players-view vaadin-grid {
+.person-list-view vaadin-grid {
   height: 100%;
   line-height: var(--lumo-line-height-m);
 }
 
-.players-view vaadin-grid,
-.players-view vaadin-grid-cell-content {
+.person-list-view vaadin-grid,
+.person-list-view vaadin-grid-cell-content {
   background-color: var(--lumo-contrast-10pct);
 }
 
-.players-view .card {
+.person-list-view .card {
   background-color: var(--lumo-base-color);
   border-radius: var(--lumo-border-radius);
   box-shadow: var(--lumo-box-shadow-xs);
   padding: calc(var(--lumo-space-s) * 1.5) var(--lumo-space-m);
 }
 
-.players-view img {
+.person-list-view img {
   border-radius: 50%;
   flex-shrink: 0;
   height: var(--lumo-size-m);
@@ -45,42 +45,42 @@
   width: var(--lumo-size-m);
 }
 
-.players-view .header {
+.person-list-view .header {
   align-items: baseline;
 }
 
-.players-view .name {
+.person-list-view .name {
   font-size: var(--lumo-font-size-s);
   font-weight: bold;
   margin-right: var(--lumo-space-s);
 }
 
-.players-view .date {
+.person-list-view .date {
   color: var(--lumo-tertiary-text-color);
   font-size: var(--lumo-font-size-xs);
 }
 
-.players-view .post {
+.person-list-view .post {
   color: var(--lumo-secondary-text-color);
   font-size: var(--lumo-font-size-s);
   margin-bottom: var(--lumo-space-s);
   white-space: normal;
 }
 
-.players-view .actions {
+.person-list-view .actions {
   align-items: center;
 }
 
-.players-view iron-icon {
+.person-list-view iron-icon {
   color: var(--lumo-tertiary-text-color);
   height: calc(var(--lumo-icon-size-s) * 0.8);
   margin-right: var(--lumo-space-s);
   width: calc(var(--lumo-icon-size-s) * 0.8);
 }
 
-.players-view .likes,
-.players-view .comments,
-.players-view .shares {
+.person-list-view .likes,
+.person-list-view .comments,
+.person-list-view .shares {
   color: var(--lumo-tertiary-text-color);
   font-size: var(--lumo-font-size-xs);
   margin-right: var(--lumo-space-l);

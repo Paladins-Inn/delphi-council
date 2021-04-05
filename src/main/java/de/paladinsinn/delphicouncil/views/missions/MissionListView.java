@@ -164,7 +164,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
                             r.getGameMaster().getUsername()
                     ),
                     MissionReportListView.class,
-                    new RouteParameters("report", r.getId().toString())
+                    new RouteParameters("id", r.getId().toString())
             );
 
             card.addMargin(reportButton);

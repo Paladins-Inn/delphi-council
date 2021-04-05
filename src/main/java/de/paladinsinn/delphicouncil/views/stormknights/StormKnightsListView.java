@@ -36,6 +36,7 @@ import de.paladinsinn.delphicouncil.data.operative.OperativeService;
 import de.paladinsinn.delphicouncil.ui.DataCard;
 import de.paladinsinn.delphicouncil.views.main.MainView;
 import de.paladinsinn.delphicouncil.views.missions.MissionReportListView;
+import de.paladinsinn.delphicouncil.views.person.PersonEditView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,24 +87,24 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
         add(grid);
     }
 
-    private DataCard createCard(@NotNull final Operative mission) {
+    private DataCard createCard(@NotNull final Operative data) {
         DataCard card = new DataCard();
         card.init();
 
         // Logo
         Image logo = new Image();
-        if (mission.getAvatar() != null) {
-            logo.setSrc(mission.getAvatar());
+        if (data.getAvatar() != null) {
+            logo.setSrc(data.getAvatar());
             card.setLogo(logo);
         }
 
         // Header
-        Span title = new Span(getTranslation("operative.title.card", getLocale(), mission.getName()));
+        Span title = new Span(getTranslation("operative.title.card", getLocale(), data.getName()));
         title.setClassName("name");
         title.setMinWidth(300, PIXELS);
         title.setWidth(40, PERCENTAGE);
 
-        Span clearance = new Span(getTranslation("torg.clearance.card", getLocale(), getTranslation("torg.clearance." + mission.getClearance().name(), getLocale())));
+        Span clearance = new Span(getTranslation("torg.clearance.card", getLocale(), getTranslation("torg.clearance." + data.getClearance().name(), getLocale())));
         clearance.setClassName("date");
         clearance.setMinWidth(150, PIXELS);
         clearance.setWidth(20, PERCENTAGE);
@@ -122,8 +123,8 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
         // Main text
         FlexLayout description = new FlexLayout();
 
-        for (OperativeReport r : mission.getReports()) {
-            LOG.debug("Adding Link to mission reports. mission={}, report={}", mission.getId(), r.getId());
+        for (OperativeReport r : data.getReports()) {
+            LOG.debug("Adding Link to mission reports. mission={}, report={}", data.getId(), r.getId());
 
             RouterLink reportButton = new RouterLink(
                     getTranslation(
@@ -132,7 +133,7 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
                             r.getReport().getGameMaster().getUsername()
                     ),
                     MissionReportListView.class,
-                    new RouteParameters("report", r.getReport().getId().toString())
+                    new RouteParameters("id", r.getReport().getId().toString())
             );
 
             Div line = new Div();
@@ -151,18 +152,18 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
         card.getDescription().setFlexGrow(100, description);
 
         // Footer line
-        Span code = new Span(getTranslation("operative.code.card", getLocale(), mission.getId()));
+        Span code = new Span(getTranslation("operative.code.card", getLocale(), data.getId()));
         code.setClassName("date");
         code.setMinWidth(300, PIXELS);
         code.setWidth(40, PERCENTAGE);
 
 
-        Span created = new Span(getTranslation("db.entry.created.title", getLocale(), mission.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+        Span created = new Span(getTranslation("db.entry.created.title", getLocale(), data.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE)));
         created.addClassName("date");
         created.setMinWidth(150, PIXELS);
         created.setWidth(20, PERCENTAGE);
 
-        Span modified = new Span(getTranslation("db.entry.modified.title", getLocale(), mission.getModified().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+        Span modified = new Span(getTranslation("db.entry.modified.title", getLocale(), data.getModified().format(DateTimeFormatter.ISO_LOCAL_DATE)));
         modified.addClassName("date");
         modified.setMinWidth(150, PIXELS);
         modified.setWidth(20, PERCENTAGE);
@@ -171,6 +172,19 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
         card.getFooter().setFlexGrow(100, publication);
         card.getFooter().setFlexGrow(1, created);
         card.getFooter().setFlexGrow(1, modified);
+
+        RouterLink edit = new RouterLink(
+                getTranslation("buttons.edit.caption"),
+                OperativeEditView.class,
+                new RouteParameters("id", data.getId().toString())
+        );
+
+        RouterLink player = new RouterLink(
+                getTranslation("operative.player-link.caption", data.getPlayer().getName()),
+                PersonEditView.class,
+                new RouteParameters("id", data.getPlayer().getId().toString())
+        );
+        card.addMargin(edit, player);
 
         translatables.add(card);
         return card;

@@ -42,7 +42,7 @@ import java.util.List;
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigureUIServiceInitListener.class);
 
-    private static final List<String> ALLOWED_PATHS = Arrays.asList("images", "img", "icons", "api", "actuator");
+    private static final List<String> ALLOWED_PATHS = Arrays.asList("images", "img", "icons", "api", "actuator", "static");
 
 
     @Override
@@ -63,10 +63,12 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
     private void beforeEnter(BeforeEnterEvent event) {
         LOG.trace("Check security. ui={}, location={}", event.getUI().getId(), event.getLocation().getPath());
 
-        String[] firstUrlPath = event.getLocation().getPath().split("/");
+        String path = event.getLocation().getPath();
+        path = path.startsWith("/") ? path.substring(1) : path;
+        String[] firstUrlPath = path.split("/");
         LOG.debug("Checking Request. resource={}, pathElements={}, allowedPaths={}", event.getLocation().getPath(), firstUrlPath, ALLOWED_PATHS);
 
-        if (firstUrlPath.length >= 2 && ALLOWED_PATHS.contains(firstUrlPath[1])) {
+        if (firstUrlPath.length >= 1 && ALLOWED_PATHS.contains(firstUrlPath[0])) {
             LOG.debug("Request ok. resource={}", event.getLocation().getPath());
             return;
         }

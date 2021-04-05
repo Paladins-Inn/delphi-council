@@ -52,7 +52,8 @@ public class MissionService extends CrudService<Mission, UUID> implements Compon
 
             event.getSource().displayNote(
                     "input.data.saved.success",
-                    "mission.editor.title"
+                    "mission.editor.title",
+                    data.getId().toString()
             );
         } catch (Exception e) {
             LOG.error("Could not save mission report. data=" + data, e);
@@ -60,7 +61,7 @@ public class MissionService extends CrudService<Mission, UUID> implements Compon
             event.getSource().displayNote(
                     "input.data.saved.failed",
                     "mission.editor.title",
-                    data.getId(),
+                    data.getId().toString(),
                     e.getLocalizedMessage()
             );
         }

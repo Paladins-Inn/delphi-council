@@ -75,9 +75,12 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
     private String password;
 
     @Embedded
-    private AccountSecurityStatus status;
+    private AccountSecurityStatus status = new AccountSecurityStatus();
 
-    @ElementCollection
+    @ElementCollection(
+            targetClass = Role.class,
+            fetch = FetchType.EAGER
+    )
     @CollectionTable(
             name = "ROLES",
             joinColumns = @JoinColumn(name = "PERSON_ID")

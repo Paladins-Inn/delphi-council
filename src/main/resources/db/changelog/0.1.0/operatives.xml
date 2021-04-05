@@ -67,7 +67,8 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="AVATAR" type="tinyblob"/>
+            <column name="AVATAR" type="longblob"/>
+            <column name="TOKEN" type="longblob"/>
 
             <column name="CREATED" type="TIMESTAMP">
                 <constraints nullable="false"/>

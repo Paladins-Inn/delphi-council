@@ -279,8 +279,8 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
         // Form fields
         LOG.trace("Translating form elements. form={}", this);
-        id.setTitle(getTranslation("mission.id.caption"));
-        id.setHelperText(getTranslation("mission.id.help"));
+        id.setTitle(getTranslation("input.id.caption"));
+        id.setHelperText(getTranslation("input.id.help"));
 
         code.setTitle(getTranslation("mission.code.caption"));
         code.setHelperText(getTranslation("mission.code.help"));
@@ -314,7 +314,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
 
         LOG.trace("adding all form elements. form={}", this);
-        form.addFormItem(id, getTranslation("mission.id.caption"));
+        form.addFormItem(id, getTranslation("input.id.caption"));
         form.addFormItem(code, getTranslation("mission.code.caption"));
         form.addFormItem(clearance, getTranslation("torg.clearance.caption"));
         form.addFormItem(title, getTranslation("mission.title.caption"));
@@ -364,8 +364,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
     }
 
 
-
-    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, Object... parameters) {
+    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, String... parameters) {
         LOG.trace("Displaying notification. i18nKey='{}', type='{}', parameter={}", i18nkey, type, parameters);
 
         Notification.show(

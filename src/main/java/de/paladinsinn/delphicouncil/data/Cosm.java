@@ -18,7 +18,10 @@
 package de.paladinsinn.delphicouncil.data;
 
 import com.sun.istack.NotNull;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 /**
  * Realm -- The realms of the possibility wars with their axioms.
@@ -63,6 +66,14 @@ public enum Cosm {
         this.spirit = spirit;
         this.tech = tech;
     }
+
+    public ListDataProvider<Cosm> dataProvider() {
+        return new ListDataProvider<>(Arrays.asList(
+                AYSLE, CORE_EARTH, CYBERPAPACY, LIVING_LAND, NILE_EMPIRE, ORRORSH, PAN_PACIFICA, THARKOLD,
+                AKASHA, AYSLE_THARKOLD, ELFAME, FAIRY_TALE_AYSLE, Mechopotamia, TheDeadWorld, Tombspace, Ukhaan, Waldeck
+        ));
+    }
+
 
     public int[] axioms() {
         return new int[]{magic, social, spirit, tech};

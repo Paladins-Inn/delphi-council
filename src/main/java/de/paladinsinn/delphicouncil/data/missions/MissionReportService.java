@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -54,7 +53,8 @@ public class MissionReportService extends CrudService<MissionReport, UUID> imple
 
             event.getSource().displayNote(
                     "input.data.saved.success",
-                    "missionreport.editor.title"
+                    "missionreport.editor.title",
+                    data.getId().toString()
             );
         } catch (Exception e) {
             LOG.error("Could not save mission report. data=" + data, e);
@@ -62,7 +62,7 @@ public class MissionReportService extends CrudService<MissionReport, UUID> imple
             event.getSource().displayNote(
                     "input.data.saved.failed",
                     "missionreport.editor.title",
-                    data.getId(),
+                    data.getId().toString(),
                     e.getLocalizedMessage()
             );
         }

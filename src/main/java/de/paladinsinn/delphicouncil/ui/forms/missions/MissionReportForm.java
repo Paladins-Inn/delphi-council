@@ -31,10 +31,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.delphicouncil.app.events.MissionGroupReportSaveEvent;
 import de.paladinsinn.delphicouncil.app.i18n.I18nDatePicker;
 import de.paladinsinn.delphicouncil.app.i18n.TranslatableComponent;
 import de.paladinsinn.delphicouncil.app.i18n.Translator;
-import de.paladinsinn.delphicouncil.app.events.MissionGroupReportSaveEvent;
 import de.paladinsinn.delphicouncil.data.missions.Mission;
 import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.missions.MissionReportService;
@@ -278,8 +278,8 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         form.removeAll();
 
         // Form fields
-        id.setTitle(getTranslation("missionreport.id.caption"));
-        id.setHelperText(getTranslation("missionreport.id.help"));
+        id.setTitle(getTranslation("input.id.caption"));
+        id.setHelperText(getTranslation("input.id.help"));
 
         missionDate.setI18n(new I18nDatePicker(getLocale(), translator));
         missionDate.setLocale(getLocale());
@@ -297,7 +297,7 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
 
 
         LOG.trace("Adding all form elements. form={}", this);
-        form.addFormItem(id, getTranslation("missionreport.id.caption"));
+        form.addFormItem(id, getTranslation("input.id.caption"));
         form.addFormItem(missionDate, getTranslation("missionreport.datepicker.caption"));
         form.addFormItem(successState, getTranslation("missionreport.success.caption"));
         form.addFormItem(achievements, getTranslation("missionreport.achievements.caption"));
@@ -318,7 +318,7 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         form.setColspan(notes, 3);
     }
 
-    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, Object... parameters) {
+    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, String... parameters) {
         LOG.trace("Displaying notification. i18nKey='{}', type='{}', parameter={}", i18nkey, type, parameters);
 
         Notification.show(

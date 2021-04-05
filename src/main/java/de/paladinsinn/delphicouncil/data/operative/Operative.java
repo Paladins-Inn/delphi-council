@@ -22,15 +22,15 @@ import com.vaadin.flow.server.StreamResource;
 import de.paladinsinn.delphicouncil.data.AbstractRevisionedEntity;
 import de.paladinsinn.delphicouncil.data.Clearance;
 import de.paladinsinn.delphicouncil.data.Cosm;
-import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.person.Person;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.io.*;
-import java.nio.ByteBuffer;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -97,8 +97,13 @@ public class Operative extends AbstractRevisionedEntity {
     @Audited
     private OffsetDateTime deleted;
 
-    @Column(name = "AVATAR")
+    @Lob
+    @Column(name = "AVATAR", length = 16777215)
     private byte[] avatar;
+
+    @Lob
+    @Column(name = "TOKEN", length = 16777215)
+    private byte[] token;
 
 
     public void addReport(@NotNull OperativeReport report) {
@@ -131,5 +136,21 @@ public class Operative extends AbstractRevisionedEntity {
      */
     public void setAvatar(InputStream data) throws IOException {
         avatar = data.readAllBytes();
+    }
+
+    public StreamResource getToken() {
+        if (token != null) {
+            return new StreamResource(getId().toString() + "png", () -> new ByteArrayInputStream(token));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param data data to read.
+     * @throws IOException If the data can't be read.
+     */
+    public void setToken(InputStream data) throws IOException {
+        token = data.readAllBytes();
     }
 }

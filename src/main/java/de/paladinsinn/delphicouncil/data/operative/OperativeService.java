@@ -17,6 +17,10 @@
 
 package de.paladinsinn.delphicouncil.data.operative;
 
+import com.vaadin.flow.component.ComponentEventListener;
+import de.paladinsinn.delphicouncil.app.events.OperativeSaveEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -30,7 +34,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class OperativeService extends CrudService<Operative, UUID> {
+public class OperativeService extends CrudService<Operative, UUID> implements ComponentEventListener<OperativeSaveEvent> {
+    private static final Logger LOG = LoggerFactory.getLogger(OperativeService.class);
 
     private final OperativeRepository repository;
 
@@ -42,6 +47,32 @@ public class OperativeService extends CrudService<Operative, UUID> {
     protected OperativeRepository getRepository() {
         return repository;
     }
+
+
+    @Override
+    public void onComponentEvent(OperativeSaveEvent event) {
+        Operative data = event.getData();
+
+        try {
+            repository.saveAndFlush(data);
+            LOG.info("Saved {}. data={}", getClass().getSimpleName(), data);
+
+            event.getSource().displayNote(
+                    "input.data.saved.success",
+                    "mission.editor.title"
+            );
+        } catch (Exception e) {
+            LOG.error("Could not " + getClass().getSimpleName() + ". data=" + data, e);
+
+            event.getSource().displayNote(
+                    "input.data.saved.failed",
+                    "mission.editor.title",
+                    data.getId().toString(),
+                    e.getLocalizedMessage()
+            );
+        }
+    }
+
 
     public List<Operative> findAll() {
         return repository.findAll();

@@ -88,7 +88,7 @@ public class DataCard extends HorizontalLayout implements Serializable, AutoClos
     private Locale locale;
     private final HashSet<TranslatableComponent> translatables = new HashSet<>();
 
-    private Image logo;
+    private Component logo;
     private VerticalLayout data;
     private HorizontalLayout dataHeader;
     private HorizontalLayout dataDescription;
@@ -385,7 +385,6 @@ public class DataCard extends HorizontalLayout implements Serializable, AutoClos
     @Override
     public String toString() {
         return new StringJoiner(", ", DataCard.class.getSimpleName() + "[", "]")
-                .add("logo=" + logo.getSrc())
                 .toString();
     }
 }

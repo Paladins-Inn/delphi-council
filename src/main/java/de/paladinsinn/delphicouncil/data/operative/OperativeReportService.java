@@ -53,15 +53,16 @@ public class OperativeReportService extends CrudService<OperativeReport, UUID> i
 
             event.getSource().displayNote(
                     "input.data.saved.success",
-                    "mission.editor.title"
+                    "operative.editor.title",
+                    data.getId().toString()
             );
         } catch (Exception e) {
             LOG.error("Could not save mission report. data=" + data, e);
 
             event.getSource().displayNote(
                     "input.data.saved.failed",
-                    "mission.editor.title",
-                    data.getId(),
+                    "operative.editor.title",
+                    data.getId().toString(),
                     e.getLocalizedMessage()
             );
         }

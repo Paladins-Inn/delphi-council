@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.time.*;
+import java.time.OffsetDateTime;
+import java.time.Period;
+import java.time.ZoneOffset;
 
 /**
  * AccountSecurityStatus -- Spring security states of an account.
@@ -70,11 +72,15 @@ public class AccountSecurityStatus {
 
     public boolean isAccountNonExpired() {
         return OffsetDateTime.now(ZoneOffset.UTC)
-                .isAfter(expiry);
+                .isBefore(expiry);
     }
 
     public boolean isAccountNonLocked() {
         return !locked;
+    }
+
+    public void setCredentialsChange() {
+        credentialsChange = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     public boolean isCredentialsNonExpired() {

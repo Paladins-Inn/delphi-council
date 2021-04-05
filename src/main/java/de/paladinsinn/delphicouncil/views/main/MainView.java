@@ -52,7 +52,7 @@ import de.paladinsinn.delphicouncil.data.person.PersonRepository;
 import de.paladinsinn.delphicouncil.views.about.AboutView;
 import de.paladinsinn.delphicouncil.views.dashboard.DashboardView;
 import de.paladinsinn.delphicouncil.views.missions.MissionListView;
-import de.paladinsinn.delphicouncil.views.players.PersonListView;
+import de.paladinsinn.delphicouncil.views.person.PersonListView;
 import de.paladinsinn.delphicouncil.views.stormknights.StormKnightsListView;
 import de.paladinsinn.delphicouncil.views.tools.ThreatCardView;
 import org.slf4j.Logger;

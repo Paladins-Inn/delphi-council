@@ -37,10 +37,10 @@ import de.paladinsinn.delphicouncil.data.missions.MissionReportRepository;
 import de.paladinsinn.delphicouncil.data.operative.Operative;
 import de.paladinsinn.delphicouncil.data.operative.OperativeReport;
 import de.paladinsinn.delphicouncil.data.operative.OperativeReportService;
-import de.paladinsinn.delphicouncil.ui.forms.missions.OperativeReportForm;
-import de.paladinsinn.delphicouncil.views.main.MainView;
 import de.paladinsinn.delphicouncil.ui.forms.missions.MissionForm;
 import de.paladinsinn.delphicouncil.ui.forms.missions.MissionReportForm;
+import de.paladinsinn.delphicouncil.ui.forms.operatives.OperativeReportForm;
+import de.paladinsinn.delphicouncil.views.main.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ import java.util.*;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
-@Route(value = "missionreport/:report?", layout = MainView.class)
+@Route(value = "missionreport/:id?", layout = MainView.class)
 @PageTitle("Mission Reports")
 @CssImport("./views/mission/report-list-view.css")
 @Secured({"PLAYER", "GM", "JUDGE", "ORGA", "ADMIN"})
@@ -95,7 +95,7 @@ public class MissionReportListView extends Div implements BeforeEnterObserver, L
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<String> reportId = event.getRouteParameters().get("report");
+        Optional<String> reportId = event.getRouteParameters().get("id");
         LOG.trace("Entering form. view={}, reportId={}", this, reportId);
 
         Optional<MissionReport> report = Optional.empty();

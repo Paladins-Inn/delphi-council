@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.delphicouncil.ui.forms.missions;
+package de.paladinsinn.delphicouncil.ui.forms.operatives;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Composite;
@@ -61,23 +61,35 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public class OperativeReportForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OperativeReportForm.class);
 
-    /** The service for writing data to. */
+    /**
+     * The service for writing data to.
+     */
     private final OperativeReportService reportService;
 
-    /** Details of the logged in user. */
+    /**
+     * Details of the logged in user.
+     */
     private Authentication userDetails;
 
-    /** The locale of this form. */
+    /**
+     * The locale of this form.
+     */
     private Locale locale;
 
-    /** The mission report to edit. */
+    /**
+     * The mission report to edit.
+     */
     private OperativeReport operativeReport;
 
-    /** If the form is read-only. */
+    /**
+     * If the form is read-only.
+     */
     private boolean readonly = true;
 
 
-    /** If this form is alread initialized. */
+    /**
+     * If this form is alread initialized.
+     */
     private boolean initialized = false;
 
     // The form components.
@@ -251,8 +263,8 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
         form.removeAll();
 
         // Form fields
-        id.setTitle(getTranslation("missionreport.id.caption"));
-        id.setHelperText(getTranslation("missionreport.id.help"));
+        id.setTitle(getTranslation("input.id.caption"));
+        id.setHelperText(getTranslation("input.id.help"));
 
         achievements.setLabel(getTranslation("missionreport.achievements.caption"));
         achievements.setHelperText(getTranslation("missionreport.achievements.help"));
@@ -262,7 +274,7 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
 
 
         LOG.trace("Adding all form elements. form={}", this);
-        form.addFormItem(id, getTranslation("missionreport.id.caption"));
+        form.addFormItem(id, getTranslation("input.id.caption"));
         form.addFormItem(achievements, getTranslation("missionreport.achievements.caption"));
         form.addFormItem(notes, getTranslation("missionreport.notes.caption"));
 
@@ -281,7 +293,7 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
         form.setColspan(notes, 3);
     }
 
-    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, Object... parameters) {
+    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, String... parameters) {
         LOG.trace("Displaying notification. i18nKey='{}', type='{}', parameter={}", i18nkey, type, parameters);
 
         Notification.show(

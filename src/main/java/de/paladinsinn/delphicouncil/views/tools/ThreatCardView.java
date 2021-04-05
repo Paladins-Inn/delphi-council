@@ -19,7 +19,6 @@ package de.paladinsinn.delphicouncil.views.tools;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.IFrame;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -49,7 +48,7 @@ public class ThreatCardView extends Div {
         addClassName("threat-card-view");
         setSizeFull();
 
-        String iframe = "<style>iframe {margin: 0; padding: 0; border: none; width: 100%; height: 100%}</style><iframe src=\"ThreatCard/index.html\"/>";
+        String iframe = "<style>iframe {margin: 0; padding: 0; border: none; width: 100%; height: 100%}</style><iframe ignore-router src=\"/ThreatCard/index.html\"/>";
         Label content = new Label();
         content.getElement().setProperty("innerHTML", iframe);
 

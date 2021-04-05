@@ -30,12 +30,14 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.*;
 import de.codecamp.vaadin.serviceref.ServiceRef;
+import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.operative.Operative;
 import de.paladinsinn.delphicouncil.data.person.Person;
 import de.paladinsinn.delphicouncil.data.person.PersonRepository;
 import de.paladinsinn.delphicouncil.ui.DataCard;
 import de.paladinsinn.delphicouncil.views.main.MainView;
-import de.paladinsinn.delphicouncil.views.stormknights.OperativeEditView;
+import de.paladinsinn.delphicouncil.views.missions.MissionReportListView;
+import de.paladinsinn.delphicouncil.views.operative.OperativeEditView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 
 import javax.annotation.PostConstruct;
+import java.time.format.DateTimeFormatter;
 
 import static com.vaadin.flow.component.Unit.PERCENTAGE;
 
@@ -111,6 +114,16 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
         );
         card.addMargin(editButton);
 
+        Span spacer = new Span(" ");
+        for (MissionReport r : person.getReports()) {
+            RouterLink link = new RouterLink(
+                    getTranslation("person.missionreport-link.caption", r.getMission().getCode(), r.getMission().getTitle(), r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE)),
+                    MissionReportListView.class,
+                    new RouteParameters("id", r.getId().toString())
+            );
+
+            card.addDescription(link, spacer);
+        }
 
         for (Operative o : person.getOperatives()) {
             RouterLink link = new RouterLink(

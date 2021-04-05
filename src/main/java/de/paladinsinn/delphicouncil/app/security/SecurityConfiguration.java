@@ -17,6 +17,7 @@
 
 package de.paladinsinn.delphicouncil.app.security;
 
+import com.sun.istack.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_PROCESSING_URL = "/login";
     private static final String LOGIN_FAILURE_URL = "/login";
     private static final String LOGOUT_SUCCESS_URL = "/login";
+
+    /**
+     * Datasource for logins
+     */
+    private final DataSource dataSource;
+
+    @Autowired
+    public SecurityConfiguration(@NotNull DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     /**
      * Require login to access internal pages and configure login form.
@@ -105,6 +116,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/api/**",
                 "/actuator/**",
 
+                // ThreatCard Editor
+                "/ThreatCard/**",
+
                 // web application manifest
                 "/manifest.webmanifest",
                 "/sw.js",
@@ -122,17 +136,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // (development mode) webjars
                 "/webjars/**",
 
-                // (development mode) H2 debugging console
-                "/h2-console/**",
-
                 // (production mode) static resources
                 "/frontend-es5/**", "/frontend-es6/**");
     }
-
-
-
-    @Autowired
-    private DataSource dataSource;
 
 
     @Autowired

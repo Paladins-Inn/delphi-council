@@ -37,6 +37,10 @@ function uploadFile(file) {
     reader.onload = function (e) {
         document.getElementById("card").src = e.target.result;
     };
+
+    setTimeout(function () {
+        DrawCard();
+    }, 500);
 }
 
 function DrawCard(){

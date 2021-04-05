@@ -190,7 +190,13 @@ public class MissionReportListView extends Div implements BeforeEnterObserver, L
         }
 
         Tabs tabs = new Tabs(tabList.toArray(Tab[]::new));
-        tabs.setSelectedTab(missionTab);
+
+        if (report == null) {
+            tabs.setSelectedTab(missionTab);
+        } else {
+            tabs.setSelectedTab(reportTab);
+        }
+
         add(tabs);
 
 

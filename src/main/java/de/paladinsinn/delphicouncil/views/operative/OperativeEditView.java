@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.delphicouncil.views.stormknights;
+package de.paladinsinn.delphicouncil.views.operative;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
@@ -45,9 +45,9 @@ import java.util.*;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
-@Route(value = "stormknight/:id?", layout = MainView.class)
+@Route(value = "operative/:id?", layout = MainView.class)
 @PageTitle("Storm Knight")
-@CssImport("./views/stormknights/edit-view.css")
+@CssImport("./views/operative/edit-view.css")
 public class OperativeEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OperativeEditView.class);
     public static final Long serial = 1L;
@@ -66,7 +66,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
 
     @PostConstruct
     public void init() {
-        addClassName("storm-knight-view");
+        addClassName("operative-edit-view");
         setSizeFull();
 
         form = new OperativeForm(operativeService, personService);

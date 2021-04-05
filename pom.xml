@@ -405,7 +405,7 @@
 
             <resource>
                 <directory>src/main/resources/META-INF/resources</directory>
-                <targetPath>static/static</targetPath>
+                <targetPath>static</targetPath>
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.docx</exclude>
@@ -425,7 +425,7 @@
             </resource>
             <resource>
                 <directory>src/main/resources/META-INF/resources</directory>
-                <targetPath>static/static</targetPath>
+                <targetPath>static</targetPath>
                 <filtering>false</filtering>
                 <includes>
                     <include>**/*.docx</include>

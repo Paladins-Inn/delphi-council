@@ -49,11 +49,9 @@ import de.codecamp.vaadin.serviceref.ServiceRef;
 import de.paladinsinn.delphicouncil.app.i18n.Translator;
 import de.paladinsinn.delphicouncil.data.person.Person;
 import de.paladinsinn.delphicouncil.data.person.PersonRepository;
-import de.paladinsinn.delphicouncil.views.about.AboutView;
-import de.paladinsinn.delphicouncil.views.dashboard.DashboardView;
 import de.paladinsinn.delphicouncil.views.missions.MissionListView;
+import de.paladinsinn.delphicouncil.views.operative.OperativesListView;
 import de.paladinsinn.delphicouncil.views.person.PersonListView;
-import de.paladinsinn.delphicouncil.views.stormknights.StormKnightsListView;
 import de.paladinsinn.delphicouncil.views.tools.ThreatCardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,12 +189,10 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         ArrayList<Component> result = new ArrayList<>();
 
         ArrayList<Class<? extends Component>> allTabs = new ArrayList<>();
-        allTabs.add(DashboardView.class);
         allTabs.add(MissionListView.class);
-        allTabs.add(StormKnightsListView.class);
+        allTabs.add(OperativesListView.class);
         allTabs.add(PersonListView.class);
         allTabs.add(ThreatCardView.class);
-        allTabs.add(AboutView.class);
 
         String role = readRoleFromAuthentication(authentication);
 

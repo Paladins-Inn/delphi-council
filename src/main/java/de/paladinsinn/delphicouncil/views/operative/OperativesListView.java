@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.delphicouncil.views.stormknights;
+package de.paladinsinn.delphicouncil.views.operative;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -61,13 +61,13 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
-@Route(value = "stormknights", layout = MainView.class)
+@Route(value = "operatives", layout = MainView.class)
 @PageTitle("Storm Knights")
-@CssImport("./views/stormknights/list-view.css")
-public class StormKnightsListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
+@CssImport("./views/operative/list-view.css")
+public class OperativesListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
     public static final Long serial = 1L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(StormKnightsListView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OperativesListView.class);
 
     private final HashSet<TranslatableComponent> translatables = new HashSet<>();
     private Locale locale;
@@ -79,7 +79,7 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
 
     @PostConstruct
     public void init() {
-        addClassName("storm-knights-view");
+        addClassName("operative-list-view");
         setSizeFull();
         grid.setHeight("100%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
@@ -123,12 +123,15 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
         // Main text
         FlexLayout description = new FlexLayout();
 
+        Span spacer = new Span(" ");
         for (OperativeReport r : data.getReports()) {
             LOG.debug("Adding Link to mission reports. mission={}, report={}", data.getId(), r.getId());
 
             RouterLink reportButton = new RouterLink(
                     getTranslation(
                             "operative.report-link.caption",
+                            r.getReport().getMission().getCode(),
+                            r.getReport().getMission().getTitle(),
                             r.getReport().getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
                             r.getReport().getGameMaster().getUsername()
                     ),
@@ -136,9 +139,7 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
                     new RouteParameters("id", r.getReport().getId().toString())
             );
 
-            Div line = new Div();
-            line.add(reportButton);
-            description.add(line);
+            card.addDescription(reportButton, spacer);
         }
 
 
@@ -245,8 +246,8 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StormKnightsListView)) return false;
-        StormKnightsListView that = (StormKnightsListView) o;
+        if (!(o instanceof OperativesListView)) return false;
+        OperativesListView that = (OperativesListView) o;
         return getLocale().equals(that.getLocale());
     }
 
@@ -257,7 +258,7 @@ public class StormKnightsListView extends Div implements Serializable, AutoClose
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", StormKnightsListView.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", OperativesListView.class.getSimpleName() + "[", "]")
                 .add("locale=" + locale)
                 .toString();
     }

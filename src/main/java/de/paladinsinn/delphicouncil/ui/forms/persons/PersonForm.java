@@ -445,32 +445,28 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
         form.removeAll();
 
         // Form fields
-        id.setTitle(getTranslation("input.id.caption"));
+        id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
 
         LOG.trace("Adding all form elements. form={}", this);
 
+        avatar.setTitle(getTranslation("person.avatar.caption"));
         avatarUpload.setDropLabelIcon(avatar);
-        form.addFormItem(avatarUpload, getTranslation("person.avatar.caption"));
 
-        name.setTitle(getTranslation("person.name.caption"));
+        name.setLabel(getTranslation("person.name.caption"));
         name.setHelperText(getTranslation("person.name.help"));
-        form.addFormItem(name, name.getTitle());
 
-        email.setTitle(getTranslation("person.email.caption"));
+        email.setLabel(getTranslation("person.email.caption"));
         email.setHelperText(getTranslation("person.email.help"));
-        form.addFormItem(email, email.getTitle());
 
-        username.setTitle(getTranslation("person.username.caption"));
+        username.setLabel(getTranslation("person.username.caption"));
         username.setHelperText(getTranslation("person.username.help"));
-        form.addFormItem(username, username.getTitle());
-        password.setTitle(getTranslation("person.password.caption"));
+        password.setLabel(getTranslation("person.password.caption"));
         password.setHelperText(getTranslation("person.password.help"));
-        form.addFormItem(password, password.getTitle());
 
+        roles.setLabel(getTranslation("person.roles.caption"));
         roles.setHelperText(getTranslation("person.roles.help"));
-        form.addFormItem(roles, getTranslation("person.roles.caption"));
 
         String statusEnabled = getTranslation("person.status-enabled.caption");
         String statusLocked = getTranslation("person.status-locked.caption");
@@ -482,9 +478,10 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
             statusOptionsSelected.add(getTranslation("person.status-locked.caption"));
         }
         status.removeAll();
+        status.setLabel(getTranslation("person.status.caption"));
+        status.setHelperText(getTranslation("person.status.help"));
         status.setItems(Arrays.asList(statusEnabled, statusLocked));
         status.setValue(statusOptionsSelected);
-        form.addFormItem(status, getTranslation("person.status.caption"));
 
         final String userChangeableFlagIsGm = getTranslation("person.status-is-gm.caption");
         final String userChangeableFlagAllowGravatar = getTranslation("person.status-allow-gravatar.caption");
@@ -496,25 +493,27 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
             userChangeableFlagSelected.add(getTranslation("person.status-is-gm.caption"));
         }
         userChangeableFlags.removeAll();
+        userChangeableFlags.setLabel(getTranslation("person.user-changeable-flags.caption"));
         userChangeableFlags.setItems(Arrays.asList(userChangeableFlagIsGm, userChangeableFlagAllowGravatar));
         userChangeableFlags.setValue(userChangeableFlagSelected);
-        form.addFormItem(userChangeableFlags, getTranslation("person.user-changeable-flags.caption"));
 
-        lastName.setTitle(getTranslation("person.last-name.caption"));
+        lastName.setLabel(getTranslation("person.last-name.caption"));
         lastName.setHelperText(getTranslation("person.last-name.help"));
-        form.addFormItem(lastName, lastName.getTitle());
-        firstName.setTitle(getTranslation("person.first-name.caption"));
+        firstName.setLabel(getTranslation("person.first-name.caption"));
         firstName.setHelperText(getTranslation("person.first-name.help"));
-        form.addFormItem(firstName, firstName.getTitle());
+        deleted.setLabel(getTranslation("person.deleted.caption"));
         deleted.setHelperText(getTranslation("person.deleted.help"));
-        form.addFormItem(deleted, deleted.getLabel());
+        expiryDate.setLabel(getTranslation("person.expiry-date.caption"));
         expiryDate.setHelperText(getTranslation("person.expiry-date.help"));
-        form.addFormItem(expiryDate, expiryDate.getLabel());
+        lastPasswordChange.setLabel(getTranslation("person.last-password-change.caption"));
         lastPasswordChange.setHelperText(getTranslation("person.last-password-change.help"));
-        form.addFormItem(lastPasswordChange, lastPasswordChange.getLabel());
+        lastLogin.setLabel(getTranslation("person.last-login.caption"));
         lastLogin.setHelperText(getTranslation("person.last-login.help"));
-        form.addFormItem(lastLogin, lastLogin.getLabel());
 
+
+        form.addFormItem(avatarUpload, getTranslation("person.avatar.caption"));
+        form.add(name, email, username, password, roles, status, userChangeableFlags, lastName, firstName,
+                deleted, expiryDate, lastPasswordChange, lastLogin, lastLogin);
 
         // Buttons
         if (!readonly) {

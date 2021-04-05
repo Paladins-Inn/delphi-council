@@ -424,37 +424,39 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
         form.removeAll();
 
         // Form fields
-        id.setTitle(getTranslation("input.id.caption"));
+        id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
 
         LOG.trace("Adding all form elements. form={}", this);
 
-        name.setTitle(getTranslation("operative.name.caption"));
+        name.setLabel(getTranslation("operative.name.caption"));
         name.setHelperText(getTranslation("operative.name.help"));
-        form.addFormItem(name, name.getTitle());
 
 
+        clearance.setLabel(getTranslation("torg.clearance.caption"));
         clearance.setHelperText(getTranslation("torg.clearance.help"));
-        form.addFormItem(clearance, getTranslation("torg.clearance.caption"));
 
+        cosm.setLabel(getTranslation("torg.cosm.caption"));
         cosm.setHelperText(getTranslation("torg.cosm.help"));
-        form.addFormItem(cosm, getTranslation("torg.cosm.caption"));
 
-        lastName.setTitle(getTranslation("operative.last-name.caption"));
+        lastName.setLabel(getTranslation("operative.last-name.caption"));
         lastName.setHelperText(getTranslation("operative.last-name.help"));
-        firstName.setTitle(getTranslation("operative.first-name.caption"));
+        firstName.setLabel(getTranslation("operative.first-name.caption"));
         firstName.setHelperText(getTranslation("operative.first-name.help"));
-        form.addFormItem(lastName, lastName.getTitle());
-        form.addFormItem(firstName, firstName.getTitle());
 
+        player.setLabel(getTranslation("operative.player.caption"));
         player.setHelperText(getTranslation("operative.player.help"));
-        form.addFormItem(player, getTranslation("operative.player.caption"));
 
+        avatar.setTitle(getTranslation("operative.avatar.caption"));
         avatarUpload.setDropLabelIcon(avatar);
-        form.addFormItem(avatarUpload, getTranslation("operative.avatar.caption"));
 
+        token.setTitle(getTranslation("operative.token.caption"));
         tokenUpload.setDropLabelIcon(token);
+
+        form.add(name, clearance, cosm, lastName, firstName, player);
+
+        form.addFormItem(avatarUpload, getTranslation("operative.avatar.caption"));
         form.addFormItem(tokenUpload, getTranslation("operative.token.caption"));
 
         // Buttons

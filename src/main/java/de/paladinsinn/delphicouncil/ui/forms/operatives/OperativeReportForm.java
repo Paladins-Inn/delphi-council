@@ -263,7 +263,7 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
         form.removeAll();
 
         // Form fields
-        id.setTitle(getTranslation("input.id.caption"));
+        id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
         achievements.setLabel(getTranslation("missionreport.achievements.caption"));
@@ -274,9 +274,8 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
 
 
         LOG.trace("Adding all form elements. form={}", this);
-        form.addFormItem(id, getTranslation("input.id.caption"));
-        form.addFormItem(achievements, getTranslation("missionreport.achievements.caption"));
-        form.addFormItem(notes, getTranslation("missionreport.notes.caption"));
+        form.add(achievements);
+        form.add(notes);
 
         // Buttons
         if (!readonly) {

@@ -20,14 +20,23 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="2021-04-05-rlichti3" author="rlichti">
+        <comment>Add XP to MISSIONS and MISSIONS_AUD.</comment>
+        <addColumn tableName="MISSIONS">
+            <column name="XP" type="INT" defaultValueNumeric="5"/>
+        </addColumn>
+        <addColumn tableName="MISSIONS_AUD">
+            <column name="XP" type="INT"/>
+        </addColumn>
 
-    <include file="base.xml" relativeToChangelogFile="true"/>
-    <include file="persons.xml" relativeToChangelogFile="true"/>
-    <include file="operatives.xml" relativeToChangelogFile="true"/>
-    <include file="missions.xml" relativeToChangelogFile="true"/>
+        <sql>
+            update MISSIONS set XP=5;
+            update MISSIONS_AUD set XP=5 where PAYMENT is not null;
+        </sql>
 
-    <include file="add_avatar_to_person.xml" relativeToChangelogFile="true"/>
-    <include file="add_name_to_person.xml" relativeToChangelogFile="true"/>
-    <include file="add_xp_to_mission.xml" relativeToChangelogFile="true"/>
-    <include file="special_missions.xml" relativeToChangelogFile="true"/>
+        <addNotNullConstraint constraintName="MISSIONS_XP_NN"
+                              tableName="MISSIONS"
+                              columnName="XP"
+                              columnDataType="INT"/>
+    </changeSet>
 </databaseChangeLog>

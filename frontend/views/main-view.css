@@ -60,3 +60,21 @@ vaadin-tab[selected] {
   background-color: var(--lumo-primary-color-10pct);
   color: var(--lumo-primary-text-color);
 }
+
+body {
+  background-image: url("/images/marble.png");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+}
+
+#header {
+  background-image: url("/images/thunder.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.torg-thunder {
+  background-image: url("/images/thunder.png");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+}

@@ -19,6 +19,7 @@ package de.paladinsinn.delphicouncil.ui.forms.missions;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -63,6 +64,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public class MissionForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MissionForm.class);
     public static final int DEFAULT_PAYMENT = 250;
+    public static final int DEFAULT_XP = 5;
 
     /** service for writing data to. */
     private final MissionService missionService;
@@ -86,6 +88,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
     private final TextField image = new TextField();
     private final TextArea description = new TextArea();
     private final IntegerField payment = new IntegerField();
+    private final IntegerField xp = new IntegerField();
     private final TextArea objectivesSuccess = new TextArea();
     private final TextArea objectivesGood = new TextArea();
     private final TextArea objectivesOutstanding = new TextArea();
@@ -143,6 +146,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
             mission.setImage(image.getValue());
             mission.setDescription(description.getValue());
             mission.setPayment(payment.getValue());
+            mission.setXp(xp.getValue());
             mission.setObjectivesSuccess(objectivesSuccess.getValue());
             mission.setObjectivesGood(objectivesGood.getValue());
             mission.setObjectivesOutstanding(objectivesOutstanding.getValue());
@@ -183,6 +187,12 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
         payment.setStep(50);
         payment.setValue(DEFAULT_PAYMENT);
         payment.setReadOnly(readonly);
+
+        xp.setMin(1);
+        xp.setMax(50);
+        xp.setStep(1);
+        xp.setValue(DEFAULT_XP);
+        xp.setReadOnly(readonly);
 
         objectivesSuccess.addClassName("long-text");
         objectivesSuccess.setRequired(true);
@@ -232,6 +242,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
         image.setValue(mission.getImage());
         description.setValue(mission.getDescription());
         payment.setValue(mission.getPayment());
+        xp.setValue(mission.getXp());
         objectivesSuccess.setValue(mission.getObjectivesSuccess());
         objectivesGood.setValue(mission.getObjectivesGood());
         objectivesOutstanding.setValue(mission.getObjectivesOutstanding());
@@ -279,22 +290,23 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
         // Form fields
         LOG.trace("Translating form elements. form={}", this);
-        id.setTitle(getTranslation("input.id.caption"));
+        id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
-        code.setTitle(getTranslation("mission.code.caption"));
+        code.setLabel(getTranslation("mission.code.caption"));
         code.setHelperText(getTranslation("mission.code.help"));
 
-        title.setTitle(getTranslation("mission.title.caption"));
+        title.setLabel(getTranslation("mission.title.caption"));
         title.setHelperText(getTranslation("mission.title.help"));
 
         clearance.setLabel(getTranslation("torg.clearance.caption"));
         clearance.setHelperText(getTranslation("torg.clearance.help"));
+        clearance.setItemLabelGenerator((ItemLabelGenerator<Clearance>) item -> getTranslation("torg.clearance." + item.name()));
 
-        publication.setTitle(getTranslation("mission.publication.caption"));
+        publication.setLabel(getTranslation("mission.publication.caption"));
         publication.setHelperText(getTranslation("mission.publication.help"));
 
-        image.setTitle(getTranslation("mission.image.caption"));
+        image.setLabel(getTranslation("mission.image.caption"));
         image.setHelperText(getTranslation("mission.image.help"));
 
         description.setLabel(getTranslation("mission.description.caption"));
@@ -302,6 +314,9 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
         payment.setLabel(getTranslation("mission.payment.caption"));
         payment.setHelperText(getTranslation("mission.description.help"));
+
+        xp.setLabel(getTranslation("mission.xp.caption"));
+        xp.setHeight(getTranslation("mission.xp.help"));
 
         objectivesSuccess.setLabel(getTranslation("mission.objectives.success.caption"));
         objectivesSuccess.setHelperText(getTranslation("mission.objectives.success.help"));
@@ -314,20 +329,11 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
 
         LOG.trace("adding all form elements. form={}", this);
-        form.addFormItem(id, getTranslation("input.id.caption"));
-        form.addFormItem(code, getTranslation("mission.code.caption"));
-        form.addFormItem(clearance, getTranslation("torg.clearance.caption"));
-        form.addFormItem(title, getTranslation("mission.title.caption"));
-        form.addFormItem(publication, getTranslation("mission.publication.caption"));
-        form.addFormItem(payment, getTranslation("mission.payment.caption"));
-        form.addFormItem(image, getTranslation("mission.image.caption"));
-        form.addFormItem(description, getTranslation("mission.description.caption"));
-        form.addFormItem(objectivesSuccess, getTranslation("mission.objectives.success.caption"));
-        form.addFormItem(objectivesGood, getTranslation("mission.objectives.good.caption"));
-        form.addFormItem(objectivesOutstanding, getTranslation("mission.objectives.outstanding.caption"));
+        form.add(code, clearance, title, publication, payment, xp, image, description,
+                objectivesSuccess, objectivesGood, objectivesOutstanding);
 
         // Buttons
-        if (! readonly) {
+        if (!readonly) {
             save.setText(getTranslation("buttons.save.caption"));
             reset.setText(getTranslation("buttons.reset.caption"));
 

@@ -18,7 +18,6 @@
 package de.paladinsinn.delphicouncil.data.missions;
 
 import com.sun.istack.NotNull;
-import de.paladinsinn.delphicouncil.data.AbstractEntity;
 import de.paladinsinn.delphicouncil.data.AbstractRevisionedEntity;
 import de.paladinsinn.delphicouncil.data.Clearance;
 import lombok.Getter;
@@ -63,6 +62,10 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
     @Column(name = "PAYMENT", nullable = false)
     @Audited
     private int payment;
+
+    @Column(name = "XP", nullable = false)
+    @Audited
+    private int xp;
 
     @Column(name = "OBJECTIVES_SUCCESS", length = 4000)
     @Audited
@@ -122,6 +125,8 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
         return new StringJoiner(", ", Mission.class.getSimpleName() + "[", "]")
                 .add("code='" + code + "'")
                 .add("title='" + title + "'")
+                .add("payment=" + payment)
+                .add("xp=" + xp)
                 .toString();
     }
 }

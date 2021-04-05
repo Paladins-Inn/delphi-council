@@ -19,6 +19,7 @@ package de.paladinsinn.delphicouncil.ui.forms.missions;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -28,6 +29,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.server.VaadinSession;
@@ -40,10 +42,15 @@ import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.missions.MissionReportService;
 import de.paladinsinn.delphicouncil.data.missions.SuccessState;
 import de.paladinsinn.delphicouncil.data.person.Person;
+import de.paladinsinn.delphicouncil.data.person.PersonService;
+import de.paladinsinn.delphicouncil.data.person.RoleName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,26 +74,60 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public class MissionReportForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MissionReportForm.class);
 
-    /** Tanslator (needed for the datepicker). */
+    /**
+     * Tanslator (needed for the datepicker).
+     */
     private final Translator translator;
 
-    /** The service for writing data to. */
+    /**
+     * The service for writing data to.
+     */
     private final MissionReportService reportService;
 
-    /** Details of the logged in user. */
+    /**
+     * The service for reading the gm from.
+     */
+    private final PersonService personService;
+
+    /**
+     * Details of the logged in user.
+     */
     private Authentication userDetails;
 
-    /** The locale of this form. */
+    /**
+     * The locale of this form.
+     */
     private Locale locale;
 
-    /** The mission report to edit. */
+    /**
+     * The mission report to edit.
+     */
     private MissionReport missionReport;
 
-    /** If the form is read-only. */
+    /**
+     * If the form is read-only.
+     */
     private boolean readonly = true;
 
+    /**
+     * If the logged in user is an admin.
+     */
+    private boolean isAdmin = false;
 
-    /** If this form is alread initialized. */
+    /**
+     * If the logged in user is a member of the orga team.
+     */
+    private boolean isOrga = false;
+
+    /**
+     * if the logged in user is a judge.
+     */
+    private boolean isJudge = false;
+
+
+    /**
+     * If this form is alread initialized.
+     */
     private boolean initialized = false;
 
     // The form components.
@@ -94,6 +135,7 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
     private final TextField id = new TextField();
     private final DatePicker missionDate = new DatePicker();
     private final ComboBox<SuccessState> successState = new ComboBox<>();
+    private final ComboBox<Person> gm = new ComboBox<>();
     private final TextArea achievements = new TextArea();
     private final TextArea notes = new TextArea();
     private final HorizontalLayout actions = new HorizontalLayout();
@@ -104,10 +146,12 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
     @Autowired
     public MissionReportForm(
             @NotNull final Translator translator,
-            @NotNull final MissionReportService reportService
+            @NotNull final MissionReportService reportService,
+            @NotNull final PersonService personService
     ) {
         this.translator = translator;
         this.reportService = reportService;
+        this.personService = personService;
     }
 
 
@@ -155,6 +199,30 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         notes.setMaxLength(1000);
         notes.setReadOnly(readonly);
 
+        gm.setReadOnly(!isAdmin && !isOrga && !isJudge);
+        gm.setDataProvider(DataProvider.fromFilteringCallbacks(
+                query -> {
+                    String filter = query.getFilter().orElse(null);
+                    LOG.trace("player query. form={}, filter='{}'", this, filter);
+
+                    int offset = query.getOffset();
+                    int limit = query.getLimit();
+
+                    Pageable page = PageRequest.of(offset / limit, limit);
+                    Page<Person> players = personService.findAll(page);
+
+                    return players.stream();
+                },
+                query -> {
+                    String filter = query.getFilter().orElse(null);
+                    LOG.trace("player count query. form={}, filter='{}'", this, filter);
+
+                    return personService.count();
+                }
+        ));
+        gm.setItemLabelGenerator((ItemLabelGenerator<Person>) Person::getName);
+
+
         save.getStyle().set("marginRight", "10px");
         save.addClickListener(event -> {
             if (missionReport == null) missionReport = new MissionReport();
@@ -163,6 +231,7 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
             missionReport.setObjectivesMet(successState.getValue());
             missionReport.setAchievements(achievements.getValue());
             missionReport.setNotes(notes.getValue());
+            missionReport.setGameMaster(gm.getValue());
 
             getEventBus().fireEvent(new MissionGroupReportSaveEvent(this, false));
         });
@@ -210,6 +279,8 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         achievements.setValue(missionReport.getAchievements());
         notes.setValue(missionReport.getNotes());
 
+        gm.setValue(missionReport.getGameMaster());
+
         calculateReadOnly();
     }
 
@@ -248,10 +319,20 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
     }
 
     private void calculateReadOnly() {
-        readonly = userDetails != null
-                && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ORGA"))
+        if (userDetails == null) {
+            LOG.warn("Can't calculate permissions. userDetails not set. form={}", this);
+            return;
+        }
+
+        readonly = !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ORGA"))
                 && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))
                 && !(missionReport != null && userDetails.getName().equals(missionReport.getGameMaster().getUsername()));
+
+        isOrga = userDetails.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ORGA.name()));
+        isAdmin = userDetails.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ADMIN.name()));
+        isJudge = userDetails.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.JUDGE.name()));
+
+        LOG.debug("User access calculation done. readonly={}, isAdmin={}", readonly, isAdmin);
     }
 
     @Override
@@ -278,7 +359,7 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         form.removeAll();
 
         // Form fields
-        id.setTitle(getTranslation("input.id.caption"));
+        id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
         missionDate.setI18n(new I18nDatePicker(getLocale(), translator));
@@ -295,13 +376,11 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         notes.setLabel(getTranslation("missionreport.notes.caption"));
         notes.setHelperText(getTranslation("missionreport.notes.help"));
 
+        gm.setLabel(getTranslation("missionreport.gm.caption"));
+        gm.setHelperText(getTranslation("missionreport.gm.help"));
 
         LOG.trace("Adding all form elements. form={}", this);
-        form.addFormItem(id, getTranslation("input.id.caption"));
-        form.addFormItem(missionDate, getTranslation("missionreport.datepicker.caption"));
-        form.addFormItem(successState, getTranslation("missionreport.success.caption"));
-        form.addFormItem(achievements, getTranslation("missionreport.achievements.caption"));
-        form.addFormItem(notes, getTranslation("missionreport.notes.caption"));
+        form.add(gm, missionDate, successState, achievements, notes);
 
         // Buttons
         if (!readonly) {

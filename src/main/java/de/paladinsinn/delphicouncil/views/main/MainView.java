@@ -116,6 +116,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setId("header");
         layout.getThemeList().set("dark", true);
+        layout.addClassName("torg-header");
         layout.setWidthFull();
         layout.setSpacing(false);
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -158,6 +159,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
 
     private Component createDrawerContent(@NotNull final Tabs menu) {
         VerticalLayout layout = new VerticalLayout();
+        layout.addClassName("torg-thunder");
         layout.setSizeFull();
         layout.setPadding(false);
         layout.setSpacing(false);
@@ -174,9 +176,9 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
         VerticalLayout logo = new VerticalLayout();
         logoLayout.add(logo);
 
-        H1 systemName = new H1(translator.get().getMessage(this, "view.title", getLocale()));
+        H1 systemName = new H1(translator.get().getTranslation("application.title", getLocale()));
         Div claim = new Div();
-        claim.setText(translator.get().getMessage(this, "view.description", getLocale()));
+        claim.setText(translator.get().getTranslation("application.description", getLocale()));
         logo.add(systemName, claim);
 
         layout.add(logoLayout, menu);
@@ -213,7 +215,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver {
                         secured != null ? Arrays.asList(secured.value()) : "-not-set-"
                 );
 
-                Tab tab = createTab(translator.get().getMessage(this, t.getSimpleName(), locale), t);
+                Tab tab = createTab(translator.get().getTranslation(t.getSimpleName(), locale), t);
                 result.add(tab);
             } else {
                 LOG.debug("View is not allowed for user. role={}, view={}, rolesAllowed={}",

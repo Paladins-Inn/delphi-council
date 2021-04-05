@@ -66,11 +66,21 @@ spec:
         readinessProbe:
           failureThreshold: 1
           httpGet:
-            path: /actuator/health
+            path: /actuator/health/readiness
             port: 8080
             scheme: HTTP
           initialDelaySeconds: 20
           periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 300
+          periodSeconds: 100
+          failureThreshold: 3
           successThreshold: 1
           timeoutSeconds: 5
         volumeMounts:

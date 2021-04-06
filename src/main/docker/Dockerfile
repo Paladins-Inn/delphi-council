@@ -52,6 +52,7 @@ RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
     && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
 
 COPY classes/Dockerfile /deployments
+
 COPY delphi-council-is-@project.version@.jar /deployments/app.jar
 RUN chmod 444 /deployments/app.jar
 #RUN chown 1001 /deployments/app.jar

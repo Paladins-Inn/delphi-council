@@ -408,6 +408,12 @@
                 <directory>src/main/docker</directory>
                 <filtering>true</filtering>
             </resource>
+
+            <resource>
+                <directory>src/main/helm</directory>
+                <targetPath>../helm</targetPath>
+                <filtering>true</filtering>
+            </resource>
         </resources>
 
         <plugins>

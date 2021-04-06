@@ -1,11 +1,11 @@
 ---
 type: application
 apiVersion: v2
-name: delphi-council-is
-version: 1.0.0
-description: Delphi Concil Storm Knight Information system
+name: @project.artifactId@
+version: @project.version@
+description: @project.description@
 maintainers:
   - name: Roland T. Lichti
     email: rlichti@kaiserpfalz-edv.de
     url: https://www.lichti.de
-appVersion: 0.1.0-SNAPSHOT
+appVersion: @project.version@

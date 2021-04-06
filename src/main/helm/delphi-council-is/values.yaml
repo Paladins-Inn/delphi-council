@@ -3,8 +3,8 @@ app:
   route: www.delphi-council.org
   image:
     repo: quay.io/klenkes74
-    name: delphi-council-is
-    tag: 0.2.0-SNAPSHOT
+    name: @project.artifactId@
+    tag: @project.version@
   requests:
     cpu: 1000m
     memory: 2Gi

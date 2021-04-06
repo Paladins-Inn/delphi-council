@@ -58,7 +58,8 @@ jobs:
           image: ${{ env.IMAGE }}
           tags: ${{ env.VERSION }} latest ${{ github.sha }}
           dockerfiles: |
-            ./Dockerfile
+            ./classes/Dockerfile
+          context: ./
       - name: Push To quay
         env:
           IMAGE: $(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')

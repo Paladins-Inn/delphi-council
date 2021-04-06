@@ -25,9 +25,9 @@ jobs:
         id: build-java
         run: mvn package -B -Pproduction
       - name: Upload Artifact
-        env: |
-          IMAGE=$(cat target/classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
-          VERSION=$(cat target/classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+        env:
+          IMAGE: $(cat target/classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+          VERSION: $(cat target/classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')
         id: upload-jar
         uses: actions/upload-artifact@v2
         with:

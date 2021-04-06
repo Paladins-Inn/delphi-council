@@ -40,6 +40,7 @@ jobs:
           path: |
             target/delphi-council-is-${{ env.VERSION }}.jar
             target/classes/Dockerfile
+            target/helm
           retention-days: 1
 
 

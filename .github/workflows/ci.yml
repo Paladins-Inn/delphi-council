@@ -29,10 +29,9 @@ jobs:
         run: mvn package -B -Pproduction
 
       - name: Set Image name
-        run: "::set-env name=IMAGE::$(cat target/classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
-
-      - name: Set image version
-        run: "::set-env name=VERSION::$(cat target/classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
+        run: |
+          echo "IMAGE=$(cat target/classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
+          echo "VERSION=$(cat target/classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
 
       - name: Image name and version
         run: echo "Working on image '${{ env.IMAGE }}:${{ env.VERSION }}'."

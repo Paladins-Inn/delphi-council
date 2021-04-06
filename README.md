@@ -6,7 +6,7 @@
 
 ![Dependabot](https://flat.badgen.net/dependabot/Paladins-Inn/delphi-council/?icon=dependabot)
 ![Maven](https://github.com/Paladins-Inn/delphi-council/workflows/CI/badge.svg)
-![Docker Repository on Quay](https://quay.io/repository/klenkes74/delphi-council-is/status "Docker Repository on Quay")
+[![Docker Repository on Quay](https://quay.io/repository/klenkes74/delphi-council-is/status "Docker Repository on Quay")](https://quay.io/repository/klenkes74/delphi-council-is)
 
 ## License
 The license for the software is LGPL 3.0 or newer. Parts of the software may be licensed under other licences like MIT

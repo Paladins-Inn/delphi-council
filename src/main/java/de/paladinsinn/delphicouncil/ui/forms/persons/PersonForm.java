@@ -133,7 +133,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
     private final CheckboxGroup<String> status = new CheckboxGroup<>();
 
-    private final CheckboxGroup<String> userChangeableFlags = new CheckboxGroup<>();
+    private final CheckboxGroup<String> flags = new CheckboxGroup<>();
 
     private final Image avatar = new Image();
     private final MemoryBuffer avatarBuffer = new MemoryBuffer();
@@ -206,7 +206,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
         status.setReadOnly(!isAdmin && !isOrga && !isJudge);
 
-        userChangeableFlags.setReadOnly(readonly);
+        flags.setReadOnly(readonly);
 
         roles.setItems(RoleName.PERSON.getRoleNamesWithoutGM());
         roles.setReadOnly(!isAdmin && !isOrga);
@@ -277,26 +277,15 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
                 data.getRoles().add(new Role(RoleName.valueOf(b)));
             }
 
-            Role gmRole = new Role(RoleName.GM);
             data.disableGravatar();
             boolean isGm = false,
                     allowGravatar = false;
-            for (String b : userChangeableFlags.getValue()) {
-                if (getTranslation("person.status-is-gm.caption").equals(b)) {
-                    isGm = true;
-                } else if (getTranslation("person.status-allow-gravatar.caption").equals(b)) {
-                    allowGravatar = true;
+            data.disableGravatar();
+
+            for (String b : flags.getValue()) {
+                if (getTranslation("person.status-allow-gravatar.caption").equals(b)) {
+                    data.enableGravatar();
                 }
-            }
-            if (isGm) {
-                data.getRoles().add(gmRole);
-            } else {
-                data.getRoles().remove(gmRole);
-            }
-            if (allowGravatar) {
-                data.enableGravatar();
-            } else {
-                data.disableGravatar();
             }
 
             if (deleted.getValue() != null) {
@@ -360,11 +349,20 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
         roles.setValue(RoleName.PERSON.getActiveRoleNames(data));
 
         if (roles.getValue().contains(RoleName.GM.name())) {
-            userChangeableFlags.add(getTranslation("person.status-is-gm.caption"));
+            flags.add(getTranslation("person.status-is-gm.caption"));
         }
         if (data.isGravatarAllowed()) {
-            userChangeableFlags.add(getTranslation("person.status-allow-gravatar.caption"));
+            flags.add(getTranslation("person.status-allow-gravatar.caption"));
         }
+        flags.addSelectionListener(e -> {
+            roles.getValue().remove(RoleName.GM.name());
+
+            for (String s : e.getAllSelectedItems()) {
+                if (s.equals(getTranslation("person.status-is-gm.caption"))) {
+                    roles.getValue().add(RoleName.GM.name());
+                }
+            }
+        });
 
         if (data.getAvatar() != null)
             avatar.setSrc(data.getAvatar());
@@ -492,10 +490,10 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
         if (roles.getValue().contains(RoleName.GM.name())) {
             userChangeableFlagSelected.add(getTranslation("person.status-is-gm.caption"));
         }
-        userChangeableFlags.removeAll();
-        userChangeableFlags.setLabel(getTranslation("person.user-changeable-flags.caption"));
-        userChangeableFlags.setItems(Arrays.asList(userChangeableFlagIsGm, userChangeableFlagAllowGravatar));
-        userChangeableFlags.setValue(userChangeableFlagSelected);
+        flags.removeAll();
+        flags.setLabel(getTranslation("person.user-changeable-flags.caption"));
+        flags.setItems(Arrays.asList(userChangeableFlagIsGm, userChangeableFlagAllowGravatar));
+        flags.setValue(userChangeableFlagSelected);
 
         lastName.setLabel(getTranslation("person.last-name.caption"));
         lastName.setHelperText(getTranslation("person.last-name.help"));
@@ -512,7 +510,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
 
         form.addFormItem(avatarUpload, getTranslation("person.avatar.caption"));
-        form.add(name, email, username, password, roles, status, userChangeableFlags, lastName, firstName,
+        form.add(name, email, username, password, roles, status, flags, lastName, firstName,
                 deleted, expiryDate, lastPasswordChange, lastLogin, lastLogin);
 
         // Buttons

@@ -9,8 +9,6 @@ on:
 jobs:
   java-build:
     runs-on: [ java ]
-    env:
-      VERSION: 0.2.0-SNAPSHOT
     steps:
       - name: Checkout sources
         id: checkout-sources
@@ -27,41 +25,49 @@ jobs:
         id: build-java
         run: mvn package -B -Pproduction
       - name: Upload Artifact
+        env: |
+          IMAGE=$(cat target/classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+          VERSION=$(cat target/classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')
         id: upload-jar
         uses: actions/upload-artifact@v2
         with:
-          name: dci.jar
-          path: target/dci-${{ env.VERSION }}.jar
+          name: dci
+          path: |
+            target/delphi-council-is-${{ env.VERSION }}.jar
+            target/classes/Dockerfile
           retention-days: 1
   container-build:
     runs-on: [ podman ]
     needs: java-build
-    env:
-      VERSION: 0.2.0-SNAPSHOT
-      IMAGE: delphi-council-is
     steps:
       - name: checkout sources
         id: checkout-sources
         uses: actions/checkout@v2
-      - name: retrieve jar
+      - name: retrieve jar and dockerfile
         id: retrieve-jar
         uses: actions/download-artifact@v2
         with:
-          name: dci.jar
+          name: dci
       - name: Buildah
+        env:
+          IMAGE: $(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+          VERSION: $(cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')
         id: build-container
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.IMAGE }}
-          tags: ${{ env.VERSION }}
+          tags: ${{ env.VERSION }} latest ${{ github.sha }}
           dockerfiles: |
             ./Dockerfile
       - name: Push To quay
+        env:
+          IMAGE: $(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+          VERSION: $(cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ env.IMAGE }}
-          tags: ${{ env.VERSION }}
+          tags: ${{ env.VERSION }} latest ${{ github.sha }}
           registry: ${{ secrets.QUAY_REPO }}
           username: ${{ secrets.QUAY_USER }}
           password: ${{ secrets.QUAY_TOKEN }}

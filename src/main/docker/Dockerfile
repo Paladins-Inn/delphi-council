@@ -16,14 +16,17 @@
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 
-LABEL io.k8s.description="This is a discord bot and connected webservice for supporting RPG tabletop games online without providing a VTT."
-LABEL io.k8s.display-name="Delphi Council Storm Knight Information System"
+LABEL io.k8s.description="@project.description@"
+LABEL io.k8s.display-name="@project.name@"
 LABEL io.openshift.expose-services="8080/TCP"
 LABEL io.openshift.tags="spring-boot rpg"
-LABEL maintainer="Kaiserpfalz EDV-Service"
-LABEL summary="Provides a supporting system for Torganized Play Germany."
-LABEL vendor="Kaiserpfalz EDV-Service"
-LABEL version="0.2.0-SNAPSHOT"
+LABEL name="@project.artifactId@"
+LABEL url=https://www.kaiserpfalz-edv.de/delphi-council-is
+LABEL maintainer="@project.organization.name@"
+LABEL summary="@project.description@"
+LABEL vendor="@project.organization.name@"
+LABEL author="Roland T. Lichti <rlichti@kaiserpfalz-edv.de>"
+LABEL version="@project.version@"
 
 
 ARG JAVA_PACKAGE=java-11-openjdk-headless
@@ -31,7 +34,9 @@ ARG RUN_JAVA_VERSION=1.3.8
 
 ENV LANG='en_GB.UTF-8' \
     LANGUAGE='en_GB:en' \
-    VERSION='0.2.0-SNAPSHOT'
+    APP_NAME="@project.artifactId@" \
+    APP_VERSION="@project.version@" \
+    VERSION="@project.version@"
 
 # Install java and the run-java script
 # Also set up permissions for user `1001`
@@ -46,8 +51,10 @@ RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
     && chmod 540 /deployments/run-java.sh \
     && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
 
-COPY dci-${VERSION}.jar /deployments/app.jar
-RUN chown 1001 /deployments/app.jar
+COPY Dockerfile /deployments
+COPY delphi-council-is-@project.version@.jar /deployments/app.jar
+RUN chmod 444 /deployments/app.jar
+#RUN chown 1001 /deployments/app.jar
 
 EXPOSE 8080
 USER $UID

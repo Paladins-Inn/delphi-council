@@ -28,7 +28,7 @@
     </parent>
 
     <groupId>de.paladinsinn.delphicouncil</groupId>
-    <artifactId>dci</artifactId>
+    <artifactId>delphi-council-is</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -97,6 +97,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <propertiesEncoding>UTF-8</propertiesEncoding>
 
         <immutables.version>2.8.9-ea-1</immutables.version>
         <vaadin.version>14.5.1</vaadin.version>
@@ -404,44 +405,8 @@
             </resource>
 
             <resource>
-                <directory>src/main/resources/META-INF/resources</directory>
-                <targetPath>static</targetPath>
+                <directory>src/main/docker</directory>
                 <filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.docx</exclude>
-                    <exclude>**/*.xlsx</exclude>
-                    <exclude>**/*.zip</exclude>
-                    <exclude>**/*.tgz</exclude>
-                    <exclude>**/*.png</exclude>
-                    <exclude>**/*.jpg</exclude>
-                    <exclude>**/*.gpg</exclude>
-                    <exclude>**/*.license</exclude>
-                    <exclude>**/*.js</exclude>
-                    <exclude>**/*.js.*</exclude>
-                    <exclude>**/*.ttf</exclude>
-                    <exclude>**/*.woff*</exclude>
-                    <exclude>**/*.eot</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources/META-INF/resources</directory>
-                <targetPath>static</targetPath>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*.docx</include>
-                    <include>**/*.xlsx</include>
-                    <include>**/*.zip</include>
-                    <include>**/*.tgz</include>
-                    <include>**/*.png</include>
-                    <include>**/*.jpg</include>
-                    <include>**/*.gpg</include>
-                    <include>**/*.license</include>
-                    <include>**/*.js</include>
-                    <include>**/*.js.*</include>
-                    <include>**/*.ttf</include>
-                    <include>**/*.woff*</include>
-                    <include>**/*.eot</include>
-                </includes>
             </resource>
         </resources>
 

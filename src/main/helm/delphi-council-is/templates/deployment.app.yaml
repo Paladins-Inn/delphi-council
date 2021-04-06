@@ -6,9 +6,9 @@ metadata:
   name: "{{ .Chart.Name }}-app"
   labels:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "app"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -16,9 +16,8 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: "{{ .Chart.Name }}"
-      app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-      app.kubernetes.io/component: "app"
       app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+      app.kubernetes.io/component: "app"
   strategy:
     type: RollingUpdate
   template:
@@ -26,9 +25,9 @@ spec:
       name: "{{ .Chart.Name }}-app"
       labels:
         app.kubernetes.io/name: "{{ .Chart.Name }}"
-        app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-        app.kubernetes.io/component: "app"
         app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+        app.kubernetes.io/component: "app"
+        app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     spec:
       terminationGracePeriodSeconds: 30
       containers:

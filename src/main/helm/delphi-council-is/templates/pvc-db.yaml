@@ -6,9 +6,9 @@ metadata:
   name: delphi-council-db
   labels:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "db"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
   finalizers:
     - kubernetes.io/pvc-protection
 spec:

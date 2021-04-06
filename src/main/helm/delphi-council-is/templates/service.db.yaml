@@ -8,9 +8,9 @@ metadata:
     template.openshift.io/expose-uri: 'mysql://{.spec.clusterIP}:{.spec.ports[?(.name=="mariadb")].port}'
   labels:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "db"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 spec:
   type: ClusterIP
   sessionAffinity: None
@@ -20,7 +20,6 @@ spec:
       protocol: TCP
       targetPort: 3306
   selector:
-    app.kubernetes.io/component: "db"
     app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/component: "db"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"

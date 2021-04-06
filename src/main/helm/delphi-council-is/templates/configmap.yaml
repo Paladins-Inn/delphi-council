@@ -6,7 +6,6 @@ metadata:
   name: "{{ .Chart.Name }}-config"
   labels:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "app"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
 data:
@@ -34,10 +33,11 @@ data:
     spring.servlet.multipart.enabled=false
     
     logging.level.de.paladinsinn=info
-    logging.level.de.kaiserpfalzedv=info
+    logging.level.de.kaiserpfalzedv=warn
     logging.level.org.atmosphere=warn
-    logging.level.liquibase=info
-    logging.level.org.springframework.security=info
+    logging.level.liquibase=warn
+    logging.level.org.springframework=warn
+    logging.level=warn
     
     spring.datasource.url=jdbc:mariadb://delphi-council-is-db:3306/${DB_DATABASE}
     spring.datasource.username=${DB_USER}

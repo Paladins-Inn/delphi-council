@@ -6,9 +6,9 @@ metadata:
   name: "{{ .Chart.Name }}-app"
   labels:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "app"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 spec:
   rules:
   - host: "{{ .Values.app.route }}"

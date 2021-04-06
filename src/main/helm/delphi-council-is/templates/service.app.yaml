@@ -8,9 +8,9 @@ metadata:
     template.openshift.io/expose-uri: 'http://{.spec.clusterIP}:{.spec.ports[?(.name=="http")].port}'
   labels:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "app"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 spec:
   sessionAffinity: ClientIP
   type: ClusterIP
@@ -25,6 +25,5 @@ spec:
       targetPort: 8433
   selector:
     app.kubernetes.io/name: "{{ .Chart.Name }}"
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: "app"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"

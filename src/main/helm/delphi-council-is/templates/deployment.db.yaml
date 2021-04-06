@@ -5,8 +5,8 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   name: "{{ .Chart.Name }}-db"
   labels:
-    app.kubernetes.io/component: "db"
     app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/component: "db"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 spec:
@@ -17,7 +17,6 @@ spec:
       app.kubernetes.io/component: "db"
       app.kubernetes.io/name: "{{ .Chart.Name }}"
       app.kubernetes.io/part-of: "{{ .Chart.Name }}"
-      app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
   strategy:
     type: Recreate
   template:
@@ -27,7 +26,6 @@ spec:
         app.kubernetes.io/component: "db"
         app.kubernetes.io/name: "{{ .Chart.Name }}"
         app.kubernetes.io/part-of: "{{ .Chart.Name }}"
-        app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     spec:
       containers:
       - name: "{{ .Chart.Name }}-db"

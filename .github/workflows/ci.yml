@@ -20,10 +20,6 @@ jobs:
         with:
           java-version: 11
 
-#      - name: Remove node_modules package-lock.json and package.json
-#        id: prepare-npm
-#        run: rm -rf node_modules package-lock.json package.json
-
       - name: Build
         id: build-java
         run: mvn package -B -Pproduction

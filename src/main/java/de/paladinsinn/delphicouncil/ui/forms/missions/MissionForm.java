@@ -19,6 +19,7 @@ package de.paladinsinn.delphicouncil.ui.forms.missions;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -150,6 +151,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
             mission.setObjectivesSuccess(objectivesSuccess.getValue());
             mission.setObjectivesGood(objectivesGood.getValue());
             mission.setObjectivesOutstanding(objectivesOutstanding.getValue());
+            mission.setModified();
 
             fireEvent(new MissionSaveEvent(this, false));
         });
@@ -234,30 +236,30 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
             return;
         }
 
-        id.setValue(mission.getId().toString());
-        code.setValue(mission.getCode());
-        title.setValue(mission.getTitle());
-        clearance.setValue(mission.getClearance());
-        publication.setValue(mission.getPublication());
-        image.setValue(mission.getImage());
-        description.setValue(mission.getDescription());
-        payment.setValue(mission.getPayment());
-        xp.setValue(mission.getXp());
-        objectivesSuccess.setValue(mission.getObjectivesSuccess());
-        objectivesGood.setValue(mission.getObjectivesGood());
-        objectivesOutstanding.setValue(mission.getObjectivesOutstanding());
+        if (mission.getId() != null) {
+            id.setValue(mission.getId().toString());
+        }
+
+        bindData(mission.getCode(), code);
+        bindData(mission.getTitle(), title);
+        bindData(mission.getClearance(), clearance);
+        bindData(mission.getPublication(), publication);
+        bindData(mission.getImage(), image);
+        bindData(mission.getDescription(), description);
+        bindData(mission.getPayment(), payment);
+        bindData(mission.getXp(), xp);
+        bindData(mission.getObjectivesSuccess(), objectivesSuccess);
+        bindData(mission.getObjectivesGood(), objectivesGood);
+        bindData(mission.getObjectivesOutstanding(), objectivesOutstanding);
 
         calculateReadOnly();
     }
 
-    public void initializeMission() {
-        LOG.debug("Creating a new mission. form={}", this);
-
-        mission = new Mission();
-
-        init();
-        populate();
-        translate();
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void bindData(final Object data, @NotNull HasValue component) {
+        if (data != null) {
+            component.setValue(data);
+        }
     }
 
     public Optional<Mission> getMission() {

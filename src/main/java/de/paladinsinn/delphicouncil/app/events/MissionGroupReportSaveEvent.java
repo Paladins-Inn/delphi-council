@@ -43,6 +43,6 @@ public class MissionGroupReportSaveEvent extends ComponentEvent<MissionReportFor
      * @return the mission report to be saved.
      */
     public MissionReport getReport() {
-        return getSource().getMissionReport().orElseThrow();
+        return getSource().getData().orElseThrow();
     }
 }

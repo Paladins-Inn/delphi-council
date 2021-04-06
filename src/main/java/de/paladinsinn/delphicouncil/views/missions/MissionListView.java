@@ -35,6 +35,7 @@ import de.paladinsinn.delphicouncil.data.missions.Mission;
 import de.paladinsinn.delphicouncil.data.missions.MissionReport;
 import de.paladinsinn.delphicouncil.data.missions.MissionRepository;
 import de.paladinsinn.delphicouncil.ui.DataCard;
+import de.paladinsinn.delphicouncil.ui.TorgButton;
 import de.paladinsinn.delphicouncil.views.main.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,7 @@ import org.springframework.data.domain.Pageable;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 import static com.vaadin.flow.component.Unit.PERCENTAGE;
 import static com.vaadin.flow.component.Unit.PIXELS;
@@ -60,7 +58,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
-@Route(value = "mission", layout = MainView.class)
+@Route(value = "missions", layout = MainView.class)
 @PageTitle("Mission Catalogue")
 @CssImport("./views/lists-view.css")
 public class MissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
@@ -74,16 +72,26 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
     @Autowired
     private ServiceRef<MissionRepository> repository;
 
-    Grid<Mission> grid = new Grid<>();
+    private final Grid<Mission> grid = new Grid<>();
+    private final TorgButton addMission = new TorgButton("mission.add", MissionEditorView.class);
 
     @PostConstruct
     public void init() {
         addClassName("list-view");
         setSizeFull();
-        grid.setHeight("100%");
+        grid.setMinHeight(80, PERCENTAGE);
+        grid.setMaxHeight(100, PERCENTAGE);
+
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
         grid.addComponentColumn(this::createCard);
-        add(grid);
+        add(addMission, grid);
+
+        addMission.addClickListener(e -> e.getSource().getUI().ifPresent(
+                ui -> ui.navigate(
+                        MissionEditorView.class,
+                        new RouteParameters("id", UUID.randomUUID().toString())
+                )
+        ));
     }
 
     private DataCard createCard(@NotNull final Mission mission) {
@@ -154,17 +162,18 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         card.getFooter().setFlexGrow(1, created);
         card.getFooter().setFlexGrow(1, modified);
 
+
+        card.addMargin(new TorgButton("missionreport.add", MissionReportEditorView.class));
+
         for (MissionReport r : mission.getReports()) {
             LOG.debug("Adding Link to mission report. mission={}, report={}", mission.getId(), r.getId());
 
-            RouterLink reportButton = new RouterLink(
-                    getTranslation(
-                            "mission.report-link.caption",
-                            r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                            r.getGameMaster().getUsername()
-                    ),
+            TorgButton reportButton = new TorgButton(
+                    "mission.report-link",
                     MissionReportView.class,
-                    new RouteParameters("id", r.getId().toString())
+                    r.getId(),
+                    r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    r.getGameMaster().getName()
             );
 
             card.addMargin(reportButton);
@@ -207,6 +216,8 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         for (TranslatableComponent t : translatables) {
             t.translate();
         }
+
+        addMission.setText(getTranslation("mission.add.caption"));
     }
 
     @Override

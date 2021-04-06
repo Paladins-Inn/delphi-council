@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.v-nativebutton-torg {
+  border: none;
+  color: var(--lumo-body-text-color);
+  background: transparent url("/images/torg-header.png");
+  width: 241px;
+  height: 25px;
+  margin: 5px;
+}
+
+body {
+  background-image: url("/images/marble.png");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+}
+
+#header {
+  background-image: url("/images/thunder.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.torg-thunder {
+  background-image: url("/images/thunder.png");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+}

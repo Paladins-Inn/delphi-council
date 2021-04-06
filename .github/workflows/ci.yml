@@ -20,9 +20,9 @@ jobs:
         with:
           java-version: 11
 
-      - name: Remove node_modules package-lock.json and package.json
-        id: prepare-npm
-        run: rm -rf node_modules package-lock.json package.json
+#      - name: Remove node_modules package-lock.json and package.json
+#        id: prepare-npm
+#        run: rm -rf node_modules package-lock.json package.json
 
       - name: Build
         id: build-java
@@ -55,9 +55,6 @@ jobs:
         id: checkout-sources
         uses: actions/checkout@v2
 
-      - name: Image name and version
-        run: echo "Working on image '${{ env.IMAGE }}:${{ env.VERSION }}'."
-
       - name: retrieve jar and dockerfile
         id: retrieve-jar
         uses: actions/download-artifact@v2
@@ -69,13 +66,7 @@ jobs:
           echo "IMAGE=$(cat classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
           echo "VERSION=$(cat classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
 
-      - name: Image name and version
-        run: echo "Working on image '${{ env.IMAGE }}:${{ env.VERSION }}'."
-
       - name: Buildah
-        env:
-          IMAGE: $(cat classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
-          VERSION: $(cat classes/Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')
         id: build-container
         uses: redhat-actions/buildah-build@v2
         with:
@@ -85,9 +76,6 @@ jobs:
             ./classes/Dockerfile
           context: ./
       - name: Push To quay
-        env:
-          IMAGE: $(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
-          VERSION: $(cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2
         with:

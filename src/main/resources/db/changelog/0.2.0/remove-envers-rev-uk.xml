@@ -21,6 +21,14 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <include file="0.1.0/changeLog.xml" relativeToChangelogFile="true"/>
-    <include file="0.2.0/changeLog.xml" relativeToChangelogFile="true"/>
+    <changeSet id="2021-04-06-rlichti1" author="rlichti">
+        <dropUniqueConstraint constraintName="OPERATIVES_REVID_UK" tableName="OPERATIVES"/>
+        <dropUniqueConstraint tableName="PERSONS" constraintName="PERSONS_REVID_UK"/>
+        <dropUniqueConstraint tableName="MISSIONREPORTS" constraintName="MISSIONREPORTS_REVID_UK"/>
+        <dropUniqueConstraint tableName="MISSIONREPORTS_OPERATIVES"
+                              constraintName="MISSIONREPORTS_OPERATIVES_REVID_UK"/>
+        <dropUniqueConstraint tableName="SPECIALMISSIONS" constraintName="PERSONS_REVID_UK"/>
+        <dropUniqueConstraint tableName="SPECIALREPORTS_OPERATIVES"
+                              constraintName="SPECIALREPORTS_OPERATIVES_REVID_UK"/>
+    </changeSet>
 </databaseChangeLog>

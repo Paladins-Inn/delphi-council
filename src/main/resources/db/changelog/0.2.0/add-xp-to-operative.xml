@@ -21,6 +21,23 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <include file="0.1.0/changeLog.xml" relativeToChangelogFile="true"/>
-    <include file="0.2.0/changeLog.xml" relativeToChangelogFile="true"/>
+    <changeSet id="2021-04-07-rlichti1" author="rlichti">
+        <comment>The operatives need XPs of course.</comment>
+
+        <addColumn tableName="OPERATIVES">
+            <column name="XP" type="INT"/>
+        </addColumn>
+        <addColumn tableName="OPERATIVES_AUD">
+            <column name="XP" type="INT"/>
+        </addColumn>
+
+        <sql>
+            update OPERATIVES set XP=0 where XP is null;
+            update OPERATIVES_AUD set XP=0 where CLEARANCE='ALPHA';
+        </sql>
+
+        <addNotNullConstraint constraintName="OPERATIVES_XP_NN"
+                              tableName="OPERATIVES"
+                              columnName="XP" columnDataType="int"/>
+    </changeSet>
 </databaseChangeLog>

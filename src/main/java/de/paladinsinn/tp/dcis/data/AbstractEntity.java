@@ -92,13 +92,13 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     protected StringJoiner getToStringJoiner() {
         StringJoiner result = new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
                 .add("hash=" + System.identityHashCode(this))
-                .add("id=" + id);
-
-        result.add("created=" + created);
+                .add("id=" + id)
+                .add("created=" + created);
 
         if (modified != null) {
             result.add("modified=" + modified);
         }
+
         return result;
     }
 

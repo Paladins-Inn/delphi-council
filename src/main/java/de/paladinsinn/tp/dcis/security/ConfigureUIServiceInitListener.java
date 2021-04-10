@@ -42,7 +42,7 @@ import java.util.List;
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigureUIServiceInitListener.class);
 
-    private static final List<String> ALLOWED_PATHS = Arrays.asList("images", "img", "icons", "api", "actuator", "static");
+    private static final List<String> ALLOWED_PATHS = Arrays.asList("register", "images", "img", "icons", "api", "actuator", "static");
 
 
     @Override

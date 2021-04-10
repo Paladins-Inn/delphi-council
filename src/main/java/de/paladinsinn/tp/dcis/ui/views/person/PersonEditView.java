@@ -56,7 +56,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
     private Locale locale;
 
     @Autowired
-    private PersonService personService;
+    private PersonSaveService personSaveService;
 
     @Autowired
     private PersonRepository personRepository;
@@ -71,7 +71,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
         addClassName("edit-view");
         setSizeFull();
 
-        form = new PersonForm(personService, user);
+        form = new PersonForm(personSaveService, user);
 
         add(form);
     }

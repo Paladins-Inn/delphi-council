@@ -21,7 +21,6 @@ import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
@@ -271,16 +270,6 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
         form.setColspan(achievements, 3);
         form.setColspan(notes, 3);
         form.setColspan(actions, 3);
-    }
-
-    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, String... parameters) {
-        LOG.trace("Displaying notification. i18nKey='{}', type='{}', parameter={}", i18nkey, type, parameters);
-
-        Notification.show(
-                getTranslation(i18nkey, getTranslation(type), parameters),
-                2000,
-                Notification.Position.BOTTOM_STRETCH
-        );
     }
 
     @Override

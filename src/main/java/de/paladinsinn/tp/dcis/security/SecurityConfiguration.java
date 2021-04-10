@@ -119,6 +119,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // ThreatCard Editor
                 "/ThreatCard/**",
 
+                "/register",
+                "/registration",
+                "/confirmation",
+
                 // web application manifest
                 "/manifest.webmanifest",
                 "/sw.js",

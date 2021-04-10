@@ -77,7 +77,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @PWA(name = "Delphi Council Information System", shortName = "DC IS", enableInstallPrompt = false)
 @JsModule("./styles/shared-styles.js")
 @Theme(value = Lumo.class, variant = Lumo.DARK)
-@CssImport("./views/main-view.css")
+@CssImport("./views/delphi-council-is.css")
 public class MainView extends AppLayout implements LocaleChangeObserver, TranslatableComponent {
     private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
 

@@ -18,6 +18,7 @@
 package de.paladinsinn.tp.dcis.ui.i18n;
 
 import ch.carnet.kasparscherrer.LanguageSelect;
+import com.sun.istack.NotNull;
 import com.vaadin.flow.server.VaadinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,15 @@ public class I18nSelector extends LanguageSelect {
             new Locale("en_UK")
     };
 
-    public I18nSelector() {
+    public I18nSelector(@NotNull final String i18nPrefix, @NotNull final Locale selectedLocale) {
         super(
                 VALID_LOCALES[0],
                 VALID_LOCALES[1]
         );
+
+        setValue(selectedLocale);
+        setLabel(getTranslation(i18nPrefix + ".caption", getValue()));
+        setHelperText(getTranslation(i18nPrefix + ".help", getValue()));
 
         if (!Arrays.asList(VALID_LOCALES).contains(VaadinSession.getCurrent().getLocale())) {
             LOG.info("Selected locale is not known. Changing locale to the default locale. locale={}", VALID_LOCALES[0]);
@@ -54,5 +59,10 @@ public class I18nSelector extends LanguageSelect {
         setRequiredIndicatorVisible(true);
         setEmptySelectionAllowed(false);
         setRequiredIndicatorVisible(true);
+
+        addValueChangeListener(ev -> {
+            setLabel(getTranslation(i18nPrefix + ".caption", ev.getValue()));
+            setHelperText(getTranslation(i18nPrefix + ".help", ev.getValue()));
+        });
     }
 }

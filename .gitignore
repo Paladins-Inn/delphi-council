@@ -18,3 +18,5 @@ webpack.generated.js
 
 /demo/
 /delphi-council/
+/package.json
+/package-lock.json

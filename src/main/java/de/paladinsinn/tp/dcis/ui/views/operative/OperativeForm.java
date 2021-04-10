@@ -24,7 +24,6 @@ import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
@@ -370,16 +369,6 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
 
         getContent().removeAll();
         getContent().add(form);
-    }
-
-    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, String... parameters) {
-        LOG.trace("Displaying notification. i18nKey='{}', type='{}', parameter={}", i18nkey, type, parameters);
-
-        Notification.show(
-                getTranslation(i18nkey, getTranslation(type), parameters),
-                2000,
-                Notification.Position.BOTTOM_STRETCH
-        );
     }
 
     @Override

@@ -15,22 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.v-nativebutton-torg {
-  border: none;
-  color: var(--lumo-body-text-color);
-  background: transparent url("/images/torg-header.png");
-  width: 241px;
-  height: 25px;
-  margin: 5px;
-}
+package de.paladinsinn.tp.dcis.data.person;
 
-#header {
-  background-size: cover;
-  background-repeat: no-repeat;
-}
+import org.springframework.data.jpa.repository.JpaRepository;
 
-.torg-thunder {
-  background-image: url("/images/thunder.png");
-  background-size: 100% auto;
-  background-repeat: no-repeat;
+import java.util.UUID;
+
+/**
+ * ConfirmationTokenRepository -- The generic repository to access {@link ConfirmationToken}.
+ *
+ * @author Kamer Elciar (<a href="https://kamer-dev.medium.com/spring-boot-user-registration-and-login-43a33ea19745">https://kamer-dev.medium.com/spring-boot-user-registration-and-login-43a33ea19745</a>)
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 0.1.0  2021-04-10
+ */
+public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationToken, UUID> {
 }

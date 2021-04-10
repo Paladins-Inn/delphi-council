@@ -130,8 +130,12 @@ public class Translator implements
             bundles.put(bundleName, new HashMap<>());
         }
 
+        if (locale == null) {
+            locale = Locale.forLanguageTag(defaultLocale);
+        }
+
         if (!bundles.get(bundleName).containsKey(locale)) {
-            LOG.info("Loading bundle. baseName='{}', locale='{}'", bundleName, locale.getLanguage());
+            LOG.info("Loading bundle. baseName='{}', locale='{}'", bundleName, locale.getDisplayName());
 
             ResourceBundle bundle;
             try {

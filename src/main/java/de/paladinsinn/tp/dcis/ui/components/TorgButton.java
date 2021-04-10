@@ -41,7 +41,7 @@ import java.util.UUID;
  * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-06
  */
-@CssImport("./views/torg.css")
+@CssImport("./views/delphi-council-is.css")
 public class TorgButton extends NativeButton implements TranslatableComponent, LocaleChangeObserver {
     private static final Logger LOG = LoggerFactory.getLogger(TorgButton.class);
 

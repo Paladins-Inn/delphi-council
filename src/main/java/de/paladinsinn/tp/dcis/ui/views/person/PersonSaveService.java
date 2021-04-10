@@ -32,20 +32,20 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * PersonService -- Handling persistence for {@link PersonService}.
+ * PersonSaveService -- Handling persistence for {@link PersonSaveService}.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-05
  */
 @Service
-public class PersonService extends CrudService<Person, UUID> implements ComponentEventListener<PersonSaveEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonService.class);
+public class PersonSaveService extends CrudService<Person, UUID> implements ComponentEventListener<PersonSaveEvent> {
+    private static final Logger LOG = LoggerFactory.getLogger(PersonSaveService.class);
 
     private static final String DATA_TYPE_TITLE = "person.editor.caption";
 
     private final PersonRepository repository;
 
-    public PersonService(@Autowired PersonRepository repository) {
+    public PersonSaveService(@Autowired PersonRepository repository) {
         this.repository = repository;
     }
 

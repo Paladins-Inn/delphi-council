@@ -25,7 +25,6 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -70,7 +69,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     /**
      * The service for writing data to.
      */
-    private final PersonService personService;
+    private final PersonSaveService personSaveService;
 
     /**
      * Details of the logged in user.
@@ -107,7 +106,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     private final TextField lastName = new TextField();
     private final TextField firstName = new TextField();
 
-    private final LanguageSelect language = new I18nSelector();
+    private final LanguageSelect language;
 
     private final CheckboxGroup<String> roles = new CheckboxGroup<>();
     private final CheckboxGroup<String> status = new CheckboxGroup<>();
@@ -125,10 +124,12 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
     @Autowired
     public PersonForm(
-            @NotNull final PersonService personService,
+            @NotNull final PersonSaveService personSaveService,
             LoggedInUser user) {
-        this.personService = personService;
+        this.personSaveService = personSaveService;
         this.user = user;
+
+        this.language = new I18nSelector("person.locale", VaadinSession.getCurrent().getLocale());
     }
 
 
@@ -148,7 +149,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
             locale = VaadinSession.getCurrent().getLocale();
         }
 
-        addListener(PersonSaveEvent.class, personService);
+        addListener(PersonSaveEvent.class, personSaveService);
 
         user.allow(user.getPerson().getName().equals(data.getUsername()));
 
@@ -434,16 +435,6 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
         getContent().removeAll();
         getContent().add(form);
-    }
-
-    public void displayNote(@NotNull final String i18nkey, @NotNull final String type, Object... parameters) {
-        LOG.trace("Displaying notification. i18nKey='{}', type='{}', parameter={}", i18nkey, type, parameters);
-
-        Notification.show(
-                getTranslation(i18nkey, getTranslation(type), parameters),
-                2000,
-                Notification.Position.BOTTOM_STRETCH
-        );
     }
 
     @Override

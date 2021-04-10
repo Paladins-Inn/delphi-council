@@ -20,6 +20,7 @@ package de.paladinsinn.tp.dcis.ui.views.login;
 import ch.carnet.kasparscherrer.LanguageSelect;
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -28,14 +29,12 @@ import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
-import de.codecamp.vaadin.serviceref.ServiceRef;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
-import de.paladinsinn.tp.dcis.ui.i18n.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.Locale;
@@ -57,30 +56,30 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Lo
 
     public static final String ROUTE = "login";
 
-    /** The login component. */
+    /**
+     * The login component.
+     */
     private LanguageSelect languageSelect;
-    private LoginOverlay login;
-
-    /** Translator for i18n. */
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
-    @Autowired
-    private ServiceRef<Translator> translator;
+    private LoginForm login;
+    private RouterLink register;
 
     @PostConstruct
     public void init() {
         LOG.debug("Creating login view.");
-        languageSelect = new I18nSelector();
+        languageSelect = new I18nSelector("input.locale", VaadinSession.getCurrent().getLocale());
+        languageSelect.setRequiredIndicatorVisible(true);
+        languageSelect.setValue(VaadinSession.getCurrent().getLocale());
 
-        login = new LoginOverlay();
+        login = new LoginForm();
         login.setAction("login");
-        login.setOpened(true);
-        login.addForgotPasswordListener(event -> {
-            Notification.show("sorry, not implemented yet", 2000, Notification.Position.BOTTOM_STRETCH);
-        });
+        login.addForgotPasswordListener(event -> Notification.show("sorry, not implemented yet", 2000, Notification.Position.BOTTOM_STRETCH));
 
-        setLocale(VaadinSession.getCurrent().getLocale());
+        register = new RouterLink(
+                getTranslation("login.register-link.caption"),
+                RegistrationView.class
+        );
 
-        add(languageSelect, login);
+        add(languageSelect, login, register);
     }
 
     @Override
@@ -100,7 +99,9 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Lo
     private void setLocale(@NotNull final Locale locale) {
         LOG.trace("Changing locale. locale={}", locale);
 
-        login.setTitle(getTranslation("application.title"));
-        login.setDescription(getTranslation("application.description"));
+        languageSelect.setLabel(getTranslation("input.locale.caption"));
+        languageSelect.setHelperText(getTranslation("input.locale.help"));
+
+        register.setText(getTranslation("login.register-link.caption"));
     }
 }

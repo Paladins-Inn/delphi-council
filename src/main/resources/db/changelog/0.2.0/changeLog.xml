@@ -23,4 +23,5 @@
 
     <include file="remove-envers-rev-uk.xml" relativeToChangelogFile="true"/>
     <include file="add-xp-to-operative.xml" relativeToChangelogFile="true"/>
+    <include file="add-language-to-person.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

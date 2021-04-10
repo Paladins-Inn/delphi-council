@@ -22,7 +22,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
+import de.paladinsinn.tp.dcis.ui.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

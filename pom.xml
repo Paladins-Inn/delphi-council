@@ -415,6 +415,53 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <filtering>true</filtering>
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <filtering>true</filtering>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*.docx</exclude>
+                    <exclude>**/*.xlsx</exclude>
+                    <exclude>**/*.zip</exclude>
+                    <exclude>**/*.tgz</exclude>
+                    <exclude>**/*.png</exclude>
+                    <exclude>**/*.jpg</exclude>
+                    <exclude>**/*.gpg</exclude>
+                    <exclude>**/*.license</exclude>
+                    <exclude>**/*.js</exclude>
+                    <exclude>**/*.js.*</exclude>
+                    <exclude>**/*.ttf</exclude>
+                    <exclude>**/*.woff*</exclude>
+                    <exclude>**/*.eot</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <filtering>false</filtering>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.docx</include>
+                    <include>**/*.xlsx</include>
+                    <include>**/*.zip</include>
+                    <include>**/*.tgz</include>
+                    <include>**/*.png</include>
+                    <include>**/*.jpg</include>
+                    <include>**/*.gpg</include>
+                    <include>**/*.license</include>
+                    <include>**/*.js</include>
+                    <include>**/*.js.*</include>
+                    <include>**/*.ttf</include>
+                    <include>**/*.woff*</include>
+                    <include>**/*.eot</include>
+                </includes>
+            </testResource>
+        </testResources>
 
         <plugins>
             <plugin>
@@ -519,6 +566,5 @@
                 </plugins>
             </build>
         </profile>
-
     </profiles>
 </project>

@@ -22,6 +22,7 @@ import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.data.Clearance;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
@@ -42,12 +43,12 @@ import java.util.StringJoiner;
 )
 @Getter
 @Setter
-public class Mission extends AbstractRevisionedEntity implements Comparable<Mission> {
+public class Mission extends AbstractRevisionedEntity implements Comparable<Mission>, Cloneable {
     @Column(name = "CODE", length = 20, nullable = false)
     @Audited
     private String code;
 
-    @Column(name = "IMAGE", length=100)
+    @Column(name = "IMAGE", length = 100)
     @Audited
     private String image;
 
@@ -91,7 +92,7 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
     @OneToMany(
             targetEntity = MissionReport.class,
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
             mappedBy = "mission",
             orphanRemoval = true
     )
@@ -128,5 +129,30 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
                 .add("payment=" + payment)
                 .add("xp=" + xp)
                 .toString();
+    }
+
+    @SneakyThrows
+    @Override
+    public Mission clone() {
+        Mission result = (Mission) super.clone();
+
+        result.code = code;
+        result.title = title;
+
+        result.description = description;
+        result.clearance = clearance;
+        result.payment = payment;
+        result.xp = xp;
+
+        result.publication = publication;
+        result.image = image;
+
+        result.objectivesSuccess = objectivesSuccess;
+        result.objectivesGood = objectivesGood;
+        result.objectivesOutstanding = objectivesOutstanding;
+
+        result.reports = Set.copyOf(reports);
+
+        return result;
     }
 }

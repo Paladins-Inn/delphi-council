@@ -18,6 +18,7 @@
 package de.paladinsinn.tp.dcis.security;
 
 import com.sun.istack.NotNull;
+import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import org.slf4j.Logger;
@@ -70,7 +71,6 @@ public class AuthenticationHandler extends SavedRequestAwareAuthenticationSucces
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
-        super.onAuthenticationSuccess(request, response, authentication);
 
         Person user = repository.findByUsername(authentication.getName());
         if (user == null) {
@@ -83,5 +83,10 @@ public class AuthenticationHandler extends SavedRequestAwareAuthenticationSucces
         repository.save(user);
 
         LOG.debug("Saved login. user='{}', lastLogin={}", authentication.getName(), user.getStatus().getLastLogin());
+
+        VaadinSession.getCurrent().setLocale(user.getLocale());
+        LOG.debug("Set locale. locale={}", user.getLocale());
+
+        super.onAuthenticationSuccess(request, response, authentication);
     }
 }

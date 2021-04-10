@@ -24,9 +24,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.time.Period;
 import java.time.ZoneOffset;
+import java.util.StringJoiner;
 
 /**
  * AccountSecurityStatus -- Spring security states of an account.
@@ -42,7 +44,7 @@ import java.time.ZoneOffset;
 @Embeddable
 @Getter
 @Setter
-public class AccountSecurityStatus {
+public class AccountSecurityStatus implements Serializable, Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(AccountSecurityStatus.class);
 
     private static final Period CREDENTIALS_VALID_FOR = Period.ofYears(5);
@@ -90,5 +92,43 @@ public class AccountSecurityStatus {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public AccountSecurityStatus clone() throws CloneNotSupportedException {
+        AccountSecurityStatus result = (AccountSecurityStatus) super.clone();
+
+        result.enabled = enabled;
+        result.locked = locked;
+
+        if (credentialsChange != null) {
+            result.credentialsChange = OffsetDateTime.from(credentialsChange);
+        }
+
+        if (lastLogin != null) {
+            result.lastLogin = OffsetDateTime.from(lastLogin);
+        }
+
+        if (expiry != null) {
+            result.expiry = OffsetDateTime.from(expiry);
+        }
+
+        if (deleted != null) {
+            result.deleted = OffsetDateTime.from(deleted);
+        }
+
+        LOG.trace("Cloned AccountSecurityStatus. orig={}, clone={}", this, result);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", AccountSecurityStatus.class.getSimpleName() + "[", "]")
+                .add("enabled=" + enabled)
+                .add("locked=" + locked)
+                .add("credentialsChange=" + credentialsChange)
+                .add("lastLogin=" + lastLogin)
+                .add("expiry=" + expiry)
+                .add("deleted=" + deleted)
+                .toString();
     }
 }

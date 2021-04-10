@@ -38,7 +38,6 @@ $_documentContainer.innerHTML = `
       --lumo-space-m: 0.625rem;
       --lumo-space-s: 0.3125rem;
       --lumo-space-xs: 0.1875rem;
-
     }
 
 </style>

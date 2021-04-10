@@ -50,5 +50,9 @@ public class I18nSelector extends LanguageSelect {
 
             VaadinSession.getCurrent().setLocale(VALID_LOCALES[0]);
         }
+
+        setRequiredIndicatorVisible(true);
+        setEmptySelectionAllowed(false);
+        setRequiredIndicatorVisible(true);
     }
 }

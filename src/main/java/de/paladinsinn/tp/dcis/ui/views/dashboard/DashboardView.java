@@ -20,14 +20,12 @@ package de.paladinsinn.tp.dcis.ui.views.dashboard;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 
-@Route(value = "", layout = MainView.class)
-@RouteAlias(value = "", layout = MainView.class)
-@PageTitle("Dashboard")
+@Route(value = "/dashboard", layout = MainView.class)
+@I18nPageTitle("dashboard.title")
 @CssImport("./views/dashboard-view.css")
 public class DashboardView extends Div {
 

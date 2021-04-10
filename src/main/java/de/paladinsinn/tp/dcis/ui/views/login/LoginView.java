@@ -27,10 +27,10 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import de.codecamp.vaadin.serviceref.ServiceRef;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
 import de.paladinsinn.tp.dcis.ui.i18n.Translator;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ import java.util.Locale;
  */
 @Tag("sa-login-view")
 @Route(LoginView.ROUTE)
-@PageTitle("Login")
+@I18nPageTitle("login.title")
 public class LoginView extends VerticalLayout implements BeforeEnterObserver, LocaleChangeObserver {
     private static final Logger LOG = LoggerFactory.getLogger(LoginView.class);
 

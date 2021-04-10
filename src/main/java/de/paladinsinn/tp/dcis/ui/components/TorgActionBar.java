@@ -65,16 +65,24 @@ public class TorgActionBar extends HorizontalLayout implements LocaleChangeObser
 
         this.save = save;
         this.reset = reset;
-        this.cancel = cancel;
         this.delete = delete;
+
+        if (cancel != null) {
+            this.cancel = cancel;
+        } else {
+            LOG.debug("Adding back button as cancel.");
+
+            this.cancel = event -> event.getSource()
+                    .getUI().ifPresent(ui -> ui.getPage().getHistory().back());
+        }
 
         this.additionalActions = new HashMap<>();
 
         if (isEnabled() && isVisible()) {
-            addButton(String.format("%s.%s", this.i18nKey, "save"), save);
-            addButton(String.format("%s.%s", this.i18nKey, "reset"), reset);
-            addButton(String.format("%s.%s", this.i18nKey, "cancel"), cancel);
-            addButton(String.format("%s.%s", this.i18nKey, "delete"), delete);
+            addButton(String.format("%s.%s", this.i18nKey, "save"), this.save);
+            addButton(String.format("%s.%s", this.i18nKey, "reset"), this.reset);
+            addButton(String.format("%s.%s", this.i18nKey, "cancel"), this.cancel);
+            addButton(String.format("%s.%s", this.i18nKey, "delete"), this.delete);
         }
     }
 
@@ -102,7 +110,8 @@ public class TorgActionBar extends HorizontalLayout implements LocaleChangeObser
      *                 read-only mode or not
      */
     public void setReadOnly(boolean readOnly) {
-        setEnabled(!readOnly);
+        super.setEnabled(!readOnly);
+        super.setVisible(!readOnly);
     }
 
     /**
@@ -112,7 +121,7 @@ public class TorgActionBar extends HorizontalLayout implements LocaleChangeObser
      * not.
      */
     public boolean isReadOnly() {
-        return isEnabled();
+        return super.isEnabled();
     }
 
     @Override
@@ -149,6 +158,8 @@ public class TorgActionBar extends HorizontalLayout implements LocaleChangeObser
             @NotNull final ComponentEventListener<ClickEvent<NativeButton>> action
     ) {
         if (action != null) {
+            LOG.trace("Add button. i18nKey={}, i18nParameters={}", i18nKey, i18nParameters);
+
             add(new TorgButton(
                     i18nKey,
                     action,

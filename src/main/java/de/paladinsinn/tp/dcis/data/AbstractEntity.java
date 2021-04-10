@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
@@ -32,26 +33,29 @@ import java.util.UUID;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class AbstractEntity {
+public abstract class AbstractEntity implements Serializable, Cloneable {
     @Id
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(generator = "uuid2")
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDCharType")
     @Column(name = "ID", length = 36, nullable = false, updatable = false, unique = true)
-    UUID id;
+    protected UUID id;
 
     @Version
-    int version;
+    @Column(name = "VERSION", nullable = false)
+    protected int version;
 
-    @GeneratedValue
-    int revId;
     @Column(name = "CREATED", nullable = false, updatable = false)
-    public OffsetDateTime created;
+    protected OffsetDateTime created;
     @Column(name = "MODIFIED")
-    public OffsetDateTime modified;
+    protected OffsetDateTime modified;
 
     public int getVersion() {
         return version;
+    }
+
+    protected OffsetDateTime getNowUTC() {
+        return OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     @PrePersist
@@ -62,11 +66,6 @@ public abstract class AbstractEntity {
     @PreUpdate
     public void setModified() {
         modified = getNowUTC();
-    }
-
-
-    protected OffsetDateTime getNowUTC() {
-        return OffsetDateTime.now(ZoneOffset.UTC);
     }
 
 
@@ -100,6 +99,24 @@ public abstract class AbstractEntity {
         if (modified != null) {
             result.add("modified=" + modified);
         }
+        return result;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        AbstractEntity result = (AbstractEntity) super.clone();
+
+        result.id = id;
+        result.version = version;
+
+        if (created != null) {
+            result.created = OffsetDateTime.from(created);
+        }
+
+        if (modified != null) {
+            result.modified = OffsetDateTime.from(modified);
+        }
+
         return result;
     }
 }

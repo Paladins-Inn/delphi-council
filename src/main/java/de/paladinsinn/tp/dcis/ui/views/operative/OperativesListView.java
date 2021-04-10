@@ -29,18 +29,16 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.*;
-import de.codecamp.vaadin.serviceref.ServiceRef;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
-import de.paladinsinn.tp.dcis.data.operative.OperativeService;
-import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.components.DataCard;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
-import de.paladinsinn.tp.dcis.ui.views.missions.MissionReportView;
-import de.paladinsinn.tp.dcis.ui.views.person.PersonEditView;
+import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +64,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @since 0.1.0  2021-03-28
  */
 @Route(value = "operatives", layout = MainView.class)
-@PageTitle("Storm Knights")
+@I18nPageTitle("operative.list.title")
 @CssImport("./views/lists-view.css")
 public class OperativesListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
     public static final Long serial = 1L;
@@ -77,13 +75,10 @@ public class OperativesListView extends Div implements Serializable, AutoCloseab
     private Locale locale;
 
     @Autowired
-    private OperativeService service;
+    private OperativeRepository repository;
 
     @Autowired
     private LoggedInUser user;
-
-    @Autowired
-    private ServiceRef<PersonRepository> personRepository;
 
     private final Grid<Operative> grid = new Grid<>();
     private TorgButton addOperative;
@@ -190,27 +185,26 @@ public class OperativesListView extends Div implements Serializable, AutoCloseab
         card.getFooter().setFlexGrow(1, created);
         card.getFooter().setFlexGrow(1, modified);
 
-        TorgButton edit = new TorgButton(
-                "buttons.edit",
-                OperativeEditView.class,
-                data.getId()
-        );
-        card.addMargin(edit);
-
+        TorgButton edit;
         if (
-                user.isOrga()
+                user.getPerson().equals(data.getPlayer())
+                        || user.isOrga()
                         || user.isAdmin()
                         || user.isJudge()
-                        || data.getPlayer().equals(user.getPerson())
         ) {
-            TorgButton player = new TorgButton(
-                    "operative.player-link",
-                    PersonEditView.class,
-                    data.getPlayer().getId(),
-                    data.getPlayer().getName()
+            edit = new TorgButton(
+                    "buttons.edit",
+                    OperativeEditView.class,
+                    data.getId()
             );
-            card.addMargin(player);
+        } else {
+            edit = new TorgButton(
+                    "buttons.view",
+                    OperativeEditView.class,
+                    data.getId()
+            );
         }
+        card.addMargin(edit);
 
         translatables.add(card);
         return card;
@@ -224,12 +218,12 @@ public class OperativesListView extends Div implements Serializable, AutoCloseab
                             int offset = query.getOffset();
                             int limit = query.getLimit();
 
-                            Pageable page = PageRequest.of(offset/limit, limit);
-                            Page<Operative> missions = service.findAll(page);
+                            Pageable page = PageRequest.of(offset / limit, limit);
+                            Page<Operative> missions = repository.findAll(page);
 
                             return missions.stream();
                         },
-                        query -> service.count()
+                        query -> (int) repository.count()
                 )
         );
     }

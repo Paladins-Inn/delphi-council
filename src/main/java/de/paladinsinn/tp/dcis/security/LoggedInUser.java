@@ -18,12 +18,15 @@
 package de.paladinsinn.tp.dcis.security;
 
 import com.sun.istack.NotNull;
+import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.data.person.RoleName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Locale;
 
 /**
  * LoggedInUser --
@@ -57,7 +60,20 @@ public class LoggedInUser {
 
         person = repository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 
+        enforceSavedLocale();
+
         return person;
+    }
+
+    private void enforceSavedLocale() {
+        Locale sessionLocale = VaadinSession.getCurrent().getLocale();
+        Locale personLocale = person.getLocale();
+
+        if (sessionLocale != null || !sessionLocale.equals(personLocale)) {
+            LOG.info("Changing locale. sessionLocale={}, personLocale={}", sessionLocale, personLocale);
+
+            VaadinSession.getCurrent().setLocale(personLocale);
+        }
     }
 
     public void setPerson(@NotNull final Person person) {

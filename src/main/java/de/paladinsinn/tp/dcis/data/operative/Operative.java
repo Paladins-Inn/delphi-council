@@ -18,10 +18,9 @@
 package de.paladinsinn.tp.dcis.data.operative;
 
 import com.sun.istack.NotNull;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.server.StreamResource;
-import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
-import de.paladinsinn.tp.dcis.data.Clearance;
-import de.paladinsinn.tp.dcis.data.Cosm;
+import de.paladinsinn.tp.dcis.data.*;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,8 +31,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringJoiner;
 
 @Entity
 @Table(
@@ -46,13 +47,7 @@ import java.util.Set;
 )
 @Getter
 @Setter
-public class Operative extends AbstractRevisionedEntity {
-    // FIXME 2021-04-07 rlichti get the correct limits.
-    private static final int DELTA_CLEARANCE_XP = 400;
-    private static final int GAMMA_CLEARANCE_XP = 200;
-    private static final int BETA_CLEARANCE_XP = 50;
-
-
+public class Operative extends AbstractRevisionedEntity implements HasAvatar, HasToken {
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited
     private String name;
@@ -82,7 +77,7 @@ public class Operative extends AbstractRevisionedEntity {
     @ManyToOne(
             targetEntity = Person.class,
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
 
             optional = false
     )
@@ -98,7 +93,7 @@ public class Operative extends AbstractRevisionedEntity {
             targetEntity = OperativeReport.class,
             mappedBy = "operative",
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
             orphanRemoval = true
     )
     private Set<OperativeReport> reports = new HashSet<>();
@@ -132,6 +127,19 @@ public class Operative extends AbstractRevisionedEntity {
         }
     }
 
+    @Override
+    public Image getAvatarImage() {
+        Image result = new Image();
+
+        StreamResource data = getAvatar();
+        if (data != null) {
+            result.setSrc(data);
+        }
+
+        return result;
+    }
+
+    @Override
     public StreamResource getAvatar() {
         if (avatar != null) {
             return new StreamResource(getId().toString() + "png", () -> new ByteArrayInputStream(avatar));
@@ -144,10 +152,25 @@ public class Operative extends AbstractRevisionedEntity {
      * @param data data to read.
      * @throws IOException If the data can't be read.
      */
+    @Override
     public void setAvatar(InputStream data) throws IOException {
         avatar = data.readAllBytes();
     }
 
+
+    @Override
+    public Image getTokenImage() {
+        Image result = new Image();
+
+        StreamResource data = getToken();
+        if (data != null) {
+            result.setSrc(data);
+        }
+
+        return result;
+    }
+
+    @Override
     public StreamResource getToken() {
         if (token != null) {
             return new StreamResource(getId().toString() + "png", () -> new ByteArrayInputStream(token));
@@ -160,28 +183,57 @@ public class Operative extends AbstractRevisionedEntity {
      * @param data data to read.
      * @throws IOException If the data can't be read.
      */
+    @Override
     public void setToken(InputStream data) throws IOException {
         token = data.readAllBytes();
     }
 
     public void setXp(@NotNull final int xp) {
         this.xp = xp;
-
-        calculateClearance();
+        clearance = Clearance.valueOf(xp);
     }
 
-    /**
-     * Calculates the security clearance according to the XP of the character.
-     */
-    private void calculateClearance() {
-        if (xp >= DELTA_CLEARANCE_XP) {
-            clearance = Clearance.DELTA;
-        } else if (xp >= GAMMA_CLEARANCE_XP) {
-            clearance = Clearance.GAMMA;
-        } else if (xp >= BETA_CLEARANCE_XP) {
-            clearance = Clearance.BETA;
-        } else {
-            clearance = Clearance.ALPHA;
+    @Override
+    public Operative clone() throws CloneNotSupportedException {
+        Operative result = (Operative) super.clone();
+
+        result.name = name;
+        result.firstName = firstName;
+        result.lastName = lastName;
+
+        if (avatar != null) {
+            result.avatar = Arrays.copyOf(avatar, avatar.length);
         }
+
+        if (token != null) {
+            result.token = Arrays.copyOf(token, token.length);
+        }
+
+        result.player = player.clone();
+
+        result.cosm = cosm;
+        result.clearance = clearance;
+        result.xp = xp;
+
+        result.reports = Set.copyOf(reports);
+
+        if (deleted != null) {
+            result.deleted = OffsetDateTime.from(deleted);
+        }
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Operative.class.getSimpleName() + "[", "]")
+                .merge(super.getToStringJoiner())
+
+                .add("player='" + player.getName() + "'")
+                .add("name='" + name + "'")
+                .add("cosm=" + cosm)
+                .add("clearance=" + clearance)
+
+                .toString();
     }
 }

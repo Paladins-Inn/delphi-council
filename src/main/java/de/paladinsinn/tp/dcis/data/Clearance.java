@@ -17,6 +17,7 @@
 
 package de.paladinsinn.tp.dcis.data;
 
+import com.sun.istack.NotNull;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
 import java.util.Arrays;
@@ -28,13 +29,46 @@ import java.util.Arrays;
  * @since 0.1.0  2021-03-26
  */
 public enum Clearance {
-    ANY,
-    ALPHA,
-    BETA,
-    GAMMA,
-    DELTA;
+    ANY(-1),
+    ALPHA(0),
+    BETA(50),
+    GAMMA(200),
+    DELTA(500),
+    OMEGA(1000);
+
+    private final int xp;
+
+    Clearance(@NotNull final int xp) {
+        this.xp = xp;
+    }
+
+    public int getMinXP() {
+        return xp;
+    }
+
+    /**
+     * Calculates the clearance for the given amount of XP.
+     *
+     * @param xp The xp to match the security clearance level.
+     * @return The Delphi Council Security Clearance level.
+     */
+    public static Clearance valueOf(int xp) {
+        if (xp >= Clearance.OMEGA.getMinXP()) {
+            return Clearance.OMEGA;
+        } else if (xp >= Clearance.DELTA.getMinXP()) {
+            return Clearance.DELTA;
+        } else if (xp >= Clearance.GAMMA.getMinXP()) {
+            return Clearance.GAMMA;
+        } else if (xp >= Clearance.BETA.getMinXP()) {
+            return Clearance.BETA;
+        } else if (xp >= Clearance.ALPHA.getMinXP()) {
+            return Clearance.ALPHA;
+        } else {
+            return Clearance.ANY;
+        }
+    }
 
     public ListDataProvider<Clearance> dataProvider() {
-        return new ListDataProvider<>(Arrays.asList(ANY, ALPHA, BETA, GAMMA, DELTA));
+        return new ListDataProvider<>(Arrays.asList(ANY, ALPHA, BETA, GAMMA, DELTA, OMEGA));
     }
 }

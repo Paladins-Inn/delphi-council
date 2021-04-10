@@ -36,11 +36,11 @@ public class AbstractRevisionedEntity extends AbstractEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DbSequence")
     @SequenceGenerator(name = "DbSequence", sequenceName = "hibernate_sequence")
     @Column(name = "REVID", nullable = false, updatable = false)
-    int revId;
+    protected int revId;
 
     @RevisionTimestamp
     @Column(name = "REVISIONED")
-    OffsetDateTime revisioned;
+    protected OffsetDateTime revisioned;
 
     @Override
     public String toString() {
@@ -50,6 +50,21 @@ public class AbstractRevisionedEntity extends AbstractEntity {
     protected StringJoiner getToStringJoiner() {
         return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
                 .merge(super.getToStringJoiner())
-                .add("revId=" + revId);
+                .add("revId=" + revId)
+                .add("revisioned=" + revisioned);
+    }
+
+
+    @Override
+    public AbstractRevisionedEntity clone() throws CloneNotSupportedException {
+        AbstractRevisionedEntity result = (AbstractRevisionedEntity) super.clone();
+
+        result.revId = revId;
+
+        if (revisioned != null) {
+            result.revisioned = OffsetDateTime.from(revisioned);
+        }
+
+        return result;
     }
 }

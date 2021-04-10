@@ -24,14 +24,13 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.missions.Mission;
-import de.paladinsinn.tp.dcis.data.missions.MissionService;
-import de.paladinsinn.tp.dcis.ui.forms.missions.MissionForm;
+import de.paladinsinn.tp.dcis.data.missions.MissionRepository;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ import java.util.UUID;
  * @since 0.1.0  2021-04-06
  */
 @Route(value = "mission/:id?", layout = MainView.class)
-@PageTitle("Mission")
+@I18nPageTitle("mission.editor.caption")
 @CssImport("./views/edit-view.css")
 @Secured({"JUDGE", "ORGA", "ADMIN"})
 public class MissionEditorView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
@@ -60,7 +59,7 @@ public class MissionEditorView extends Div implements BeforeEnterObserver, Local
     private MissionForm missionForm;
 
     @Autowired
-    private MissionService missionService;
+    private MissionRepository missionRepository;
 
     private Locale locale;
 
@@ -82,7 +81,7 @@ public class MissionEditorView extends Div implements BeforeEnterObserver, Local
         LOG.trace("Entering form. id={}", id);
 
         id.ifPresentOrElse(
-                e -> missionService.findById(UUID.fromString(e)).ifPresentOrElse(
+                e -> missionRepository.findById(UUID.fromString(e)).ifPresentOrElse(
                         this::setData,
                         () -> setData(new Mission())
                 ),
@@ -91,13 +90,13 @@ public class MissionEditorView extends Div implements BeforeEnterObserver, Local
     }
 
     private void setData(@NotNull Mission data) {
-        if (data == null || data.equals(missionForm.getMission().orElse(null))) {
+        if (data == null || data.equals(missionForm.getData().orElse(null))) {
             LOG.info("Data is null or data didn't change - will do nothing. data={}", data);
             return;
         }
         LOG.trace("Loaded mission. mission={}", data);
 
-        missionForm.setMission(data);
+        missionForm.setData(data);
         translate();
     }
 
@@ -111,8 +110,8 @@ public class MissionEditorView extends Div implements BeforeEnterObserver, Local
 
     @Override
     public void translate() {
-        if (locale == null || missionForm.getMission().isEmpty()) {
-            LOG.debug("No locale or no data - will do nothing. locale={}, data={}", locale, missionForm.getMission());
+        if (locale == null || missionForm.getData().isEmpty()) {
+            LOG.debug("No locale or no data - will do nothing. locale={}, data={}", locale, missionForm.getData());
             return;
         }
 

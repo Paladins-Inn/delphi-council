@@ -21,6 +21,7 @@ import com.sun.istack.NotNull;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.server.StreamResource;
 import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.data.HasAvatar;
 import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
@@ -54,7 +55,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 )
 @Getter
 @Setter
-public class Person extends AbstractRevisionedEntity implements UserDetails {
+public class Person extends AbstractRevisionedEntity implements UserDetails, HasAvatar {
     public static final int ITERATION_COUNT = 10;
 
     @Column(name = "NAME", length = 100, nullable = false, unique = true)
@@ -97,11 +98,14 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @Column(name = "LOCALE", length = 20, nullable = false)
+    private String locale;
+
     @OneToMany(
             targetEntity = Operative.class,
             mappedBy = "player",
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
 
             orphanRemoval = true
     )
@@ -111,7 +115,7 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
             targetEntity = MissionReport.class,
             mappedBy = "gameMaster",
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
 
             orphanRemoval = true
     )
@@ -161,6 +165,14 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
         }
     }
 
+    public Locale getLocale() {
+        return Locale.forLanguageTag(locale);
+    }
+
+    public void setLocale(@NotNull final Locale locale) {
+        this.locale = locale.getLanguage();
+    }
+
     /**
      * <a href="https://www.gravatar.com/">Gravatar</a> delivers an avatar by using the email address.
      *
@@ -182,14 +194,17 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
         avatar.setGravatar(true);
     }
 
+    @Override
     public Image getAvatarImage() {
         return avatar.getAvatarImage(getId().toString() + ".png", email);
     }
 
+    @Override
     public StreamResource getAvatar() {
         return avatar.getAvatar(getId() + ".png");
     }
 
+    @Override
     public void setAvatar(InputStream stream) throws IOException {
         avatar.setAvatar(stream);
     }
@@ -314,11 +329,35 @@ public class Person extends AbstractRevisionedEntity implements UserDetails {
 
 
     @Override
+    public Person clone() throws CloneNotSupportedException {
+        Person result = (Person) super.clone();
+
+        result.name = name;
+        result.username = username;
+        result.firstname = firstname;
+        result.lastname = lastname;
+        result.email = email;
+        result.password = password;
+        result.locale = locale;
+
+        result.roles = Set.copyOf(roles);
+        result.operatives = Set.copyOf(operatives);
+        result.reports = Set.copyOf(reports);
+
+        result.status = status.clone();
+        result.avatar = avatar.clone();
+
+        return result;
+    }
+
+    @Override
     public String toString() {
         return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
                 .merge(super.getToStringJoiner())
+
                 .add("userName='" + getName() + "'")
                 .add("status=" + getStatus())
+
                 .toString();
     }
 }

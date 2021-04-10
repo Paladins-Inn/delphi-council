@@ -31,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * AvatarInformation --
@@ -41,7 +42,7 @@ import java.io.Serializable;
 @Embeddable
 @Getter
 @Setter
-public class AvatarInformation implements Serializable {
+public class AvatarInformation implements Serializable, Cloneable {
     @Lob
     @Column(name = "AVATAR", length = 16777215)
     private byte[] avatar;
@@ -92,5 +93,18 @@ public class AvatarInformation implements Serializable {
 
     public void enableGravatar() {
         gravatar = true;
+    }
+
+    @Override
+    public AvatarInformation clone() throws CloneNotSupportedException {
+        AvatarInformation result = (AvatarInformation) super.clone();
+
+        if (avatar != null) {
+            result.avatar = Arrays.copyOf(avatar, avatar.length);
+        }
+
+        result.gravatar = gravatar;
+
+        return result;
     }
 }

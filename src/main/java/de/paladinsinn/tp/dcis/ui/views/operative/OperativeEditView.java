@@ -23,17 +23,16 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import de.paladinsinn.tp.dcis.data.Clearance;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
-import de.paladinsinn.tp.dcis.data.operative.OperativeService;
+import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
 import de.paladinsinn.tp.dcis.data.person.Person;
-import de.paladinsinn.tp.dcis.data.person.PersonService;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
-import de.paladinsinn.tp.dcis.ui.forms.operatives.OperativeForm;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ import java.util.*;
  * @since 0.1.0  2021-03-28
  */
 @Route(value = "operative/:id?/:person?", layout = MainView.class)
-@PageTitle("Storm Knight")
+@I18nPageTitle("operative.editor.caption")
 @CssImport("./views/edit-view.css")
 public class OperativeEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OperativeEditView.class);
@@ -60,7 +59,10 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
     private OperativeService operativeService;
 
     @Autowired
-    private PersonService personService;
+    private OperativeRepository operativeRepository;
+
+    @Autowired
+    private PersonRepository personRepository;
 
     @Autowired
     private LoggedInUser user;
@@ -72,7 +74,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
         addClassName("edit-view");
         setSizeFull();
 
-        form = new OperativeForm(operativeService, personService, user);
+        form = new OperativeForm(operativeService, personRepository, user);
 
         add(form);
     }
@@ -106,7 +108,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
         LOG.trace("Entering form. person={}, id={}", personId, id);
 
         id.ifPresentOrElse(
-                e -> operativeService.findById(UUID.fromString(e)).ifPresentOrElse(
+                e -> operativeRepository.findById(UUID.fromString(e)).ifPresentOrElse(
                         form::setData,
                         () -> form.setData(generateNewOperative(personId, e))
                 ),
@@ -129,7 +131,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
         Person person = data.getPlayer();
         if (person == null) {
             personId.ifPresentOrElse(
-                    p -> personService.findById(UUID.fromString(p)).ifPresentOrElse(
+                    p -> personRepository.findById(UUID.fromString(p)).ifPresentOrElse(
                             data::setPlayer,
                             () -> {
 

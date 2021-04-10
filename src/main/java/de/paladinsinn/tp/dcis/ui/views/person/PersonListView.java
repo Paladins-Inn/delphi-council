@@ -34,10 +34,11 @@ import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.components.DataCard;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
-import de.paladinsinn.tp.dcis.ui.views.missions.MissionReportView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
 import de.paladinsinn.tp.dcis.ui.views.operative.OperativeEditView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +55,11 @@ import java.util.UUID;
 import static com.vaadin.flow.component.Unit.PERCENTAGE;
 
 @Route(value = "persons", layout = MainView.class)
-@PageTitle("Persons")
+@I18nPageTitle("person.list.title")
 @CssImport("./views/lists-view.css")
 @Secured({"ADMIN", "ORGA", "JUDGE"})
 public class PersonListView extends Div implements AfterNavigationObserver, LocaleChangeObserver {
     private static final Logger LOG = LoggerFactory.getLogger(PersonListView.class);
-    private static final Long serial = 1L;
 
     @Autowired
     private ServiceRef<PersonRepository> repository;

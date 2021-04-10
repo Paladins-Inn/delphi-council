@@ -24,14 +24,7 @@
   margin: 5px;
 }
 
-body {
-  background-image: url("/images/marble.png");
-  background-size: 100% auto;
-  background-repeat: no-repeat;
-}
-
 #header {
-  background-image: url("/images/thunder.png");
   background-size: cover;
   background-repeat: no-repeat;
 }

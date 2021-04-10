@@ -48,9 +48,9 @@ import java.util.StringJoiner;
 )
 @Getter
 @Setter
-public class MissionReport extends AbstractRevisionedEntity implements Comparable<MissionReport> {
+public class MissionReport extends AbstractRevisionedEntity implements Comparable<MissionReport>, Cloneable {
     @ManyToOne(
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
             fetch = FetchType.EAGER,
             optional = false,
             targetEntity = Mission.class
@@ -64,7 +64,7 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
     private Mission mission;
 
     @ManyToOne(
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
             fetch = FetchType.EAGER,
             optional = false,
             targetEntity = Person.class
@@ -82,7 +82,7 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
             targetEntity = OperativeReport.class,
             mappedBy = "report",
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
             orphanRemoval = true
     )
     private Set<OperativeReport> operatives = new HashSet<>();
@@ -150,9 +150,28 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
     @Override
     public String toString() {
         return new StringJoiner(", ", MissionReport.class.getSimpleName() + "[", "]")
+                .merge(super.getToStringJoiner())
                 .add("mission=" + mission.getCode())
-                .add("gameMaster=" + gameMaster.getName())
+                .add("gameMaster='" + gameMaster.getName() + "'")
                 .add("date=" + date)
                 .toString();
+    }
+
+    @Override
+    public MissionReport clone() throws CloneNotSupportedException {
+        MissionReport result = (MissionReport) super.clone();
+
+        result.achievements = achievements;
+        result.notes = notes;
+
+        result.gameMaster = gameMaster.clone();
+        result.mission = mission.clone();
+        result.objectivesMet = objectivesMet;
+
+        if (date != null) {
+            result.date = LocalDate.from(date);
+        }
+
+        return result;
     }
 }

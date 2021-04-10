@@ -140,33 +140,13 @@
 
     <changeSet id="roles" author="rlichti">
         <createTable tableName="ROLES">
-            <column name="PERSON_ID" type="VARCHAR(36)">
-                <constraints nullable="false"
-                             foreignKeyName="ROLES_PERSON_FK"
-                             referencedTableName="PERSONS" referencedColumnNames="ID"
-                />
-            </column>
+            <column name="PERSON_ID" type="VARCHAR(36)"/>
 
             <column name="ROLE" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
-        <createIndex tableName="ROLES" indexName="ROLES_UK" unique="true">
-            <column name="PERSON_ID"/>
-            <column name="ROLE"/>
-        </createIndex>
-
-        <createIndex tableName="ROLES" indexName="ROLES_ROLE_IDX">
-            <column name="ROLE" />
-        </createIndex>
-
         <loadData tableName="ROLES" file="persons_roles.csv" relativeToChangelogFile="true"/>
-
-        <rollback>
-            <dropIndex tableName="ROLES" indexName="ROLES_ROLE_IDX"/>
-            <dropIndex tableName="ROLES" indexName="ROLES_UK"/>
-            <dropTable tableName="ROLES"/>
-        </rollback>
     </changeSet>
 </databaseChangeLog>

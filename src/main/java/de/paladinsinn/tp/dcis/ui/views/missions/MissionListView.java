@@ -36,10 +36,13 @@ import de.paladinsinn.tp.dcis.data.missions.MissionRepository;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.components.DataCard;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
+import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportEditorView;
+import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +66,8 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @since 0.1.0  2021-03-28
  */
 @Route(value = "missions", layout = MainView.class)
-@PageTitle("Mission Catalogue")
+@RouteAlias(value = "", layout = MainView.class)
+@I18nPageTitle("mission.list.title")
 @CssImport("./views/lists-view.css")
 public class MissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
     public static final Long serial = 1L;
@@ -179,6 +183,17 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         card.getFooter().setFlexGrow(1, created);
         card.getFooter().setFlexGrow(1, modified);
 
+        if (user.isOrga()) {
+            TorgButton editMission = new TorgButton(
+                    "mission.editor",
+                    MissionEditorView.class,
+                    new RouteParameters(
+                            new RouteParam("id", mission.getId().toString())
+                    )
+            );
+
+            card.addMargin(editMission);
+        }
 
         if (user.isGm()) {
             TorgButton registerExecution = new TorgButton(

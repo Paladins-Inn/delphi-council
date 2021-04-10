@@ -23,14 +23,13 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import de.paladinsinn.tp.dcis.data.person.Person;
-import de.paladinsinn.tp.dcis.data.person.PersonService;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
-import de.paladinsinn.tp.dcis.ui.components.PersonForm;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import de.paladinsinn.tp.dcis.ui.views.main.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ import java.util.*;
  * @since 0.1.0  2021-03-28
  */
 @Route(value = "person/:id?", layout = MainView.class)
-@PageTitle("Person")
+@I18nPageTitle("person.editor.caption")
 @Secured({"ORGA", "ADMIN", "JUDGE"})
 @CssImport("./views/edit-view.css")
 public class PersonEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
@@ -57,7 +56,10 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
     private Locale locale;
 
     @Autowired
-    private PersonService repository;
+    private PersonService personService;
+
+    @Autowired
+    private PersonRepository personRepository;
 
     @Autowired
     private LoggedInUser user;
@@ -69,7 +71,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
         addClassName("edit-view");
         setSizeFull();
 
-        form = new PersonForm(repository, user);
+        form = new PersonForm(personService, user);
 
         add(form);
     }
@@ -103,7 +105,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
 
         Optional<Person> person = Optional.empty();
         if (personId.isPresent()) {
-            person = repository.findById(UUID.fromString(personId.get()));
+            person = personRepository.findById(UUID.fromString(personId.get()));
         } else {
             LOG.warn("Person ID is missing. person={}", personId);
         }

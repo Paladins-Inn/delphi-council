@@ -25,6 +25,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.StringJoiner;
 
 /**
  * OperativeReport --
@@ -52,7 +53,7 @@ public class OperativeReport extends AbstractRevisionedEntity implements Compara
     @ManyToOne(
             targetEntity = MissionReport.class,
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
             optional = false
     )
     @JoinColumn(name = "MISSIONREPORT_ID", nullable = false)
@@ -61,7 +62,7 @@ public class OperativeReport extends AbstractRevisionedEntity implements Compara
     @ManyToOne(
             targetEntity = Operative.class,
             fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.REFRESH},
             optional = false
     )
     @JoinColumn(name = "OPERATIVE_ID", nullable = false)
@@ -95,5 +96,29 @@ public class OperativeReport extends AbstractRevisionedEntity implements Compara
                 .append(getReport(), o.getReport())
                 .append(getOperative(), o.getOperative())
                 .toComparison();
+    }
+
+    @Override
+    public OperativeReport clone() throws CloneNotSupportedException {
+        OperativeReport result = (OperativeReport) super.clone();
+
+        result.operative = operative.clone();
+        result.report = report.clone();
+
+        result.achievements = achievements;
+        result.notes = notes;
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", OperativeReport.class.getSimpleName() + "[", "]")
+                .merge(super.getToStringJoiner())
+
+                .add("report=" + report.getId())
+                .add("operative='" + operative.getName() + "'")
+
+                .toString();
     }
 }

@@ -28,3 +28,13 @@ db:
   rootpassword: changeme
   user: dcis
   password: changeme
+
+mail:
+  host:
+    name: smtp.example.com
+    port: 587
+  user:
+    name: Quin Sebastian
+    address: quin.sebastian@delphi-council.org
+    user: clerk@delphi-council.org
+    password: hahahaha

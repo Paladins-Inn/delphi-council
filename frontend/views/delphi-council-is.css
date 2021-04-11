@@ -75,15 +75,19 @@ vaadin-tab[selected] {
 
 .torg-marble {
   background-image: url("/images/marble.png");
-  background-size: 100% auto;
+  background-size: 200% auto;
   background-repeat: no-repeat;
 }
 
 .v-nativebutton-torg {
-  width: 251px;
-  height: 25px;
   border: none;
-  background-image: url("images/torg-header.png");
-  background-size: 241px 25px;
-  background-repeat: no-repeat;
+  color: var(--lumo-body-text-color);
+  background: transparent url("/images/torg-header.png");
+  width: 241px;
+  height: 25px;
+  margin: 5px;
+}
+
+.centered {
+  align-content: center;
 }

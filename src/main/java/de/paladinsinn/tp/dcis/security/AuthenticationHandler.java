@@ -24,6 +24,7 @@ import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -50,18 +51,21 @@ public class AuthenticationHandler extends SavedRequestAwareAuthenticationSucces
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationHandler.class);
 
     private final PersonRepository repository;
+    private final String defaultLocale;
 
     @Autowired
     public AuthenticationHandler(
-            @NotNull final PersonRepository repository
+            @NotNull final PersonRepository repository,
+            @NotNull @Value("${spring.web.locale:de}") final String defaultLocale
     ) {
         this.repository = repository;
+        this.defaultLocale = defaultLocale;
     }
 
     @Bean
     @Scope("prototype")
     public LoggedInUser createUser() {
-        return new LoggedInUser(repository);
+        return new LoggedInUser(repository, defaultLocale);
     }
 
     @Override

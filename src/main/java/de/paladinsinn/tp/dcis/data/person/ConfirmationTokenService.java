@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -47,10 +48,19 @@ public class ConfirmationTokenService {
      */
     public ConfirmationToken save(@NotNull final ConfirmationToken token) {
         LOG.debug("Saving confirmation token. data={}", token);
+
         return repository.save(token);
     }
 
     public void delete(@NotNull final UUID id) {
+        LOG.debug("Removing token. id={}", id);
+
         repository.deleteById(id);
+    }
+
+    public Optional<ConfirmationToken> load(@NotNull final UUID id) {
+        LOG.debug("Loading token. id={}", id);
+
+        return repository.findById(id);
     }
 }

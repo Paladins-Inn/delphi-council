@@ -20,29 +20,36 @@ package de.paladinsinn.tp.dcis.ui.views.login;
 import ch.carnet.kasparscherrer.LanguageSelect;
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.login.LoginForm;
-import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.ui.components.TorgButton;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.Locale;
 
+import static com.vaadin.flow.component.Unit.PERCENTAGE;
+import static com.vaadin.flow.component.Unit.PIXELS;
+
 /**
  * LoginView -- The view for log in a user to the system.
- *
- * We use the component {@link LoginOverlay} for logging in users.
+ * <p>
+ * We use the component {@link LoginForm} for logging in users.
  *
  * @author paulroemer (github.com/vaadin-lerning-center/spring-secured-vaadin)
  * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
@@ -50,8 +57,8 @@ import java.util.Locale;
  */
 @Tag("sa-login-view")
 @Route(LoginView.ROUTE)
-@I18nPageTitle("login.title")
-public class LoginView extends VerticalLayout implements BeforeEnterObserver, LocaleChangeObserver {
+@I18nPageTitle("login.caption")
+public class LoginView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
     private static final Logger LOG = LoggerFactory.getLogger(LoginView.class);
 
     public static final String ROUTE = "login";
@@ -59,13 +66,47 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Lo
     /**
      * The login component.
      */
+    private Image logo;
+    private H1 title;
+    private Div description;
+
     private LanguageSelect languageSelect;
     private LoginForm login;
-    private RouterLink register;
+    private TorgButton register;
+
+    private HorizontalLayout layout;
+    private VerticalLayout left, center, right;
+    private Locale locale;
 
     @PostConstruct
     public void init() {
         LOG.debug("Creating login view.");
+
+        setSizeFull();
+        layout = new HorizontalLayout();
+        layout.setSizeFull();
+
+        left = generateBorder();
+        right = generateBorder();
+        center = generateLoginForm();
+
+        layout.add(left, center, right);
+        add(layout);
+    }
+
+    private VerticalLayout generateLoginForm() {
+        VerticalLayout result = new VerticalLayout();
+        result.setHeightFull();
+
+        logo = new Image("/images/logo.png", "Delphi Council");
+        logo.setClassName("centered");
+        logo.setMaxWidth(200, PIXELS);
+        logo.setMaxHeight(200, PIXELS);
+
+        title = new H1(getTranslation("login.caption"));
+        description = new Div();
+        description.setText(getTranslation("login.help"));
+
         languageSelect = new I18nSelector("input.locale", VaadinSession.getCurrent().getLocale());
         languageSelect.setRequiredIndicatorVisible(true);
         languageSelect.setValue(VaadinSession.getCurrent().getLocale());
@@ -74,12 +115,28 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Lo
         login.setAction("login");
         login.addForgotPasswordListener(event -> Notification.show("sorry, not implemented yet", 2000, Notification.Position.BOTTOM_STRETCH));
 
-        register = new RouterLink(
-                getTranslation("login.register-link.caption"),
+        register = new TorgButton(
+                "login.register-link",
                 RegistrationView.class
         );
 
-        add(languageSelect, login, register);
+        result.add(logo, title, description, languageSelect, login, register);
+
+        return result;
+    }
+
+    private VerticalLayout generateBorder() {
+        VerticalLayout result = new VerticalLayout();
+
+        result.setClassName("torg-marble");
+        result.setHeightFull();
+
+        Div space = new Div();
+        space.setMinWidth(10, PIXELS);
+        space.setMaxWidth(100, PERCENTAGE);
+        result.add(space);
+
+        return result;
     }
 
     @Override
@@ -96,12 +153,30 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver, Lo
         setLocale(event.getLocale());
     }
 
-    private void setLocale(@NotNull final Locale locale) {
+    @Override
+    public void setLocale(@NotNull final Locale locale) {
+        if (this.locale != null && this.locale.equals(locale)) {
+            LOG.debug("Language not changed - ignoring event. locale={}", locale);
+            return;
+        }
+
         LOG.trace("Changing locale. locale={}", locale);
+
+        this.locale = locale;
+
+        translate();
+    }
+
+    @Override
+    public void translate() {
+        LOG.trace("Translating. locale={}, vaadin={}", locale, VaadinSession.getCurrent().getLocale());
+
+        title.setText(getTranslation("login.caption"));
+        description.setText(getTranslation("login.help"));
 
         languageSelect.setLabel(getTranslation("input.locale.caption"));
         languageSelect.setHelperText(getTranslation("input.locale.help"));
 
-        register.setText(getTranslation("login.register-link.caption"));
+        register.translate();
     }
 }

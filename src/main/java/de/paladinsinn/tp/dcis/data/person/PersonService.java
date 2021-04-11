@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +34,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -43,6 +46,7 @@ import java.util.UUID;
  * @since 0.1.0  2021-03-29
  */
 @Service
+@Transactional
 public class PersonService implements UserDetailsService {
     private static final Logger LOG = LoggerFactory.getLogger(PersonService.class);
 
@@ -105,14 +109,24 @@ public class PersonService implements UserDetailsService {
         emailSender.send(message);
     }
 
-    public Person confirmUser(@NotNull ConfirmationToken token) {
+    public Person confirmUser(@NotNull ConfirmationToken token) throws IllegalStateException {
+        LOG.debug("Confirming user. token={}", token);
         Person person = token.getPerson();
-        person.getStatus().setEnabled(true);
-        confirmationTokenRepository.delete(token.getId());
 
-        person = personRepository.save(person);
+        try {
+            person.getStatus().setEnabled(true);
+            person.setRoles(Collections.singleton(new Role(RoleName.PERSON)));
 
-        LOG.info("User confirmed. token={}", token);
+            person = personRepository.save(person);
+
+            confirmationTokenRepository.delete(token.getId());
+        } catch (DataAccessException e) {
+            LOG.error("Can't confirm user.", e);
+
+            throw new IllegalStateException("Can't confirm user with token '" + token.getId() + "'.", e);
+        }
+
+        LOG.info("User confirmed. token={}, person={}", token, person);
         return person;
     }
 

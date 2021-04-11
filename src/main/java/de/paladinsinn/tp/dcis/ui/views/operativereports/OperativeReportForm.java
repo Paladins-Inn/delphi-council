@@ -18,19 +18,14 @@
 package de.paladinsinn.tp.dcis.ui.views.operativereports;
 
 import com.sun.istack.NotNull;
-import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.i18n.LocaleChangeEvent;
-import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.server.VaadinSession;
-import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
-import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import de.paladinsinn.tp.dcis.ui.components.TorgForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +33,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.Serializable;
-import java.util.Locale;
-import java.util.Optional;
+import java.time.LocalDate;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -52,33 +45,12 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
-public class OperativeReportForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+public class OperativeReportForm extends TorgForm<OperativeReport> {
     private static final Logger LOG = LoggerFactory.getLogger(OperativeReportForm.class);
 
-    /**
-     * The service for writing data to.
-     */
     private final OperativeReportService reportService;
+    private final RemoveOperativeFromMissionListener removeOperativeFromMissionListener;
 
-    /**
-     * The locale of this form.
-     */
-    private Locale locale;
-
-    /**
-     * The mission report to edit.
-     */
-    private OperativeReport data;
-    private OperativeReport oldData;
-
-
-    private final LoggedInUser user;
-
-
-    /**
-     * If this form is alread initialized.
-     */
-    private boolean initialized = false;
 
     // The form components.
     private final FormLayout form = new FormLayout();
@@ -86,15 +58,17 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
     private final TextArea achievements = new TextArea();
     private final TextArea notes = new TextArea();
 
-    private TorgActionBar actions;
-
 
     @Autowired
     public OperativeReportForm(
             @NotNull final OperativeReportService reportService,
+            @NotNull final RemoveOperativeFromMissionListener removeOperativeFromMissionListener,
+
             LoggedInUser user) {
+        super(user);
+
         this.reportService = reportService;
-        this.user = user;
+        this.removeOperativeFromMissionListener = removeOperativeFromMissionListener;
     }
 
 
@@ -107,6 +81,7 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
                     data,
                     user
             );
+            return;
         }
 
         if (locale == null) {
@@ -114,6 +89,7 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
         }
 
         addListener(OperativeReportSaveEvent.class, reportService);
+        addListener(RemoveOperativeFromMissionEvent.class, removeOperativeFromMissionListener);
 
         form.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("1px", 1),
@@ -134,17 +110,27 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
 
         actions = new TorgActionBar(
                 "buttons",
-                event -> {
+                event -> { // save
                     scrape();
                     getEventBus().fireEvent(new OperativeReportSaveEvent(this, false));
                 },
-                event -> {
+                event -> { // reset
                     LOG.info("Resetting data from: displayed={}, new={}", data, oldData);
                     resetData();
                 },
-                ev -> {
+                ev -> { // cancel
                 },
-                null
+                ev -> { // delete
+                    if (user.isOrga() || user.isJudge() || data.getReport().getDate().isAfter(LocalDate.now())) {
+                        LOG.info("Removing this operative from mission");
+                        scrape();
+
+                        //noinspection rawtypes
+                        fireEvent(new RemoveOperativeFromMissionEvent(this, data));
+
+                        getUI().ifPresent(ui -> ui.getPage().getHistory().back());
+                    }
+                }
         );
         actions.setReadOnly(
                 user.isReadonly()
@@ -160,78 +146,22 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
         initialized = true;
     }
 
-    public void setData(@NotNull OperativeReport operativeReport) {
-        if (this.data != null && this.data.equals(operativeReport)) {
-            LOG.info("Mission report didn't change. Ignoring event. code={}, id={}, operative={}",
-                    this.data.getReport().getMission().getCode(), this.data.getOperative().getId(),
-                    this.data.getOperative().getName());
-
-            return;
-        }
-
-        LOG.debug("Set mission report. id={}, code={}, date={}, operative={}",
-                operativeReport.getId(), operativeReport.getReport().getMission().getCode(),
-                operativeReport.getReport().getDate(), operativeReport.getOperative().getName());
-
-        this.data = operativeReport;
-        try {
-            this.oldData = operativeReport.clone();
-        } catch (CloneNotSupportedException e) {
-            LOG.warn("Could not clone the data. Reset won't work. data={}", data);
-            this.oldData = data;
-        }
-
-        init();
-        populate();
-        translate();
-    }
-
-    public void resetData() {
-        setData(oldData);
-    }
-
-    private void populate() {
+    protected void populate() {
         if (data == null) {
             LOG.warn("Tried to polulate form data without a mission report defined.");
             return;
         }
 
-        id.setValue(data.getId().toString());
-        achievements.setValue(data.getAchievements());
-        notes.setValue(data.getNotes());
+        bindData(data.getId().toString(), id);
+        bindData(data.getAchievements(), achievements);
+        bindData(data.getNotes(), notes);
     }
 
-    private void scrape() {
+    protected void scrape() {
         if (data == null) data = new OperativeReport();
 
         data.setAchievements(achievements.getValue());
         data.setNotes(notes.getValue());
-    }
-
-    public void initializeReport(
-            @NotNull MissionReport mission
-    ) {
-        LOG.debug("Creating a new mission. code={}, gm={}",
-                mission.getMission().getCode(), mission.getGameMaster().getUsername());
-
-        data = new OperativeReport();
-        data.setMissionReport(mission);
-
-        init();
-        populate();
-        translate();
-    }
-
-
-    public Optional<OperativeReport> getData() {
-        return Optional.ofNullable(data);
-    }
-
-    @Override
-    public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Change locale event. locale={}", event.getLocale());
-
-        setLocale(event.getLocale());
     }
 
     @Override
@@ -270,32 +200,5 @@ public class OperativeReportForm extends Composite<Div> implements LocaleChangeO
         form.setColspan(achievements, 3);
         form.setColspan(notes, 3);
         form.setColspan(actions, 3);
-    }
-
-    @Override
-    public void setLocale(Locale locale) {
-        if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale has not changed. Ignoring event. locale={}", locale);
-            return;
-        }
-
-        this.locale = locale;
-        translate();
-    }
-
-    private String getTranslation(@NotNull final String key) {
-        try {
-            return super.getTranslation(key);
-        } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
-            return "!" + key;
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        LOG.debug("Closing form.");
-        getContent().removeAll();
-        form.removeAll();
     }
 }

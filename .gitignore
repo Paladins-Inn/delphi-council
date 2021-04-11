@@ -20,3 +20,4 @@ webpack.generated.js
 /delphi-council/
 /package.json
 /package-lock.json
+/.env

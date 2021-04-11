@@ -19,6 +19,9 @@ package de.paladinsinn.tp.dcis.ui.views.person;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.ComponentEventListener;
+import de.paladinsinn.tp.dcis.data.person.PersonService;
+import de.paladinsinn.tp.dcis.ui.views.login.LoginView;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,12 +33,18 @@ import org.springframework.stereotype.Service;
  * @since 0.1.0  2021-04-10
  */
 @Service
+@AllArgsConstructor
 public class PersonRegistrationListener implements ComponentEventListener<PersonRegistrationEvent> {
     private static final Logger LOG = LoggerFactory.getLogger(PersonRegistrationListener.class);
 
+    private final PersonService personService;
 
     @Override
     public void onComponentEvent(@NotNull final PersonRegistrationEvent event) {
         LOG.info("User want's to register. event={}", event);
+
+        personService.signUp(event.getPerson());
+
+        event.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
     }
 }

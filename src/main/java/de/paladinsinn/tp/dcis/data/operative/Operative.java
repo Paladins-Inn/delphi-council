@@ -111,7 +111,7 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
     private byte[] token;
 
 
-    public void addReport(@NotNull OperativeReport report) {
+    public void addOperativeReport(@NotNull OperativeReport report) {
         if (report != null & !reports.contains(report)) {
             reports.add(report);
 
@@ -119,7 +119,7 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
         }
     }
 
-    public void removeReport(@NotNull OperativeReport report) {
+    public void removeOperativeReport(@NotNull OperativeReport report) {
         if (report != null && reports.contains(report)) {
             reports.remove(report);
 

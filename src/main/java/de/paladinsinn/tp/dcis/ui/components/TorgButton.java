@@ -108,16 +108,12 @@ public class TorgButton extends NativeButton implements TranslatableComponent, L
     }
 
     @Override
-    public void localeChange(LocaleChangeEvent event) {
+    public void localeChange(@NotNull final LocaleChangeEvent event) {
         setLocale(event.getLocale());
     }
 
     @Override
-    public void setLocale(Locale locale) {
-        if (getLocale() != null && !getLocale().equals(locale)) {
-            return;
-        }
-
+    public void setLocale(@NotNull final Locale locale) {
         translate();
     }
 

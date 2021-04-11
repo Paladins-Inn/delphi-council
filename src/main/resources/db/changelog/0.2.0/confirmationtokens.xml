@@ -39,11 +39,6 @@
                 />
             </column>
 
-            <column name="TOKEN" type="VARCHAR(40)">
-                <constraints nullable="false"/>
-            </column>
-
-
             <column name="CREATED" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>

@@ -24,9 +24,11 @@ import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.data.person.RoleName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Locale;
+import java.util.StringJoiner;
 
 /**
  * LoggedInUser --
@@ -49,8 +51,14 @@ public class LoggedInUser {
     private boolean allow = false;
     private boolean calculated = false;
 
-    public LoggedInUser(@NotNull final PersonRepository repository) {
+    private final String defaultLocale;
+
+    public LoggedInUser(
+            @NotNull final PersonRepository repository,
+            @NotNull @Value("${spring.web.locale:de}") final String locale
+    ) {
         this.repository = repository;
+        this.defaultLocale = locale;
     }
 
     public Person getPerson() {
@@ -66,14 +74,24 @@ public class LoggedInUser {
     }
 
     private void enforceSavedLocale() {
-        Locale sessionLocale = VaadinSession.getCurrent().getLocale();
-        Locale personLocale = person.getLocale();
+        Locale savedLocale = null;
 
-        if (sessionLocale != null || !sessionLocale.equals(personLocale)) {
-            LOG.info("Changing locale. sessionLocale={}, personLocale={}", sessionLocale, personLocale);
-
-            VaadinSession.getCurrent().setLocale(personLocale);
+        if (person != null) {
+            savedLocale = person.getLocale();
         }
+
+        if (savedLocale == null) {
+            savedLocale = VaadinSession.getCurrent().getLocale();
+        }
+        if (savedLocale == null) {
+            savedLocale = Locale.forLanguageTag(defaultLocale);
+        }
+        if (savedLocale == null) {
+            savedLocale = Locale.getDefault();
+        }
+
+        LOG.info("Changing locale. locale={}", savedLocale);
+        VaadinSession.getCurrent().setLocale(savedLocale);
     }
 
     public void setPerson(@NotNull final Person person) {
@@ -140,5 +158,20 @@ public class LoggedInUser {
     public boolean isJudge() {
         calculateReadOnly();
         return isJudge;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", LoggedInUser.class.getSimpleName() + "[", "]")
+                .add("person=" + person)
+                .add("readonly=" + readonly)
+                .add("isGm=" + isGm)
+                .add("isOrga=" + isOrga)
+                .add("isAdmin=" + isAdmin)
+                .add("isJudge=" + isJudge)
+                .add("allow=" + allow)
+                .add("calculated=" + calculated)
+                .add("defaultLocale='" + defaultLocale + "'")
+                .toString();
     }
 }

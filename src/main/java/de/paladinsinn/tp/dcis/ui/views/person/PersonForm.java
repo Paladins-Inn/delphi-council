@@ -19,7 +19,6 @@ package de.paladinsinn.tp.dcis.ui.views.person;
 
 import ch.carnet.kasparscherrer.LanguageSelect;
 import com.sun.istack.NotNull;
-import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -45,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -63,7 +61,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
-public class PersonForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+public class PersonForm extends Div implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(PersonForm.class);
 
     /**
@@ -85,7 +83,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
      * The mission report to edit.
      */
     private Person data;
-
+    private Person oldData;
 
 
     /**
@@ -94,30 +92,30 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     private boolean initialized = false;
 
     // The form components.
-    private final FormLayout form = new FormLayout();
+    private FormLayout form;
 
-    private final TextField id = new TextField();
+    private TextField id;
 
-    private final TextField username = new TextField();
-    private final PasswordField password = new PasswordField();
-    private final EmailField email = new EmailField();
+    private TextField username;
+    private PasswordField password;
+    private EmailField email;
 
-    private final TextField name = new TextField();
-    private final TextField lastName = new TextField();
-    private final TextField firstName = new TextField();
+    private TextField name;
+    private TextField lastName;
+    private TextField firstName;
 
-    private final LanguageSelect language;
+    private LanguageSelect language;
 
-    private final CheckboxGroup<String> roles = new CheckboxGroup<>();
-    private final CheckboxGroup<String> status = new CheckboxGroup<>();
-    private final CheckboxGroup<String> flags = new CheckboxGroup<>();
+    private CheckboxGroup<String> roles;
+    private CheckboxGroup<String> status;
+    private CheckboxGroup<String> flags;
 
     private Avatar avatar;
 
-    private final DateTimePicker lastLogin = new DateTimePicker();
-    private final DateTimePicker deleted = new DateTimePicker();
-    private final DateTimePicker lastPasswordChange = new DateTimePicker();
-    private final DateTimePicker expiryDate = new DateTimePicker();
+    private DateTimePicker lastLogin;
+    private DateTimePicker deleted;
+    private DateTimePicker lastPasswordChange;
+    private DateTimePicker expiryDate;
 
     private TorgActionBar actions;
 
@@ -128,63 +126,60 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
             LoggedInUser user) {
         this.personSaveService = personSaveService;
         this.user = user;
-
-        this.language = new I18nSelector("person.locale", VaadinSession.getCurrent().getLocale());
     }
 
-
-    @PostConstruct
     public void init() {
-        if (data == null) {
-            LOG.debug("Can't initialize without having a mission.");
+        if (initialized || data == null || user == null) {
+            LOG.debug("Already initialized or not initializable. initialized={}, data={}, user={}, locale={}",
+                    initialized, data, user, locale);
             return;
-        }
-
-        if (initialized) {
-            LOG.debug("Already initialized.");
-            return;
-        }
-
-        if (locale == null) {
-            locale = VaadinSession.getCurrent().getLocale();
         }
 
         addListener(PersonSaveEvent.class, personSaveService);
-
         user.allow(user.getPerson().getName().equals(data.getUsername()));
+        ensureLocale();
 
+        LOG.debug("initializing. data={}, user={}, locale={}", data, user, locale);
+
+        form = new FormLayout();
         form.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("1px", 1),
                 new FormLayout.ResponsiveStep("400px", 2),
                 new FormLayout.ResponsiveStep("800px", 3)
         );
 
-        id.setReadOnly(true);
+        id = generateTextField(true, false);
+        username = generateTextField(!user.isAdmin(), true);
+        password = generatePasswordField(user.isReadonly(), false);
+        email = generateEmailField(user.isReadonly(), true);
+        name = generateTextField(user.isReadonly(), true);
+        lastName = generateTextField(user.isReadonly(), true);
+        firstName = generateTextField(user.isReadonly(), true);
 
-        username.setReadOnly(user.isAdmin());
-        username.setRequired(true);
-        password.setReadOnly(user.isReadonly());
-        password.setRequired(true);
-        email.setReadOnly(user.isReadonly());
-
-        name.setReadOnly(user.isReadonly());
-        name.setRequired(true);
-        lastName.setReadOnly(user.isReadonly());
-        lastName.setRequired(true);
-        firstName.setReadOnly(user.isReadonly());
-        firstName.setRequired(true);
-
+        language = new I18nSelector(data.getLocale());
         language.setReadOnly(user.isReadonly());
+        language.setRequiredIndicatorVisible(true);
 
-        expiryDate.setReadOnly(!user.isAdmin());
+        lastLogin = new DateTimePicker();
         lastLogin.setReadOnly(true);
-        lastPasswordChange.setReadOnly(true);
+
+        deleted = new DateTimePicker();
         deleted.setReadOnly(!user.isAdmin());
 
+        lastPasswordChange = new DateTimePicker();
+        lastPasswordChange.setReadOnly(true);
+
+        expiryDate = new DateTimePicker();
+        expiryDate.setReadOnly(!user.isAdmin());
+        expiryDate.setRequiredIndicatorVisible(true);
+
+        status = new CheckboxGroup<>();
         status.setReadOnly(!user.isAdmin() && !user.isOrga() && !user.isJudge());
 
+        flags = new CheckboxGroup<>();
         flags.setReadOnly(user.isReadonly());
 
+        roles = new CheckboxGroup<>();
         roles.setItems(RoleName.PERSON.getRoleNamesWithoutGM());
         roles.setReadOnly(!user.isAdmin() && !user.isOrga());
 
@@ -195,51 +190,104 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
                 50, 150,
                 16777215
         );
+        FormLayout.FormItem avatarItem = form.addFormItem(avatar, getTranslation("person.avatar.caption"));
 
         actions = new TorgActionBar(
                 "buttons",
-                event -> {
+                event -> { // save
                     scrape();
                     getEventBus().fireEvent(new PersonSaveEvent(this, false));
                 },
-                null,
-                null,
+                ev -> { // reset
+                    data = oldData;
+                    populate();
+                },
+                ev -> { // cancel
+                    getUI().ifPresent(ui -> ui.getPage().getHistory().back());
+                },
                 null
         );
-        actions.setReadOnly(
-                user.isReadonly()
-                        && !user.getPerson().equals(data)
-                        && !user.isAdmin()
+        actions.setReadOnly(user.isReadonly()
+                && !user.getPerson().equals(data)
+                && !user.isAdmin()
         );
 
-        getContent().add(form);
+
+        form.add(username, password, status,
+                email, flags,
+                name, language,
+                lastName, firstName, new Span(),
+                roles, expiryDate,
+                lastPasswordChange, lastLogin, deleted);
+
+        actions.translate();
+        form.add(actions);
+
+        form.setColspan(avatarItem, 3);
+        form.setColspan(email, 2);
+        form.setColspan(name, 2);
+        form.setColspan(roles, 2);
+        form.setColspan(actions, 3);
+        add(form);
 
         // mark as initialized.
         initialized = true;
     }
 
-    public void setData(@NotNull Person data) {
-        if (this.data != null && this.data.equals(data)) {
-            LOG.info("Person didn't change. Ignoring event. id={}, name={}",
-                    this.data.getId(), this.data.getName());
+    private EmailField generateEmailField(boolean readonly, boolean required) {
+        EmailField result = new EmailField();
 
-            return;
+        result.setReadOnly(readonly);
+        result.setRequiredIndicatorVisible(required);
+
+        return result;
+    }
+
+    private PasswordField generatePasswordField(boolean readonly, boolean required) {
+        PasswordField result = new PasswordField();
+
+        result.setReadOnly(readonly);
+        result.setRequired(required);
+        result.setRequiredIndicatorVisible(required);
+
+        return result;
+    }
+
+    private TextField generateTextField(boolean readonly, boolean required) {
+        TextField result = new TextField();
+
+        result.setReadOnly(readonly);
+        result.setRequired(required);
+        result.setRequiredIndicatorVisible(required);
+
+        return result;
+    }
+
+    private void ensureLocale() {
+        if (locale == null) {
+            locale = VaadinSession.getCurrent().getLocale();
         }
+    }
 
+    public void setData(@NotNull Person data) {
+        try {
+            this.oldData = data.clone();
+        } catch (CloneNotSupportedException e) {
+            // should not happen
+            LOG.error("All entities need to be clonable: data={}", data);
+        }
         this.data = data;
 
         LOG.debug("Set data. id={}, name={}",
                 this.data.getId(), this.data.getName());
 
-
         init();
         populate();
-        translate();
     }
 
     private void populate() {
-        if (data == null) {
-            LOG.warn("Tried to polulate form data without a person defined.");
+        if (!initialized || data == null) {
+            LOG.warn("Form is not initialized or data is not set. initialized={}, data={}", initialized, data);
             return;
         }
 
@@ -337,22 +385,10 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
 
 
     @Override
-    public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Change locale event. locale={}", event.getLocale());
-
-        setLocale(event.getLocale());
-    }
-
-    @Override
     public void translate() {
-        if (user == null || locale == null) {
-            return;
+        if (locale == null) {
+            setLocale(VaadinSession.getCurrent().getLocale());
         }
-
-        LOG.debug("Building person edit form. data={}, locale={}", data, locale);
-
-        LOG.trace("Remove and add all form elements.");
-        form.removeAll();
 
         // Form fields
         LOG.trace("Adding all form elements.");
@@ -415,32 +451,19 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
         lastLogin.setLabel(getTranslation("person.last-login.caption"));
         lastLogin.setHelperText(getTranslation("person.last-login.help"));
 
-
-        FormLayout.FormItem avatarItem = form.addFormItem(avatar, getTranslation("person.avatar.caption"));
-        form.add(username, password, status,
-                email, flags,
-                name, language,
-                lastName, firstName, new Span(),
-                roles, expiryDate,
-                lastPasswordChange, lastLogin, deleted);
-
         actions.translate();
-        form.add(actions);
+    }
 
-        form.setColspan(avatarItem, 3);
-        form.setColspan(email, 2);
-        form.setColspan(name, 2);
-        form.setColspan(roles, 2);
-        form.setColspan(actions, 3);
 
-        getContent().removeAll();
-        getContent().add(form);
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+        setLocale(event.getLocale());
     }
 
     @Override
     public void setLocale(Locale locale) {
-        if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale has not changed. Ignoring event. locale={}", locale);
+        if (locale == null || (locale.equals(this.locale))) {
+            LOG.debug("Locale already set or new locale would be null, old={}, new={}", this.locale, locale);
             return;
         }
 
@@ -460,7 +483,7 @@ public class PersonForm extends Composite<Div> implements LocaleChangeObserver, 
     @Override
     public void close() throws Exception {
         LOG.debug("Closing form.");
-        getContent().removeAll();
+        removeAll();
         status.removeAll();
         roles.removeAll();
         form.removeAll();

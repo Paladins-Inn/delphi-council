@@ -41,6 +41,7 @@ import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
 import de.paladinsinn.tp.dcis.ui.views.missions.MissionForm;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.OperativeReportForm;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.OperativeReportService;
+import de.paladinsinn.tp.dcis.ui.views.operativereports.RemoveOperativeFromMissionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,9 +77,14 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
     private ServiceRef<MissionReportRepository> missionReportRepository;
 
     @Autowired
+    private RemoveOperativeFromMissionListener removeOperativeFromMissionListener;
+
+    @Autowired
     private OperativeReportService operativeReportService;
 
-    /** The mission report to be edited. */
+    /**
+     * The mission report to be edited.
+     */
     private MissionReport report;
 
     private Locale locale;
@@ -174,7 +180,7 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
                     Tab tab = new Tab(getTranslation("missionreport.operative.title",
                             o.getOperative().getName()));
 
-                    OperativeReportForm operatorReportForm = new OperativeReportForm(operativeReportService, user);
+                    OperativeReportForm operatorReportForm = new OperativeReportForm(operativeReportService, removeOperativeFromMissionListener, user);
                     operatorReportForm.setData(o);
 
                     selectableTabs.put(tab, operatorReportForm);

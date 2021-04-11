@@ -132,7 +132,7 @@ public class Token extends Span implements HasSize, LocaleChangeObserver, Transl
 
     @Override
     public void setLocale(Locale locale) {
-        if (this.locale != null && !this.locale.equals(locale)) {
+        if (this.locale != null && this.locale.equals(locale)) {
             LOG.debug("locale did not change - ignoring event. old={}, new={}", this.locale, locale);
             return;
         }

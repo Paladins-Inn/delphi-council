@@ -111,7 +111,6 @@ public class TorgActionBar extends HorizontalLayout implements LocaleChangeObser
      */
     public void setReadOnly(boolean readOnly) {
         super.setEnabled(!readOnly);
-        super.setVisible(!readOnly);
     }
 
     /**
@@ -169,13 +168,13 @@ public class TorgActionBar extends HorizontalLayout implements LocaleChangeObser
     }
 
     @Override
-    public void localeChange(LocaleChangeEvent event) {
+    public void localeChange(@NotNull final LocaleChangeEvent event) {
         setLocale(event.getLocale());
     }
 
     @Override
-    public void setLocale(Locale locale) {
-        if (this.locale != null && !this.locale.equals(locale)) {
+    public void setLocale(@NotNull final Locale locale) {
+        if (locale != null && !locale.equals(this.locale)) {
             this.locale = locale;
 
             translate();

@@ -21,7 +21,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -29,6 +29,8 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
@@ -36,6 +38,8 @@ import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import de.paladinsinn.tp.dcis.ui.views.person.ConfirmationTokenEvent;
+import de.paladinsinn.tp.dcis.ui.views.person.ConfirmationTokenListener;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonRegistrationEvent;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonRegistrationListener;
 import org.slf4j.Logger;
@@ -46,6 +50,8 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.vaadin.flow.component.Unit.PERCENTAGE;
 import static com.vaadin.flow.component.Unit.PIXELS;
@@ -57,10 +63,10 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @since 0.1.0  2021-04-10
  */
 @Tag("sa-registration-view")
-@Route(RegistrationView.ROUTE)
-@I18nPageTitle("registration.title")
+@Route(RegistrationView.ROUTE + "/:token?")
+@I18nPageTitle("registration.caption")
 @CssImport("./views/edit-view.css")
-public class RegistrationView extends HorizontalLayout implements LocaleChangeObserver, TranslatableComponent {
+public class RegistrationView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
     private static final Logger LOG = LoggerFactory.getLogger(RegistrationView.class);
 
     public static final String ROUTE = "register";
@@ -75,10 +81,13 @@ public class RegistrationView extends HorizontalLayout implements LocaleChangeOb
     @Autowired
     private PersonRegistrationListener registrationListener;
 
-    private VerticalLayout left, right;
-    private FormLayout form;
+    @Autowired
+    private ConfirmationTokenListener confirmationTokenListener;
+
     private Locale locale;
 
+    private H1 title;
+    private Div description;
     private TextField name;
     private TextField firstname;
     private TextField lastname;
@@ -94,35 +103,52 @@ public class RegistrationView extends HorizontalLayout implements LocaleChangeOb
     @PostConstruct
     public void init() {
         addListener(PersonRegistrationEvent.class, registrationListener);
+        addListener(ConfirmationTokenEvent.class, confirmationTokenListener);
+
         locale = VaadinSession.getCurrent().getLocale();
         if (locale == null) {
-            locale = Locale.GERMANY;
+            locale = Locale.GERMAN;
         }
 
-        form = new FormLayout();
+        setSizeFull();
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setSizeFull();
+
+        FormLayout form = new FormLayout();
+        form.setHeightFull();
         form.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("1px", 1),
-                new FormLayout.ResponsiveStep("400px", 2),
-                new FormLayout.ResponsiveStep("800px", 3)
+                new FormLayout.ResponsiveStep("100px", 1),
+                new FormLayout.ResponsiveStep("300px", 2),
+                new FormLayout.ResponsiveStep("600px", 4)
         );
+
+        title = new H1(getTranslation("registration.caption"));
+        description = new Div();
+        description.setText(getTranslation("registration.help"));
 
         name = new TextField(getTranslation("person.name.caption"));
         name.setClearButtonVisible(true);
         name.setRequired(true);
         name.setRequiredIndicatorVisible(true);
         name.setHelperText(getTranslation("person.name.help"));
+        name.setMinLength(1);
+        name.setMaxLength(100);
 
         firstname = new TextField(getTranslation("person.first-name.caption"));
         firstname.setHelperText(getTranslation("person.first-name.help"));
         firstname.setClearButtonVisible(true);
         firstname.setRequired(true);
         firstname.setRequiredIndicatorVisible(true);
+        firstname.setMinLength(1);
+        firstname.setMaxLength(50);
 
         lastname = new TextField(getTranslation("person.last-name.caption"));
         lastname.setHelperText(getTranslation("person.last-name.help"));
         lastname.setClearButtonVisible(true);
         lastname.setRequired(true);
         lastname.setRequiredIndicatorVisible(true);
+        lastname.setMinLength(1);
+        lastname.setMaxLength(50);
 
         email = new EmailField(getTranslation("person.email.caption"));
         email.setHelperText(getTranslation("person.email.help"));
@@ -134,12 +160,16 @@ public class RegistrationView extends HorizontalLayout implements LocaleChangeOb
         username.setClearButtonVisible(true);
         username.setRequired(true);
         username.setRequiredIndicatorVisible(true);
+        username.setMinLength(1);
+        username.setMaxLength(50);
 
         password = new PasswordField(getTranslation("person.password.caption"));
         password.setHelperText(getTranslation("person.password.caption"));
         password.setClearButtonVisible(true);
         password.setRequired(true);
         password.setRequiredIndicatorVisible(true);
+        password.setMinLength(8);
+        password.setMaxLength(50);
 
         languageSelect = new I18nSelector("input.locale", locale);
         languageSelect.setRequiredIndicatorVisible(true);
@@ -162,10 +192,12 @@ public class RegistrationView extends HorizontalLayout implements LocaleChangeOb
 
                     new TorgNotification(
                             "registration.send-registration",
-                            notify -> ev.getSource().getUI().ifPresent(ui -> ui.navigate(redirectPage)),
+                            null,
                             null,
                             Arrays.asList(name.getValue(), username.getValue(), email.getValue())
                     ).open();
+
+                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
                 },
                 ev -> { // reset
                     name.setValue(null);
@@ -176,34 +208,53 @@ public class RegistrationView extends HorizontalLayout implements LocaleChangeOb
                     password.setValue(null);
                 },
                 ev -> { // cancel
-                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(cancelPage));
+                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
                 },
                 null
         );
 
-        form.add(name,
+        form.add(title, description,
+                name,
                 lastname, firstname,
-                email, new Span(),
+                email, languageSelect,
                 username, password,
-                languageSelect, actions);
-        form.setColspan(name, 2);
-        form.setColspan(actions, 3);
-
-        Div spacer = new Div();
-        spacer.setClassName("torg");
+                actions);
+        form.setColspan(title, 4);
+        form.setColspan(description, 4);
+        form.setColspan(name, 4);
+        form.setColspan(firstname, 2);
+        form.setColspan(lastname, 2);
+        form.setColspan(email, 3);
+        form.setColspan(actions, 4);
+        form.setColspan(username, 2);
+        form.setColspan(password, 2);
 
         form.setMinWidth(400, PIXELS);
         form.setMaxWidth(600, PIXELS);
-        form.setMaxHeight(100, PERCENTAGE);
-        left = new VerticalLayout();
-        left.add(new Div());
-        right = new VerticalLayout();
-        right.add(new Div());
 
-        add(left, form, right);
+        VerticalLayout left = generateBorder();
+        VerticalLayout right = generateBorder();
 
-        setFlexGrow(5, form);
-        setFlexGrow(5, left, right);
+        layout.add(left, form, right);
+
+        layout.setFlexGrow(10, form);
+        layout.setFlexGrow(5, left, right);
+
+        add(layout);
+    }
+
+    private VerticalLayout generateBorder() {
+        VerticalLayout result = new VerticalLayout();
+
+        result.setClassName("torg-marble");
+        result.setHeightFull();
+
+        Div space = new Div();
+        space.setMinWidth(10, PIXELS);
+        space.setMaxWidth(100, PERCENTAGE);
+        result.add(space);
+
+        return result;
     }
 
 
@@ -214,6 +265,9 @@ public class RegistrationView extends HorizontalLayout implements LocaleChangeOb
         }
 
         LOG.trace("Translating form. locale={}", locale.getDisplayName());
+
+        title.setText(getTranslation("registration.caption"));
+        description.setText(getTranslation("registration.help"));
 
         name.setLabel(getTranslation("person.name.caption"));
         name.setHelperText(getTranslation("person.name.help"));
@@ -233,6 +287,33 @@ public class RegistrationView extends HorizontalLayout implements LocaleChangeOb
         languageSelect.setLabel(getTranslation("input.locale.caption"));
 
         actions.setLocale(locale);
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Optional<String> tokenString = event.getRouteParameters().get("token");
+        LOG.trace("confirming new user. token={}", tokenString);
+
+        tokenString.ifPresent(token -> {
+            try {
+                LOG.info("Confirming token. token={}", token);
+
+                ConfirmationTokenEvent cte = new ConfirmationTokenEvent(this, UUID.fromString(token));
+                fireEvent(cte);
+
+                getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
+            } catch (IllegalArgumentException e) {
+                new TorgNotification(
+                        "registration.invalid-token.wrong-format",
+                        null,
+                        null,
+                        null
+                ).open();
+
+            }
+
+            event.getUI().navigate(LoginView.ROUTE);
+        });
     }
 
 

@@ -19,6 +19,7 @@ package de.paladinsinn.tp.dcis.ui.views.person;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.ComponentEvent;
+import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.ui.views.login.RegistrationView;
 import lombok.Getter;
 
@@ -64,6 +65,23 @@ public class PersonRegistrationEvent extends ComponentEvent<RegistrationView> {
         this.username = username;
         this.password = password;
         this.locale = locale;
+    }
+
+    public Person getPerson() {
+        Person result = new Person();
+
+        result.setName(name);
+        result.setLastname(lastname);
+        result.setFirstname(firstname);
+        result.setEmail(email);
+        result.setUsername(username);
+        result.setPassword(password);
+        result.setLocale(locale);
+        result.setCreated();
+        result.disable();
+        result.unlock();
+
+        return result;
     }
 
     @Override

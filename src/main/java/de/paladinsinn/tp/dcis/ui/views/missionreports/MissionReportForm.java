@@ -18,101 +18,86 @@
 package de.paladinsinn.tp.dcis.ui.views.missionreports;
 
 import com.sun.istack.NotNull;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.i18n.LocaleChangeEvent;
-import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.missions.SuccessState;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.operative.OperativeReportRepository;
+import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.components.OperativeSelector;
 import de.paladinsinn.tp.dcis.ui.components.PersonSelector;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
-import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import de.paladinsinn.tp.dcis.ui.components.TorgForm;
+import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionEvent;
+import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperatorToMissionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-import java.util.Locale;
-import java.util.Optional;
-
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 /**
- * MissionGroupReportEditForm -- Edits/displays the data for a mission report on group level.
+ * MissionReportForm -- Edits/displays the data for a mission report on group level.
  *
  * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-29
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
-public class MissionReportForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+public class MissionReportForm extends TorgForm<MissionReport> {
     private static final Logger LOG = LoggerFactory.getLogger(MissionReportForm.class);
 
     /**
      * The service for writing data to.
      */
     private final MissionReportService reportService;
+    private final AddOperatorToMissionListener addOperatorToMissionListener;
 
-    /**
-     * The service for reading the gm from.
-     */
     private final PersonRepository personRepository;
-
-    /**
-     * The locale of this form.
-     */
-    private Locale locale;
-
-    /**
-     * The mission report to edit.
-     */
-    private MissionReport data;
-    private MissionReport oldData;
-
-    private final LoggedInUser user;
+    private final OperativeRepository operativeRepository;
+    private final OperativeReportRepository operativeReportRepository;
 
 
-    /**
-     * If this form is alread initialized.
-     */
-    private boolean initialized = false;
-
-    // The form components.
-    private final FormLayout form = new FormLayout();
     private final TextField id = new TextField();
     private final DatePicker missionDate = new DatePicker();
     private final ComboBox<SuccessState> successState = new ComboBox<>();
-    private PersonSelector gm;
     private final TextArea achievements = new TextArea();
     private final TextArea notes = new TextArea();
 
-    private TorgActionBar actions;
-
+    private PersonSelector gm;
+    private OperativeSelector operatives;
 
     @Autowired
     public MissionReportForm(
             @NotNull final MissionReportService reportService,
+            @NotNull final AddOperatorToMissionListener addOperatorToMissionListener,
             @NotNull final PersonRepository personRepository,
-            @NotNull final LoggedInUser user) {
+            @NotNull final OperativeRepository operativeRepository,
+            @NotNull final OperativeReportRepository operativeReportRepository,
+
+            @NotNull final LoggedInUser user
+    ) {
+        super(user);
+
         this.reportService = reportService;
+        this.addOperatorToMissionListener = addOperatorToMissionListener;
         this.personRepository = personRepository;
-        this.user = user;
+        this.operativeRepository = operativeRepository;
+        this.operativeReportRepository = operativeReportRepository;
+
     }
 
 
-    private void init() {
+    protected void init() {
         if (initialized || data == null || user == null) {
             LOG.debug(
                     "Already initialized or unable to initialize. initialized={}, data={}, user={}",
@@ -126,6 +111,7 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         }
 
         addListener(MissionReportSaveEvent.class, reportService);
+        addListener(AddOperativeToMissionEvent.class, addOperatorToMissionListener);
 
         form.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("1px", 1),
@@ -133,26 +119,28 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
                 new FormLayout.ResponsiveStep("800px", 3)
         );
 
+        user.allow(user.getPerson().equals(data.getGameMaster()));
+
         actions = new TorgActionBar(
                 "buttons",
-                event -> {
+                event -> { // save
                     scrape();
                     getEventBus().fireEvent(new MissionReportSaveEvent(this, false));
+
+                    for (Operative o : operatives.getValue()) {
+                        fireEvent(new AddOperativeToMissionEvent(this, data, o));
+                    }
                 },
-                event -> {
+                event -> { // reset
                     LOG.info("Resetting data from: displayed={}, new={}", data, oldData);
                     resetData();
                 },
-                null,
+                event -> { // cancel
+                    getUI().ifPresent(ui -> ui.getPage().getHistory().back());
+                },
                 null
         );
-        actions.setReadOnly(
-                user.isReadonly()
-                        && !user.getPerson().equals(data.getGameMaster())
-                        && !user.isOrga()
-                        && !user.isAdmin()
-                        && !user.isJudge()
-        );
+        actions.setReadOnly(user.isReadonly());
 
         id.setReadOnly(true);
 
@@ -181,13 +169,25 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         gm = new PersonSelector("missionreport.gm", personRepository, user);
         gm.setReadOnly(!user.isAdmin() && !user.isOrga() && !user.isJudge());
 
+        operatives = new OperativeSelector("missionreport.add-operatives", operativeRepository);
+        operatives.setReadonly(user.isReadonly());
+        operatives.setVisible(!user.isReadonly());
+
+        form.add(gm, missionDate, successState, achievements, notes, operatives);
+        form.add(actions);
+
+        form.setColspan(achievements, 3);
+        form.setColspan(notes, 3);
+        form.setColspan(actions, 3);
+
         getContent().add(form);
+
 
         // mark as initialized.
         initialized = true;
     }
 
-    private void scrape() {
+    protected void scrape() {
         if (data == null) data = new MissionReport();
 
         data.setDate(missionDate.getValue());
@@ -197,37 +197,9 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         data.setGameMaster(gm.getValue());
     }
 
-    public void resetData() {
-        setData(oldData);
-    }
 
-    public void setData(@NotNull final MissionReport data) {
-        if (this.data != null && this.data.equals(data)) {
-            LOG.info("Mission report didn't change. Ignoring event. code={}, id={}, gm={}",
-                    this.data.getMission().getCode(), this.data.getId(),
-                    this.data.getGameMaster().getUsername());
-
-            return;
-        }
-
-        LOG.debug("Set mission report. id={}, code={}, date={}, gm={}",
-                data.getId(), data.getMission().getCode(),
-                data.getDate(), data.getGameMaster().getName());
-
-        try {
-            this.oldData = data.clone();
-        } catch (CloneNotSupportedException e) {
-            LOG.warn("Could not clone the data. Reset won't work. data={}", data);
-            this.oldData = data;
-        }
-        this.data = data;
-
-        init();
-        populate();
-        translate();
-    }
-
-    private void populate() {
+    @Override
+    protected void populate() {
         if (data == null) {
             LOG.warn("Tried to polulate form data without a mission report defined.");
             return;
@@ -244,26 +216,6 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         bindData(data.getGameMaster(), gm);
     }
 
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void bindData(final Object data, @NotNull HasValue component) {
-        if (data != null) {
-            component.setValue(data);
-        }
-    }
-
-
-    public Optional<MissionReport> getData() {
-        return Optional.ofNullable(data);
-    }
-
-    @Override
-    public void fireEvent(@NotNull ComponentEvent<?> event) {
-        LOG.trace("Event to fire. event={}", event);
-
-        getEventBus().fireEvent(event);
-    }
-
     @Override
     public void translate() {
         if (user == null || data == null || locale == null) {
@@ -276,9 +228,6 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         }
 
         LOG.debug("Building mission report group edit form. data={}, locale={}", data, locale);
-
-        LOG.trace("Remove all form elements.");
-        form.removeAll();
 
         // Form fields
         id.setLabel(getTranslation("input.id.caption"));
@@ -296,51 +245,6 @@ public class MissionReportForm extends Composite<Div> implements LocaleChangeObs
         notes.setHelperText(getTranslation("missionreport.notes.help"));
 
         gm.setLocale(locale);
-
-        LOG.trace("Adding all form elements.");
-        form.add(gm, missionDate, successState, achievements, notes);
-
         actions.setLocale(locale);
-        form.add(actions);
-
-        form.setColspan(achievements, 3);
-        form.setColspan(notes, 3);
-        form.setColspan(actions, 3);
-    }
-
-
-    @Override
-    public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Change locale event. locale={}", event.getLocale());
-
-        setLocale(event.getLocale());
-    }
-
-    @Override
-    public void setLocale(Locale locale) {
-        if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale has not changed. Ignoring event. locale={}", this.locale.getDisplayLanguage());
-            return;
-        }
-
-        this.locale = locale;
-
-        translate();
-    }
-
-    private String getTranslation(@NotNull final String key) {
-        try {
-            return super.getTranslation(key);
-        } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
-            return "!" + key;
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        LOG.debug("Closing form.");
-        getContent().removeAll();
-        form.removeAll();
     }
 }

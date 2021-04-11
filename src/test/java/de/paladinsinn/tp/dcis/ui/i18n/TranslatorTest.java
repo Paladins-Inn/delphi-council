@@ -39,8 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TranslatorTest {
     private static final Logger LOG = LoggerFactory.getLogger(Translator.class);
 
-    private static final List<Locale> supportedLocales = Arrays.asList(Locale.forLanguageTag("de_DE"), Locale.forLanguageTag("en_UK"));
-    private static final Locale DEFAULT_LOCALE = Locale.GERMANY;
+    private static final List<Locale> supportedLocales = Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
+    private static final Locale DEFAULT_LOCALE = Locale.GERMAN;
 
 
     /**
@@ -94,7 +94,7 @@ class TranslatorTest {
         MDC.put("test-name", "adding-parameters-to-translation");
 
         UUID uuid = UUID.randomUUID();
-        String expected = String.format("Dies ist ein Teststring mit 1 Parameter: 0='%s'", uuid.toString());
+        String expected = String.format("Dies ist ein Teststring mit 1 Parameter: 0='%s'", uuid);
 
         String result = sut.getTranslation("existing.with-param", DEFAULT_LOCALE, uuid);
         LOG.debug("result: {}", result);
@@ -107,7 +107,7 @@ class TranslatorTest {
         MDC.put("test-name", "adding-too-few-parameters-to-translation");
 
         UUID uuid = UUID.randomUUID();
-        String expected = String.format("Dieser String hat 2 Parameter: 0='%s', 1='{1}'.", uuid.toString());
+        String expected = String.format("Dieser String hat 2 Parameter: 0='%s', 1='{1}'.", uuid);
 
         String result = sut.getTranslation("existing.with-params", DEFAULT_LOCALE, uuid);
         LOG.debug("result: {}", result);
@@ -122,7 +122,7 @@ class TranslatorTest {
         UUID uuid = UUID.randomUUID();
         String param2 = "Und ein String";
 
-        String expected = String.format("Dieser String hat 2 Parameter: 0='%s', 1='%s'.", uuid.toString(), param2);
+        String expected = String.format("Dieser String hat 2 Parameter: 0='%s', 1='%s'.", uuid, param2);
 
         String result = sut.getTranslation("existing.with-params", DEFAULT_LOCALE, uuid, param2);
         LOG.debug("result: {}", result);
@@ -134,7 +134,7 @@ class TranslatorTest {
     void shouldReturnTheEnglishTranslationWhenCalledWithAnExistingElementFromTheDefaultBundle() {
         MDC.put("test-name", "valid-english-translation");
 
-        String result = sut.getTranslation("existing.no-params", Locale.UK);
+        String result = sut.getTranslation("existing.no-params", Locale.ENGLISH);
         LOG.debug("result: {}", result);
 
         assertEquals("This is a string to test.", result);
@@ -144,7 +144,7 @@ class TranslatorTest {
     void shouldFailWhenANonExistingMessageBundleIsSpecified() {
         MDC.put("test-name", "non-existing-bundle");
 
-        String result = sut.getTranslation("ignored", "ignored", Locale.GERMANY);
+        String result = sut.getTranslation("ignored", "ignored", Locale.GERMAN);
         LOG.debug("result: {}", result);
 
         assertEquals("!ignored", result);

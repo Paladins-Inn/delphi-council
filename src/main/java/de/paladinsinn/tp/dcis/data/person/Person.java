@@ -28,9 +28,9 @@ import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -173,6 +173,39 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         this.locale = locale.getLanguage();
     }
 
+    public void enable() {
+        setEnabled(true);
+    }
+
+    public void disable() {
+        setEnabled(false);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return getStatus().isEnabled();
+    }
+
+    public void setEnabled(boolean state) {
+        getStatus().setEnabled(state);
+    }
+
+    public void unlock() {
+        setLocked(false);
+    }
+
+    public void lock() {
+        setLocked(true);
+    }
+
+    public boolean isLocked() {
+        return getStatus().isLocked();
+    }
+
+    public void setLocked(boolean state) {
+        getStatus().setLocked(state);
+    }
+
     /**
      * <a href="https://www.gravatar.com/">Gravatar</a> delivers an avatar by using the email address.
      *
@@ -217,7 +250,7 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
      */
     @SuppressWarnings("unused")
     public boolean checkPassword(final String pw) {
-        boolean result = BCrypt.checkpw(pw, password);
+        boolean result = new BCryptPasswordEncoder().matches(pw, password);
 
         if (result) status.setLastLogin(getNowUTC());
         return result;
@@ -230,10 +263,10 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
      */
     @SuppressWarnings("unused")
     public void setPassword(final String pw) {
-        password = BCrypt.hashpw(pw, BCrypt.gensalt(ITERATION_COUNT));
+        password = new BCryptPasswordEncoder().encode(pw);
 
-        status.setCredentialsChange(getNowUTC());
-        modified = status.getCredentialsChange();
+        setModified();
+        status.setCredentialsChange(getModified());
     }
 
     public void setRoles(Collection<Role> roles) {
@@ -321,12 +354,6 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
     public boolean isCredentialsNonExpired() {
         return status.isCredentialsNonExpired();
     }
-
-    @Override
-    public boolean isEnabled() {
-        return status.isEnabled();
-    }
-
 
     @Override
     public Person clone() throws CloneNotSupportedException {

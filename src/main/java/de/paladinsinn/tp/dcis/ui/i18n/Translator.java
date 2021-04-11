@@ -53,11 +53,16 @@ public class Translator implements
     private static final Logger LOG = LoggerFactory.getLogger(Translator.class);
 
     /**
+     * The languages this {@link I18NProvider} may provide.
+     */
+    public static final List<Locale> PROVIDED_LANGUAGES = Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
+
+    /**
      * Default bundle to use when no other bundle is selected.
      */
     private static final String DEFAULT_BUNDLE = "messages";
 
-    @Value("${spring.web.locale:de_DE}")
+    @Value("${spring.web.locale:de}")
     private String defaultLocale;
 
     private final HashMap<String, HashMap<Locale, ResourceBundle>> bundles = new HashMap<>();
@@ -172,7 +177,7 @@ public class Translator implements
 
     @Override
     public List<Locale> getProvidedLocales() {
-        return Arrays.asList(Locale.forLanguageTag("de_DE"), Locale.forLanguageTag("en_UK"));
+        return PROVIDED_LANGUAGES;
     }
 
     @Override

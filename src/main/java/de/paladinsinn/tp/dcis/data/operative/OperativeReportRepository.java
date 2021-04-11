@@ -17,10 +17,11 @@
 
 package de.paladinsinn.tp.dcis.data.operative;
 
+import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
 public interface OperativeReportRepository extends JpaRepository<OperativeReport, UUID> {
-
+    OperativeReport findOperativeReportByReportAndOperative(MissionReport report, Operative operative);
 }

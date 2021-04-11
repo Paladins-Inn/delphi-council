@@ -285,7 +285,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver, Transla
 
     public void setLocale(@NotNull final Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.trace("Language did not change - ignoring event. locale={}", this.locale.getDisplayLanguage());
+            LOG.trace("Language did not change - ignoring event. locale={}", this.locale);
             return;
         }
 

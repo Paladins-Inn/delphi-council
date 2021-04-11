@@ -120,8 +120,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/ThreatCard/**",
 
                 "/register",
-                "/registration",
-                "/confirmation",
+                "/register/**",
 
                 // web application manifest
                 "/manifest.webmanifest",

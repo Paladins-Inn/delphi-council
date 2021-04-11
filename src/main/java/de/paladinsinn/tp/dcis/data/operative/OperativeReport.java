@@ -70,22 +70,28 @@ public class OperativeReport extends AbstractRevisionedEntity implements Compara
 
     @Transient
     public void setMissionReport(MissionReport report) {
-        if (this.report != null && this.report != report) {
-            this.report = report;
+        MissionReport old = this.report;
+        this.report = report;
 
-            if (report != null) {
-                report.addOperativeReport(this);
+        if (report != null && !report.equals(old)) {
+            report.addOperativeReport(this);
+
+            if (old != null) {
+                old.removeOperativeReport(this);
             }
         }
     }
 
     @Transient
     public void setOperative(Operative operative) {
-        if (this.operative != null && this.operative != operative) {
-            this.operative = operative;
+        Operative old = this.operative;
+        this.operative = operative;
 
-            if (operative != null) {
-                operative.addReport(this);
+        if (operative != null && !operative.equals(old)) {
+            operative.addOperativeReport(this);
+
+            if (old != null) {
+                old.removeOperativeReport(this);
             }
         }
     }

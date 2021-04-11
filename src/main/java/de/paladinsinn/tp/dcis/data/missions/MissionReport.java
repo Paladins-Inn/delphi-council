@@ -120,17 +120,17 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
 
     public void addOperativeReport(OperativeReport operative) {
         if (operative != null && !operatives.contains(operative)) {
-            operative.setMissionReport(this);
-
             operatives.add(operative);
+
+            operative.setMissionReport(this);
         }
     }
 
-    public void removeOperative(OperativeReport operative) {
+    public void removeOperativeReport(OperativeReport operative) {
         if (operative != null && operatives.contains(operative)) {
-            operative.setMissionReport(null);
-
             operatives.remove(operative);
+
+            operative.setMissionReport(null);
         }
     }
 

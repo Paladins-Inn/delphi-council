@@ -51,7 +51,6 @@ import java.util.*;
 @CssImport("./views/edit-view.css")
 public class PersonEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(PersonEditView.class);
-    public static final Long serial = 1L;
 
     private Locale locale;
 
@@ -87,14 +86,20 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
     public void translate() {
         LOG.trace("Translate View. locale={}", locale);
 
+        form.setLocale(locale);
         form.translate();
     }
 
     @Override
     public void setLocale(Locale locale) {
+        if (!(this.locale == null) && this.locale.equals(locale)) {
+            LOG.debug("Language not changed. locale={}", locale);
+            return;
+        }
+
         this.locale = locale;
 
-        form.setLocale(locale);
+        translate();
     }
 
 

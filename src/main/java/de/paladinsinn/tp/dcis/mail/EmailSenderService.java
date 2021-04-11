@@ -19,7 +19,6 @@ package de.paladinsinn.tp.dcis.mail;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -43,11 +42,10 @@ import javax.mail.internet.MimeMessage;
  */
 @Service
 @AllArgsConstructor
-@NoArgsConstructor
 public class EmailSenderService {
     private static final Logger LOG = LoggerFactory.getLogger(EmailSenderService.class);
 
-    private JavaMailSender sender;
+    private final JavaMailSender sender;
 
     @Async
     public void send(@NotNull SimpleMailMessage message) {

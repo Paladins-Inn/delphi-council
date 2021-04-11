@@ -61,7 +61,7 @@ public class PersonService implements UserDetailsService {
 
     @Autowired
     public PersonService(
-            @Value("${MAIL_FROM_NAME: Registration}") @NotNull final String mailFromName,
+            @Value("${MAIL_FROM_NAME:Registration Clerk}") @NotNull final String mailFromName,
             @Value("${MAIL_FROM_ADDRESS:clerk@delphi-council.org}") @NotNull final String mailFromAddress,
             @NotNull final PersonRepository personRepository,
             @NotNull final ConfirmationTokenService confirmationTokenRepository,
@@ -91,20 +91,25 @@ public class PersonService implements UserDetailsService {
         Person saved = personRepository.save(person);
 
         ConfirmationToken token = new ConfirmationToken(saved);
+        token = confirmationTokenRepository.save(token);
+
+        sendConfirmationMail(saved.getEmail(), token.getId());
 
         LOG.info("Created user confirmation token. token={}", token);
-        return confirmationTokenRepository.save(token);
+        return token;
     }
 
     public void sendConfirmationMail(@NotNull final String email, @NotNull final UUID token) {
+        LOG.info("Sending confirmation request. email='{}', token={}", email, token);
+
         final SimpleMailMessage message = new SimpleMailMessage();
 
         Locale locale = VaadinSession.getCurrent().getLocale();
 
         message.setTo(email);
         message.setFrom(mailFromName + " <" + mailFromAddress + ">");
-        message.setSubject(translator.getTranslation("mail.confirmation.subject", locale, email, token));
-        message.setText(translator.getTranslation("mail.confirmation.subject", locale, email, token));
+        message.setSubject(translator.getTranslation("mail.confirmation.subject", locale, email, token.toString()));
+        message.setText(translator.getTranslation("mail.confirmation.text", locale, email, token.toString()));
 
         emailSender.send(message);
     }

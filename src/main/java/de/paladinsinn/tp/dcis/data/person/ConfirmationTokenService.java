@@ -49,7 +49,7 @@ public class ConfirmationTokenService {
     public ConfirmationToken save(@NotNull final ConfirmationToken token) {
         LOG.debug("Saving confirmation token. data={}", token);
 
-        return repository.save(token);
+        return repository.saveAndFlush(token);
     }
 
     public void delete(@NotNull final UUID id) {

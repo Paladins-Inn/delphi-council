@@ -4,7 +4,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ development ]
 
 jobs:
   java-build:
@@ -82,13 +82,3 @@ jobs:
           registry: ${{ secrets.QUAY_REPO }}
           username: ${{ secrets.QUAY_USER }}
           password: ${{ secrets.QUAY_TOKEN }}
-
-#      - name: publish helm chart
-#        uses: goodsmileduck/helm-push-action@v2
-#        env:
-#          SOURCE_DIR: 'helm'
-#          CHART_FOLDER: 'delphi-council-is'
-#          FORCE: 'True'
-#          CHARTMUSEUM_URL: ${{ secrets.QUAY_HELM_REPO }}
-#          CHARTMUSEUM_USER: ${{ secrets.QUAY_USER }}
-#          CHARTMUSEUM_PASSWORD: ${{ secrets.QUAY_USER }}

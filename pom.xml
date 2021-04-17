@@ -101,7 +101,8 @@
 
         <immutables.version>2.8.9-ea-1</immutables.version>
         <vaadin.version>14.5.1</vaadin.version>
-        <spring-boot.version>2.5.0</spring-boot.version>
+        <spring-boot.version>2.4.5</spring-boot.version>
+        <spring-boot.envers.version>2.5.0</spring-boot.envers.version>
     </properties>
 
     <repositories>
@@ -252,7 +253,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-envers</artifactId>
-            <version>${spring-boot.version}</version>
+            <version>${spring-boot.envers.version}</version>
         </dependency>
 
         <dependency>

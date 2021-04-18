@@ -49,6 +49,7 @@ import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
 import de.paladinsinn.tp.dcis.ui.i18n.Translator;
+import de.paladinsinn.tp.dcis.ui.views.about.AboutView;
 import de.paladinsinn.tp.dcis.ui.views.missions.MissionListView;
 import de.paladinsinn.tp.dcis.ui.views.operative.OperativesListView;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonEditView;
@@ -221,6 +222,7 @@ public class MainView extends AppLayout implements LocaleChangeObserver, Transla
         allTabs.add(OperativesListView.class);
         allTabs.add(PersonListView.class);
         allTabs.add(ThreatCardView.class);
+        allTabs.add(AboutView.class);
 
         Set<String> roles = readRoleFromAuthentication();
 

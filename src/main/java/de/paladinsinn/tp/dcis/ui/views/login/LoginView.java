@@ -25,7 +25,6 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
@@ -34,6 +33,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
+import de.paladinsinn.tp.dcis.ui.components.TorgScreen;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.Locale;
 
-import static com.vaadin.flow.component.Unit.PERCENTAGE;
 import static com.vaadin.flow.component.Unit.PIXELS;
 
 /**
@@ -58,15 +57,11 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @Tag("sa-login-view")
 @Route(LoginView.ROUTE)
 @I18nPageTitle("login.caption")
-public class LoginView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
+public class LoginView extends TorgScreen implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
     private static final Logger LOG = LoggerFactory.getLogger(LoginView.class);
 
     public static final String ROUTE = "login";
 
-    /**
-     * The login component.
-     */
-    private Image logo;
     private H1 title;
     private Div description;
 
@@ -74,8 +69,6 @@ public class LoginView extends Div implements BeforeEnterObserver, LocaleChangeO
     private LoginForm login;
     private TorgButton register;
 
-    private HorizontalLayout layout;
-    private VerticalLayout left, center, right;
     private Locale locale;
 
     @PostConstruct
@@ -83,26 +76,26 @@ public class LoginView extends Div implements BeforeEnterObserver, LocaleChangeO
         LOG.debug("Creating login view.");
 
         setSizeFull();
-        layout = new HorizontalLayout();
-        layout.setSizeFull();
 
-        left = generateBorder();
-        right = generateBorder();
-        center = generateLoginForm();
+        VerticalLayout center = generateLoginForm();
 
-        layout.add(left, center, right);
-        add(layout);
+        Image logo = new Image("/images/logo.png", "Delphi Council");
+        logo.setClassName("centered");
+        logo.setMaxWidth(200, PIXELS);
+        logo.setMaxHeight(200, PIXELS);
+
+        addInLeftBorder(logo);
+
+        add(center);
     }
 
     private VerticalLayout generateLoginForm() {
         VerticalLayout result = new VerticalLayout();
         result.setHeightFull();
 
-        logo = new Image("/images/logo.png", "Delphi Council");
-        logo.setClassName("centered");
-        logo.setMaxWidth(200, PIXELS);
-        logo.setMaxHeight(200, PIXELS);
-
+        /**
+         * The login component.
+         */
         title = new H1(getTranslation("login.caption"));
         description = new Div();
         description.setText(getTranslation("login.help"));
@@ -120,24 +113,11 @@ public class LoginView extends Div implements BeforeEnterObserver, LocaleChangeO
                 RegistrationView.class
         );
 
-        result.add(logo, title, description, languageSelect, login, register);
+        result.add(title, description, languageSelect, login, register);
 
         return result;
     }
 
-    private VerticalLayout generateBorder() {
-        VerticalLayout result = new VerticalLayout();
-
-        result.setClassName("torg-marble");
-        result.setHeightFull();
-
-        Div space = new Div();
-        space.setMinWidth(10, PIXELS);
-        space.setMaxWidth(100, PERCENTAGE);
-        result.add(space);
-
-        return result;
-    }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {

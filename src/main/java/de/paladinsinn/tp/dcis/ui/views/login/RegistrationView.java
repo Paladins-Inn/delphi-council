@@ -23,7 +23,6 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -35,6 +34,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
+import de.paladinsinn.tp.dcis.ui.components.TorgScreen;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
@@ -53,7 +53,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.vaadin.flow.component.Unit.PERCENTAGE;
 import static com.vaadin.flow.component.Unit.PIXELS;
 
 /**
@@ -66,7 +65,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @Route(RegistrationView.ROUTE + "/:token?")
 @I18nPageTitle("registration.caption")
 @CssImport("./views/edit-view.css")
-public class RegistrationView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
+public class RegistrationView extends TorgScreen implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
     private static final Logger LOG = LoggerFactory.getLogger(RegistrationView.class);
 
     public static final String ROUTE = "register";
@@ -232,29 +231,7 @@ public class RegistrationView extends Div implements BeforeEnterObserver, Locale
         form.setMinWidth(400, PIXELS);
         form.setMaxWidth(600, PIXELS);
 
-        VerticalLayout left = generateBorder();
-        VerticalLayout right = generateBorder();
-
-        layout.add(left, form, right);
-
-        layout.setFlexGrow(10, form);
-        layout.setFlexGrow(5, left, right);
-
-        add(layout);
-    }
-
-    private VerticalLayout generateBorder() {
-        VerticalLayout result = new VerticalLayout();
-
-        result.setClassName("torg-marble");
-        result.setHeightFull();
-
-        Div space = new Div();
-        space.setMinWidth(10, PIXELS);
-        space.setMaxWidth(100, PERCENTAGE);
-        result.add(space);
-
-        return result;
+        add(form);
     }
 
 

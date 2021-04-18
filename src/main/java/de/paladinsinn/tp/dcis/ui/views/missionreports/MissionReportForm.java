@@ -34,6 +34,7 @@ import de.paladinsinn.tp.dcis.ui.components.OperativeSelector;
 import de.paladinsinn.tp.dcis.ui.components.PersonSelector;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.components.TorgForm;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nDatePicker;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionEvent;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionListener;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class MissionReportForm extends TorgForm<MissionReport> {
 
 
     private final TextField id = new TextField();
-    private final DatePicker missionDate = new DatePicker();
+    private final DatePicker missionDate = new I18nDatePicker();
     private final ComboBox<SuccessState> successState = new ComboBox<>();
     private final TextArea achievements = new TextArea();
     private final TextArea notes = new TextArea();

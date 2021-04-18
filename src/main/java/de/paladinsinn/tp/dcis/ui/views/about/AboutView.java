@@ -17,23 +17,26 @@
 
 package de.paladinsinn.tp.dcis.ui.views.about;
 
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
 import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.components.TorgScreen;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 
 @Route(value = "about", layout = MainView.class)
 @I18nPageTitle("about.title")
 @CssImport("./views/about-view.css")
-public class AboutView extends Div {
+public class AboutView extends TorgScreen {
 
     public AboutView() {
-        addClassName("about-view");
-        add(new Text("Content placeholder"));
+        H1 title = new H1(getTranslation("application.title"));
+        H2 description = new H2(getTranslation("application.description"));
+        H2 version = new H2(getTranslation("application.version"));
+        Span torgLicense = new Span(getTranslation("application.torg-license"));
 
-
+        add(title, description, version, torgLicense);
     }
-
 }

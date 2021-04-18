@@ -21,83 +21,78 @@ import com.sun.istack.NotNull;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.time.temporal.WeekFields;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 /**
  * I18nDatePicker -- An auto localized DatePicker for Vaadin.
+ * <p>
+ * Oh. and just for the record: week starts at monday.
  *
  * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-04
  */
 @Service
 @Scope("prototype")
-public class I18nDatePicker extends DatePicker.DatePickerI18n implements LocaleChangeObserver {
+public class I18nDatePicker extends DatePicker implements LocaleChangeObserver {
     private static final Logger LOG = LoggerFactory.getLogger(I18nDatePicker.class);
 
-    private final Translator translator;
     private Locale locale;
 
-    public I18nDatePicker(@NotNull final Locale locale, Translator translator) {
-        this.translator = translator;
-        this.locale = locale;
+    public I18nDatePicker() {
+        locale = VaadinSession.getCurrent().getLocale();
 
         translate();
     }
 
     private void translate() {
         LOG.debug("Translating. component={}, locale={}", this, locale);
-        setFirstDayOfWeek(WeekFields.of(locale).getFirstDayOfWeek().getValue());
 
-        setCancel(getTranslation("buttons.cancel.caption"));
-        setClear(getTranslation("buttons.reset.caption"));
-
-        setCalendar(getTranslation("input.datepicker.calendar"));
-        setWeek(getTranslation("input.datepicker.week"));
-        setToday(getTranslation("input.datepicker.today"));
-
-        List<String> months = Arrays.asList(getTranslation("input.datepicker.months.january"),
-                getTranslation("input.datepicker.months.february"),
-                getTranslation("input.datepicker.months.march"),
-                getTranslation("input.datepicker.months.april"),
-                getTranslation("input.datepicker.months.may"),
-                getTranslation("input.datepicker.months.june"),
-                getTranslation("input.datepicker.months.july"),
-                getTranslation("input.datepicker.months.august"),
-                getTranslation("input.datepicker.months.septembre"),
-                getTranslation("input.datepicker.months.octobre"),
-                getTranslation("input.datepicker.months.novembre"),
-                getTranslation("input.datepicker.months.decembre"));
-        setMonthNames(months);
-
-        List<String> days = Arrays.asList(getTranslation("input.datepicker.days.long.sunday"),
-                getTranslation("input.datepicker.days.long.monday"),
-                getTranslation("input.datepicker.days.long.tuesday"),
-                getTranslation("input.datepicker.days.long.wednesday"),
-                getTranslation("input.datepicker.days.long.thursday"),
-                getTranslation("input.datepicker.days.long.friday"),
-                getTranslation("input.datepicker.days.long.saturday"));
-        setWeekdays(days);
-
-        List<String> daysShort = Arrays.asList(getTranslation("input.datepicker.days.short.sunday"),
-                getTranslation("input.datepicker.days.short.monday"),
-                getTranslation("input.datepicker.days.short.tuesday"),
-                getTranslation("input.datepicker.days.short.wednesday"),
-                getTranslation("input.datepicker.days.short.thursday"),
-                getTranslation("input.datepicker.days.short.friday"),
-                getTranslation("input.datepicker.days.short.saturday"));
-        setWeekdaysShort(days);
-    }
-
-    private String getTranslation(@NotNull final String key) {
-        return translator.getTranslation(key, locale);
+        setI18n(new DatePicker.DatePickerI18n()
+                .setWeek(getTranslation("input.datepicker.week"))
+                .setCalendar(getTranslation("input.datepicker.calendar"))
+                .setToday(getTranslation("input.datepicker.today"))
+                .setCancel(getTranslation("buttons.cancel.caption"))
+                .setFirstDayOfWeek(1)
+                .setMonthNames(Arrays.asList(
+                        getTranslation("input.datepicker.months.january"),
+                        getTranslation("input.datepicker.months.february"),
+                        getTranslation("input.datepicker.months.march"),
+                        getTranslation("input.datepicker.months.april"),
+                        getTranslation("input.datepicker.months.may"),
+                        getTranslation("input.datepicker.months.june"),
+                        getTranslation("input.datepicker.months.july"),
+                        getTranslation("input.datepicker.months.august"),
+                        getTranslation("input.datepicker.months.septembre"),
+                        getTranslation("input.datepicker.months.octobre"),
+                        getTranslation("input.datepicker.months.novembre"),
+                        getTranslation("input.datepicker.months.decembre")
+                ))
+                .setWeekdays(Arrays.asList(
+                        getTranslation("input.datepicker.days.long.sunday"),
+                        getTranslation("input.datepicker.days.long.monday"),
+                        getTranslation("input.datepicker.days.long.tuesday"),
+                        getTranslation("input.datepicker.days.long.wednesday"),
+                        getTranslation("input.datepicker.days.long.thursday"),
+                        getTranslation("input.datepicker.days.long.friday"),
+                        getTranslation("input.datepicker.days.long.saturday")
+                ))
+                .setWeekdaysShort(Arrays.asList(
+                        getTranslation("input.datepicker.days.short.sunday"),
+                        getTranslation("input.datepicker.days.short.monday"),
+                        getTranslation("input.datepicker.days.short.tuesday"),
+                        getTranslation("input.datepicker.days.short.wednesday"),
+                        getTranslation("input.datepicker.days.short.thursday"),
+                        getTranslation("input.datepicker.days.short.friday"),
+                        getTranslation("input.datepicker.days.short.saturday")
+                ))
+        );
     }
 
     @Override

@@ -32,6 +32,7 @@ import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.components.OperativeSelector;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.components.TorgForm;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nDatePicker;
 import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.AddOperativeToSpecialMissionEvent;
 import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.AddOperativeToSpecialMissionListener;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class SpecialMissionForm extends TorgForm<SpecialMission> {
     private final TextField id = new TextField();
     private final TextField code = new TextField();
     private final ComboBox<Clearance> clearance = new ComboBox<>();
-    private final DatePicker missionDate = new DatePicker();
+    private final DatePicker missionDate = new I18nDatePicker();
     private final TextField publication = new TextField();
     private final TextField image = new TextField();
     private final TextArea description = new TextArea();

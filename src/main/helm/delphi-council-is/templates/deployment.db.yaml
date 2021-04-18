@@ -30,7 +30,7 @@ spec:
       containers:
       - name: "{{ .Chart.Name }}-db"
         image: "{{ .Values.db.image.repo }}/{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: "{{ .Values.db.image.pullPolicy }}"
         resources:
           limits:
             cpu: {{ .Values.db.limits.cpu }}

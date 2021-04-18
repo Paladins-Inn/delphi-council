@@ -5,6 +5,7 @@ app:
     repo: quay.io/klenkes74
     name: @project.artifactId@
     tag: @project.version@
+    pullPolicy: Always
   requests:
     cpu: 1000m
     memory: 2Gi
@@ -17,6 +18,7 @@ db:
     repo: docker-registry.default.svc:5000/openshift
     name: mariadb
     tag: latest
+    pullPolicy: IfNotPresent
   requests:
     cpu: 500m
     memory: 512Mi

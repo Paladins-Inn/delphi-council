@@ -33,7 +33,7 @@ spec:
       containers:
       - name: "{{ .Chart.Name }}-app"
         image: 'docker-registry.default.svc:5000/{{ .Release.Namespace }}/delphi-council-is:{{ .Chart.AppVersion }}'
-        imagePullPolicy: Always
+        imagePullPolicy: "{{ .Values.app.image.pullPolicy }}"
         resources:
           limits:
             cpu: {{ .Values.app.limits.cpu }}

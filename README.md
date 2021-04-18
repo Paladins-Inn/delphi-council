@@ -5,11 +5,12 @@
 > -- Balian, Kingdom of Heaven
 
 ![Dependabot](https://flat.badgen.net/dependabot/Paladins-Inn/delphi-council/?icon=dependabot)
-![Maven](https://github.com/Paladins-Inn/delphi-council/workflows/CI/badge.svg)
+![CI](https://github.com/Paladins-Inn/delphi-council/workflows/CI/badge.svg)
+![Release](https://github.com/Paladins-Inn/delphi-council/workflows/Release/badge.svg)
 [![Docker Repository on Quay](https://quay.io/repository/klenkes74/delphi-council-is/status "Docker Repository on Quay")](https://quay.io/repository/klenkes74/delphi-council-is)
 
 ## License
-The license for the software is LGPL 3.0 or newer. Parts of the software may be licensed under other licences like MIT
+The license for the software is GPL 3.0 or newer. Parts of the software may be licensed under other licences like MIT
 or Apache 2.0 - the files are marked appropriately.
 
 ## Architecture
@@ -23,7 +24,7 @@ tl;dr (ok, only the bullshit bingo words):
 ## Distribution
 The software is distributed via quay.io. You find the images as
 
-- quay.io/klenkes74/delphi-council-is:0.1.0-SNAPSHOT (bleeding edge)
+- quay.io/klenkes74/delphi-council-is:0.3.0-SNAPSHOT (bleeding edge)
 
 The images are prepared for consumption by OpenShift 3.11, so they run without any problems on kubernetes, too.
 

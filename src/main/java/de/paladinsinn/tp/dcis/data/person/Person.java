@@ -25,6 +25,7 @@ import de.paladinsinn.tp.dcis.data.HasAvatar;
 import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -120,6 +121,16 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
             orphanRemoval = true
     )
     private Set<MissionReport> reports = new HashSet<>();
+
+    @OneToMany(
+            targetEntity = SpecialMission.class,
+            mappedBy = "gameMaster",
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+
+            orphanRemoval = true
+    )
+    private Set<SpecialMission> specialMissions = new HashSet<>();
 
 
     public String getName() {
@@ -310,6 +321,23 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
 
         reports.remove(report);
         report.setGameMaster(null);
+    }
+
+
+    public void addSpecialMission(@NotNull SpecialMission specialMission) {
+        if (specialMissions.contains(specialMission))
+            return;
+
+        specialMissions.add(specialMission);
+        specialMission.setGameMaster(this);
+    }
+
+    public void removeSpecialMission(@NotNull SpecialMission specialMission) {
+        if (!specialMissions.contains(specialMission))
+            return;
+
+        specialMissions.remove(specialMission);
+        specialMission.setGameMaster(null);
     }
 
 

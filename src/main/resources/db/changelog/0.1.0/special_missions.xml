@@ -36,7 +36,7 @@
             </column>
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
                 <constraints nullable="false"
-                             unique="true" uniqueConstraintName="PERSONS_REVID_UK"
+                             unique="true" uniqueConstraintName="SPECIALMISSIONS_REVID_UK"
                 />
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>

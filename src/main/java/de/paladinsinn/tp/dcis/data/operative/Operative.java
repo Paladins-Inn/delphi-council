@@ -98,6 +98,16 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
     )
     private Set<OperativeReport> reports = new HashSet<>();
 
+    @OneToMany(
+            targetEntity = OperativeSpecialReport.class,
+            mappedBy = "operative",
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            orphanRemoval = true
+    )
+    private Set<OperativeSpecialReport> specialReports = new HashSet<>();
+
+
     @Column(name = "DELETED")
     @Audited
     private OffsetDateTime deleted;
@@ -126,6 +136,24 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
             report.setOperative(null);
         }
     }
+
+
+    public void addSpecialReport(@NotNull OperativeSpecialReport report) {
+        if (report != null & !specialReports.contains(report)) {
+            specialReports.add(report);
+
+            report.setOperative(this);
+        }
+    }
+
+    public void removeSpecialReport(@NotNull OperativeSpecialReport report) {
+        if (report != null && specialReports.contains(report)) {
+            specialReports.remove(report);
+
+            report.setOperative(null);
+        }
+    }
+
 
     @Override
     public Image getAvatarImage() {

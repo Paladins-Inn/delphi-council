@@ -134,10 +134,6 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
         }
     }
 
-    public void clearOperatives() {
-        operatives.clear();
-    }
-
     @Override
     public int compareTo(MissionReport o) {
         return new CompareToBuilder()

@@ -1,0 +1,37 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="20210418rlichti1" author="rlichti">
+        <modifyDataType tableName="SPECIALMISSIONS" columnName="CODE" newDataType="VARCHAR(36)"/>
+        <modifyDataType tableName="SPECIALMISSIONS_AUD" columnName="CODE" newDataType="VARCHAR(36)"/>
+
+        <dropUniqueConstraint tableName="SPECIALMISSIONS" constraintName="SPECIALMISSIONS_REVID_UK"/>
+        <dropUniqueConstraint tableName="SPECIALREPORTS_OPERATIVES"
+                              constraintName="SPECIALREPORTS_OPERATIVES_REVID_UK"/>
+
+        <dropColumn tableName="SPECIALMISSIONS" columnName="ACHIEVEMENTS"/>
+        <dropColumn tableName="SPECIALMISSIONS_AUD" columnName="ACHIEVEMENTS"/>
+        <dropColumn tableName="SPECIALREPORTS_OPERATIVES" columnName="ACHIEVEMENTS"/>
+        <dropColumn tableName="SPECIALREPORTS_OPERATIVES_AUD" columnName="ACHIEVEMENTS"/>
+    </changeSet>
+</databaseChangeLog>

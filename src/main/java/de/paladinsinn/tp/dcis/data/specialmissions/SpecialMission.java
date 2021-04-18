@@ -19,6 +19,8 @@ package de.paladinsinn.tp.dcis.data.specialmissions;
 
 import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.data.Clearance;
+import de.paladinsinn.tp.dcis.data.HasClearance;
+import de.paladinsinn.tp.dcis.data.HasId;
 import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import lombok.Getter;
@@ -51,16 +53,18 @@ import java.util.UUID;
 )
 @Getter
 @Setter
-public class SpecialMission extends AbstractRevisionedEntity implements Cloneable {
+public class SpecialMission extends AbstractRevisionedEntity implements HasId, HasClearance, Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(SpecialMission.class);
 
-    @Column(name = "CODE", nullable = false, unique = true)
+    @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(name = "CODE", length = 36, nullable = false, updatable = false, unique = true)
     private UUID code;
 
     @Column(name = "TITLE", nullable = false)
     private String title;
 
     @Column(name = "CLEARANCE", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Clearance clearance;
 
     @Column(name = "DESCRIPTION", length = 4000)
@@ -85,7 +89,7 @@ public class SpecialMission extends AbstractRevisionedEntity implements Cloneabl
             optional = false
     )
     @JoinColumn(name = "GM", nullable = false)
-    private Person gm;
+    private Person gameMaster;
 
     @OneToMany(
             targetEntity = OperativeSpecialReport.class,
@@ -105,8 +109,8 @@ public class SpecialMission extends AbstractRevisionedEntity implements Cloneabl
 
     @Transient
     public void setGameMaster(Person gameMaster) {
-        Person old = this.gm;
-        this.gm = gameMaster;
+        Person old = this.gameMaster;
+        this.gameMaster = gameMaster;
 
         if (gameMaster != null && !gameMaster.equals(old)) {
             gameMaster.addSpecialMission(this);
@@ -131,6 +135,14 @@ public class SpecialMission extends AbstractRevisionedEntity implements Cloneabl
             operatives.remove(operative);
 
             operative.setSpecialMission(null);
+        }
+    }
+
+
+    @Override
+    public void prePersist() {
+        if (code == null) {
+            code = UUID.randomUUID();
         }
     }
 

@@ -18,8 +18,7 @@
 package de.paladinsinn.tp.dcis.data.missions;
 
 import com.sun.istack.NotNull;
-import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
-import de.paladinsinn.tp.dcis.data.Clearance;
+import de.paladinsinn.tp.dcis.data.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -43,7 +42,7 @@ import java.util.StringJoiner;
 )
 @Getter
 @Setter
-public class Mission extends AbstractRevisionedEntity implements Comparable<Mission>, Cloneable {
+public class Mission extends AbstractRevisionedEntity implements Comparable<Mission>, HasId, HasName, HasClearance, Cloneable {
     @Column(name = "CODE", length = 20, nullable = false)
     @Audited
     private String code;
@@ -54,7 +53,7 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
 
     @Column(name = "TITLE", length = 100, nullable = false)
     @Audited
-    private String title;
+    private String name;
 
     @Column(name = "DESCRIPTION", length = 4000, nullable = false)
     @Audited
@@ -125,7 +124,7 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
     public String toString() {
         return new StringJoiner(", ", Mission.class.getSimpleName() + "[", "]")
                 .add("code='" + code + "'")
-                .add("title='" + title + "'")
+                .add("title='" + name + "'")
                 .add("payment=" + payment)
                 .add("xp=" + xp)
                 .toString();
@@ -137,7 +136,7 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
         Mission result = (Mission) super.clone();
 
         result.code = code;
-        result.title = title;
+        result.name = name;
 
         result.description = description;
         result.clearance = clearance;

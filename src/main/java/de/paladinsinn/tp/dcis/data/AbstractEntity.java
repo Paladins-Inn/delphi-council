@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
@@ -33,7 +32,7 @@ import java.util.UUID;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class AbstractEntity implements Serializable, Cloneable {
+public abstract class AbstractEntity implements Cloneable, HasId {
     @Id
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(generator = "uuid2")
@@ -59,13 +58,24 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     }
 
     @PrePersist
-    public void setCreated() {
+    public void doPrePersist() {
         created = getNowUTC();
+        modified = created;
+
+        prePersist();
+    }
+
+    public void prePersist() {
     }
 
     @PreUpdate
-    public void setModified() {
+    public void doPreUpdate() {
         modified = getNowUTC();
+
+        preUpdate();
+    }
+
+    public void preUpdate() {
     }
 
 

@@ -41,8 +41,8 @@ import java.util.Arrays;
  */
 @Service
 @AllArgsConstructor
-public class AddOperatorToMissionListener implements ComponentEventListener<AddOperativeToMissionEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(AddOperatorToMissionListener.class);
+public class AddOperativeToMissionListener implements ComponentEventListener<AddOperativeToMissionEvent> {
+    private static final Logger LOG = LoggerFactory.getLogger(AddOperativeToMissionListener.class);
 
 
     private final MissionReportRepository missionReportRepository;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.ui.views.missions;
+package de.paladinsinn.tp.dcis.ui.views.specialmissions;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -30,25 +30,24 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.*;
 import de.codecamp.vaadin.serviceref.ServiceRef;
-import de.paladinsinn.tp.dcis.data.missions.Mission;
-import de.paladinsinn.tp.dcis.data.missions.MissionReport;
-import de.paladinsinn.tp.dcis.data.missions.MissionRepository;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMissionRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.components.DataCard;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportEditorView;
-import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
+import de.paladinsinn.tp.dcis.ui.views.missions.MissionEditorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.PostConstruct;
@@ -65,14 +64,12 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
-@Route(value = "missions", layout = MainView.class)
-@RouteAlias(value = "", layout = MainView.class)
-@I18nPageTitle("mission.list.title")
+@Route(value = "specialmissions", layout = MainView.class)
+@I18nPageTitle("specialmission.list.title")
 @CssImport("./views/lists-view.css")
-public class MissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
-    public static final Long serial = 1L;
-
-    private static final Logger LOG = LoggerFactory.getLogger(MissionListView.class);
+@Secured({"ORGA", "JUDGE", "ADMIN"})
+public class SpecialMissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
+    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionListView.class);
 
     private final HashSet<TranslatableComponent> translatables = new HashSet<>();
     private Locale locale;
@@ -82,13 +79,13 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
 
 
     @Autowired
-    private ServiceRef<MissionRepository> repository;
+    private ServiceRef<SpecialMissionRepository> repository;
 
     @Autowired
     private ServiceRef<PersonRepository> personRepository;
 
-    private final Grid<Mission> grid = new Grid<>();
-    private final TorgButton addMission = new TorgButton("mission.add", MissionEditorView.class);
+    private final Grid<SpecialMission> grid = new Grid<>();
+    private final TorgButton addMission = new TorgButton("specialmission.add", MissionEditorView.class);
 
     @PostConstruct
     public void init() {
@@ -100,13 +97,16 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
         grid.addComponentColumn(this::createCard);
 
-        if (user.isAdmin() || user.isOrga()) {
+        if (user.isGm()) {
             add(addMission);
 
             addMission.addClickListener(e -> e.getSource().getUI().ifPresent(
                     ui -> ui.navigate(
-                            MissionEditorView.class,
-                            new RouteParameters("id", UUID.randomUUID().toString())
+                            SpecialMissionEditorView.class,
+                            new RouteParameters(
+                                    new RouteParam("id", UUID.randomUUID().toString()),
+                                    new RouteParam("gm", user.getPerson().getId().toString())
+                            )
                     )
             ));
         }
@@ -115,18 +115,18 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         add(grid);
     }
 
-    private DataCard createCard(@NotNull final Mission mission) {
+    private DataCard createCard(@NotNull final SpecialMission mission) {
         DataCard card = new DataCard();
         card.init();
 
         // Logo
         Image logo = new Image();
-        if (mission.getImage() != null)
-            logo.setSrc(mission.getImage());
+        if (mission.getImageUrl() != null)
+            logo.setSrc(mission.getImageUrl());
         card.setLogo(logo);
 
         // Header
-        Span title = new Span(getTranslation("mission.title.card", getLocale(), mission.getName()));
+        Span title = new Span(getTranslation("mission.title.card", getLocale(), mission.getTitle()));
         title.setClassName("name");
         title.setMinWidth(300, PIXELS);
         title.setWidth(40, PERCENTAGE);
@@ -136,7 +136,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         clearance.setMinWidth(150, PIXELS);
         clearance.setWidth(20, PERCENTAGE);
 
-        Span code = new Span(getTranslation("mission.code.card", getLocale(), mission.getCode()));
+        Span code = new Span("");
         code.setClassName("date");
         code.setMinWidth(150, PIXELS);
         code.setWidth(20, PERCENTAGE);
@@ -186,41 +186,13 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         if (user.isOrga()) {
             TorgButton editMission = new TorgButton(
                     "mission.editor",
-                    MissionEditorView.class,
+                    SpecialMissionView.class,
                     new RouteParameters(
                             new RouteParam("id", mission.getId().toString())
                     )
             );
 
             card.addMargin(editMission);
-        }
-
-        if (user.isGm()) {
-            TorgButton registerExecution = new TorgButton(
-                    "missionreport.add",
-                    MissionReportEditorView.class,
-                    new RouteParameters(
-                            new RouteParam("mission", mission.getId().toString()),
-                            new RouteParam("id", UUID.randomUUID().toString()),
-                            new RouteParam("gm", getLoggedInPerson().getId().toString())
-                    )
-            );
-
-            card.addMargin(registerExecution);
-        }
-
-        for (MissionReport r : mission.getReports()) {
-            LOG.debug("Adding Link to mission report. mission={}, report={}", mission.getId(), r.getId());
-
-            TorgButton reportButton = new TorgButton(
-                    "mission.report-link",
-                    MissionReportView.class,
-                    r.getId(),
-                    r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                    r.getGameMaster().getName()
-            );
-
-            card.addMargin(reportButton);
         }
 
         translatables.add(card);
@@ -243,11 +215,11 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
                             int limit = query.getLimit();
 
                             Pageable page = PageRequest.of(offset / limit, limit);
-                            Page<Mission> missions = repository.get().findAll(page);
+                            Page<SpecialMission> missions = repository.get().findAll(page);
 
                             return missions.stream();
                         },
-                        query -> ((int)repository.get().count())
+                        query -> ((int) repository.get().count())
                 )
         );
     }
@@ -291,8 +263,8 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MissionListView)) return false;
-        MissionListView that = (MissionListView) o;
+        if (!(o instanceof SpecialMissionListView)) return false;
+        SpecialMissionListView that = (SpecialMissionListView) o;
         return getLocale().equals(that.getLocale());
     }
 
@@ -303,7 +275,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", MissionListView.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", SpecialMissionListView.class.getSimpleName() + "[", "]")
                 .add("locale=" + locale)
                 .toString();
     }

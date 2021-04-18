@@ -47,7 +47,7 @@ import java.util.StringJoiner;
 )
 @Getter
 @Setter
-public class Operative extends AbstractRevisionedEntity implements HasAvatar, HasToken {
+public class Operative extends AbstractRevisionedEntity implements HasAvatar, HasToken, HasName, HasCosm, HasClearance {
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited
     private String name;

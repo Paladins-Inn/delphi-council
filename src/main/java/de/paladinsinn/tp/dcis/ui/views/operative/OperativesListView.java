@@ -32,6 +32,7 @@ import com.vaadin.flow.router.*;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
 import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
+import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.components.DataCard;
@@ -39,6 +40,7 @@ import de.paladinsinn.tp.dcis.ui.components.TorgButton;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
 import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,13 +148,30 @@ public class OperativesListView extends Div implements Serializable, AutoCloseab
                     MissionReportView.class,
                     r.getReport().getId(),
                     r.getReport().getMission().getCode(),
-                    r.getReport().getMission().getTitle(),
+                    r.getReport().getMission().getName(),
                     r.getReport().getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
                     r.getReport().getGameMaster().getUsername()
             );
 
             card.addDescription(reportButton);
         }
+
+        for (OperativeSpecialReport r : data.getSpecialReports()) {
+            LOG.debug("Adding Link to mission reports. mission={}, report={}", data.getId(), r.getId());
+
+            TorgButton reportButton = new TorgButton(
+                    "operative.report-link",
+                    SpecialMissionView.class,
+                    r.getSpecialMission().getId(),
+                    r.getSpecialMission().getGameMaster().getUsername(),
+                    r.getSpecialMission().getTitle(),
+                    r.getSpecialMission().getMissionDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    r.getSpecialMission().getGameMaster().getUsername()
+            );
+
+            card.addDescription(reportButton);
+        }
+
 
         description.getStyle().set("white-space", "normal");
         description.getStyle().set("test-align", "right");

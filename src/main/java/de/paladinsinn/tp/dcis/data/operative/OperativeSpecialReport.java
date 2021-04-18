@@ -18,6 +18,7 @@
 package de.paladinsinn.tp.dcis.data.operative;
 
 import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.data.HasName;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +44,7 @@ import java.util.StringJoiner;
 )
 @Getter
 @Setter
-public class OperativeSpecialReport extends AbstractRevisionedEntity implements Comparable<OperativeSpecialReport> {
+public class OperativeSpecialReport extends AbstractRevisionedEntity implements Comparable<OperativeSpecialReport>, HasName, HasOperative {
     @Column(name = "NOTES", length = 4000)
     private String notes;
 
@@ -80,6 +81,7 @@ public class OperativeSpecialReport extends AbstractRevisionedEntity implements 
         }
     }
 
+    @Override
     @Transient
     public void setOperative(Operative operative) {
         Operative old = this.operative;
@@ -92,6 +94,17 @@ public class OperativeSpecialReport extends AbstractRevisionedEntity implements 
                 old.removeSpecialReport(this);
             }
         }
+    }
+
+    @Override
+    @Transient
+    public String getName() {
+        return operative.getName();
+    }
+
+    @Override
+    @Transient
+    public void setName(final String name) {
     }
 
 

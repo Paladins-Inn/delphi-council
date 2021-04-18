@@ -126,7 +126,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
         Operative data = new Operative();
         data.setId(UUID.fromString(operativeId));
         data.setClearance(Clearance.ALPHA);
-        data.setModified();
+        data.preUpdate();
 
         Person person = data.getPlayer();
         if (person == null) {

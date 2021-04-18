@@ -34,12 +34,17 @@ import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.data.person.RoleName;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.components.DataCard;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
 import de.paladinsinn.tp.dcis.ui.views.operative.OperativeEditView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionEditorView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +68,9 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
 
     @Autowired
     private ServiceRef<PersonRepository> repository;
+
+    @Autowired
+    private LoggedInUser user;
 
     private Grid<Person> grid;
 
@@ -115,6 +123,20 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
                 person.getName()
         );
 
+        if (person.matchRole(RoleName.GM)) {
+            TorgButton registerExecution = new TorgButton(
+                    "specialmission.add",
+                    SpecialMissionEditorView.class,
+                    new RouteParameters(
+                            new RouteParam("id", UUID.randomUUID().toString()),
+                            new RouteParam("gm", user.getPerson().getId().toString())
+                    )
+            );
+
+            card.addMargin(registerExecution);
+        }
+
+
         TorgButton addOperative = new TorgButton("operative.add", OperativeEditView.class);
         addOperative.addClickListener(e -> e.getSource().getUI().ifPresent(
                 ui -> ui.navigate(
@@ -128,13 +150,26 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
 
         card.addMargin(editButton, addOperative);
 
-        Span spacer = new Span(" ");
         for (MissionReport r : person.getReports()) {
+            Span spacer = new Span(" ");
             TorgButton link = new TorgButton(
                     "person.missionreport-link",
                     MissionReportView.class,
                     r.getId(),
-                    r.getMission().getCode(), r.getMission().getTitle(), r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                    r.getMission().getCode(), r.getMission().getName(), r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
+            );
+
+
+            card.addDescription(link, spacer);
+        }
+
+        for (SpecialMission r : person.getSpecialMissions()) {
+            Span spacer = new Span(" ");
+            TorgButton link = new TorgButton(
+                    "person.missionreport-link",
+                    SpecialMissionView.class,
+                    r.getId(),
+                    r.getTitle(), r.getTitle(), r.getMissionDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
             );
 
 
@@ -154,6 +189,7 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
 
         return card;
     }
+
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {

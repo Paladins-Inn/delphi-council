@@ -53,7 +53,7 @@ public class ConfirmationToken extends AbstractEntity {
     public ConfirmationToken(@NotNull final Person person) {
         this.person = person;
 
-        setCreated();
+        prePersist();
     }
 
     @Override

@@ -77,7 +77,7 @@ public class PersonRegistrationEvent extends ComponentEvent<RegistrationView> {
         result.setUsername(username);
         result.setPassword(password);
         result.setLocale(locale);
-        result.setCreated();
+        result.prePersist();
         result.disable();
         result.unlock();
 

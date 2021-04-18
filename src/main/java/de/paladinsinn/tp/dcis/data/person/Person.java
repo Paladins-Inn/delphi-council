@@ -276,7 +276,7 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
     public void setPassword(final String pw) {
         password = new BCryptPasswordEncoder().encode(pw);
 
-        setModified();
+        preUpdate();
         status.setCredentialsChange(getModified());
     }
 

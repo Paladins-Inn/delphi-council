@@ -25,6 +25,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.AbstractEntity;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
@@ -61,7 +62,17 @@ public abstract class TorgForm<T extends AbstractEntity> extends Composite<Div> 
         this.user = user;
     }
 
-    protected abstract void init();
+    protected void init() {
+        form.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("1px", 1),
+                new FormLayout.ResponsiveStep("400px", 2),
+                new FormLayout.ResponsiveStep("800px", 3)
+        );
+
+        if (locale == null) {
+            locale = VaadinSession.getCurrent().getLocale();
+        }
+    }
 
     protected abstract void populate();
 

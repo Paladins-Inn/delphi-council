@@ -53,6 +53,8 @@ import de.paladinsinn.tp.dcis.ui.views.missions.MissionListView;
 import de.paladinsinn.tp.dcis.ui.views.operative.OperativesListView;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonEditView;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonListView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionEditorView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionListView;
 import de.paladinsinn.tp.dcis.ui.views.tools.ThreatCardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,6 +216,8 @@ public class MainView extends AppLayout implements LocaleChangeObserver, Transla
 
         ArrayList<Class<? extends Component>> allTabs = new ArrayList<>();
         allTabs.add(MissionListView.class);
+        allTabs.add(SpecialMissionListView.class);
+        allTabs.add(SpecialMissionEditorView.class);
         allTabs.add(OperativesListView.class);
         allTabs.add(PersonListView.class);
         allTabs.add(ThreatCardView.class);

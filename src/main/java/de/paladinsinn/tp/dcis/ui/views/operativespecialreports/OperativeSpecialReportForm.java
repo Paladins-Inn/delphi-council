@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.ui.views.operativereports;
+package de.paladinsinn.tp.dcis.ui.views.operativespecialreports;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.server.VaadinSession;
-import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
+import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.components.TorgForm;
@@ -45,24 +44,23 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
-public class OperativeReportForm extends TorgForm<OperativeReport> {
-    private static final Logger LOG = LoggerFactory.getLogger(OperativeReportForm.class);
+public class OperativeSpecialReportForm extends TorgForm<OperativeSpecialReport> {
+    private static final Logger LOG = LoggerFactory.getLogger(OperativeSpecialReportForm.class);
 
-    private final OperativeReportService reportService;
-    private final RemoveOperativeFromMissionListener removeOperativeFromMissionListener;
+    private final OperativeSpecialReportService reportService;
+    private final RemoveOperativeFromSpecialMissionListener removeOperativeFromMissionListener;
 
 
     // The form components.
     private final FormLayout form = new FormLayout();
     private final TextField id = new TextField();
-    private final TextArea achievements = new TextArea();
     private final TextArea notes = new TextArea();
 
 
     @Autowired
-    public OperativeReportForm(
-            @NotNull final OperativeReportService reportService,
-            @NotNull final RemoveOperativeFromMissionListener removeOperativeFromMissionListener,
+    public OperativeSpecialReportForm(
+            @NotNull final OperativeSpecialReportService reportService,
+            @NotNull final RemoveOperativeFromSpecialMissionListener removeOperativeFromMissionListener,
 
             LoggedInUser user) {
         super(user);
@@ -84,35 +82,23 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
             return;
         }
 
-        if (locale == null) {
-            locale = VaadinSession.getCurrent().getLocale();
-        }
+        super.init();
 
-        addListener(OperativeReportSaveEvent.class, reportService);
-        addListener(RemoveOperativeFromMissionEvent.class, removeOperativeFromMissionListener);
-
-        form.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("1px", 1),
-                new FormLayout.ResponsiveStep("400px", 2),
-                new FormLayout.ResponsiveStep("800px", 3)
-        );
+        addListener(OperativeSpecialReportSaveEvent.class, reportService);
+        addListener(RemoveOperativeFromSpecialMissionEvent.class, removeOperativeFromMissionListener);
 
         id.setReadOnly(true);
-        achievements.addClassName("long-text");
-        achievements.setClearButtonVisible(true);
-        achievements.setMaxLength(4000);
 
-        achievements.setReadOnly(user.isReadonly() && !(data != null && user.getPerson().getName().equals(data.getReport().getGameMaster().getUsername())));
         notes.addClassName("long-text");
         notes.setClearButtonVisible(true);
         notes.setMaxLength(4000);
-        notes.setReadOnly(user.isReadonly() && !(data != null && user.getPerson().getName().equals(data.getReport().getGameMaster().getUsername())));
+        notes.setReadOnly(user.isReadonly() && !(data != null && user.getPerson().equals(data.getSpecialMission().getGameMaster())));
 
         actions = new TorgActionBar(
                 "buttons",
                 event -> { // save
                     scrape();
-                    getEventBus().fireEvent(new OperativeReportSaveEvent(this, false));
+                    getEventBus().fireEvent(new OperativeSpecialReportSaveEvent(this, data));
                 },
                 event -> { // reset
                     LOG.info("Resetting data from: displayed={}, new={}", data, oldData);
@@ -121,11 +107,11 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
                 ev -> { // cancel
                 },
                 ev -> { // delete
-                    if (user.isOrga() || user.isJudge() || data.getReport().getDate().isAfter(LocalDate.now())) {
+                    if (user.isOrga() || user.isJudge() || data.getSpecialMission().getMissionDate().isAfter(LocalDate.now())) {
                         LOG.info("Removing this operative from mission");
                         scrape();
 
-                        fireEvent(new RemoveOperativeFromMissionEvent(this, data));
+                        fireEvent(new RemoveOperativeFromSpecialMissionEvent(this, data));
 
                         getUI().ifPresent(ui -> ui.getPage().getHistory().back());
                     }
@@ -133,7 +119,7 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
         );
         actions.setReadOnly(
                 user.isReadonly()
-                        && !user.getPerson().equals(data.getReport().getGameMaster())
+                        && !user.getPerson().equals(data.getSpecialMission().getGameMaster())
                         && !user.isOrga()
                         && !user.isAdmin()
                         && !user.isJudge()
@@ -152,14 +138,12 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
         }
 
         bindData(data.getId().toString(), id);
-        bindData(data.getAchievements(), achievements);
         bindData(data.getNotes(), notes);
     }
 
     protected void scrape() {
-        if (data == null) data = new OperativeReport();
+        if (data == null) data = new OperativeSpecialReport();
 
-        data.setAchievements(achievements.getValue());
         data.setNotes(notes.getValue());
     }
 
@@ -183,20 +167,13 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
         id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
-        achievements.setLabel(getTranslation("missionreport.achievements.caption"));
-        achievements.setHelperText(getTranslation("missionreport.achievements.help"));
-
         notes.setLabel(getTranslation("missionreport.notes.caption"));
         notes.setHelperText(getTranslation("missionreport.notes.help"));
 
 
         LOG.trace("Adding all form elements.");
-        form.add(achievements);
-        form.add(notes);
+        form.add(notes, actions);
 
-        form.add(actions);
-
-        form.setColspan(achievements, 3);
         form.setColspan(notes, 3);
         form.setColspan(actions, 3);
     }

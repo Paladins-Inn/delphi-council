@@ -27,7 +27,6 @@ import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.missions.SuccessState;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
-import de.paladinsinn.tp.dcis.data.operative.OperativeReportRepository;
 import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
@@ -36,7 +35,7 @@ import de.paladinsinn.tp.dcis.ui.components.PersonSelector;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.components.TorgForm;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionEvent;
-import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperatorToMissionListener;
+import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +59,10 @@ public class MissionReportForm extends TorgForm<MissionReport> {
      * The service for writing data to.
      */
     private final MissionReportService reportService;
-    private final AddOperatorToMissionListener addOperatorToMissionListener;
+    private final AddOperativeToMissionListener addOperativeToMissionListener;
 
     private final PersonRepository personRepository;
     private final OperativeRepository operativeRepository;
-    private final OperativeReportRepository operativeReportRepository;
 
 
     private final TextField id = new TextField();
@@ -79,21 +77,18 @@ public class MissionReportForm extends TorgForm<MissionReport> {
     @Autowired
     public MissionReportForm(
             @NotNull final MissionReportService reportService,
-            @NotNull final AddOperatorToMissionListener addOperatorToMissionListener,
+            @NotNull final AddOperativeToMissionListener addOperativeToMissionListener,
             @NotNull final PersonRepository personRepository,
             @NotNull final OperativeRepository operativeRepository,
-            @NotNull final OperativeReportRepository operativeReportRepository,
 
             @NotNull final LoggedInUser user
     ) {
         super(user);
 
         this.reportService = reportService;
-        this.addOperatorToMissionListener = addOperatorToMissionListener;
+        this.addOperativeToMissionListener = addOperativeToMissionListener;
         this.personRepository = personRepository;
         this.operativeRepository = operativeRepository;
-        this.operativeReportRepository = operativeReportRepository;
-
     }
 
 
@@ -111,7 +106,7 @@ public class MissionReportForm extends TorgForm<MissionReport> {
         }
 
         addListener(MissionReportSaveEvent.class, reportService);
-        addListener(AddOperativeToMissionEvent.class, addOperatorToMissionListener);
+        addListener(AddOperativeToMissionEvent.class, addOperativeToMissionListener);
 
         form.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("1px", 1),
@@ -158,12 +153,12 @@ public class MissionReportForm extends TorgForm<MissionReport> {
 
         achievements.addClassName("long-text");
         achievements.setClearButtonVisible(true);
-        achievements.setMaxLength(1000);
+        achievements.setMaxLength(4000);
         achievements.setReadOnly(user.isReadonly());
 
         notes.addClassName("long-text");
         notes.setClearButtonVisible(true);
-        notes.setMaxLength(1000);
+        notes.setMaxLength(4000);
         notes.setReadOnly(user.isReadonly());
 
         gm = new PersonSelector("missionreport.gm", personRepository, user);

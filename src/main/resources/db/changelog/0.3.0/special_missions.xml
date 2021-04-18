@@ -25,13 +25,14 @@
         <modifyDataType tableName="SPECIALMISSIONS" columnName="CODE" newDataType="VARCHAR(36)"/>
         <modifyDataType tableName="SPECIALMISSIONS_AUD" columnName="CODE" newDataType="VARCHAR(36)"/>
 
-        <dropUniqueConstraint tableName="SPECIALMISSIONS" constraintName="SPECIALMISSIONS_REVID_UK"/>
-        <dropUniqueConstraint tableName="SPECIALREPORTS_OPERATIVES"
-                              constraintName="SPECIALREPORTS_OPERATIVES_REVID_UK"/>
-
         <dropColumn tableName="SPECIALMISSIONS" columnName="ACHIEVEMENTS"/>
         <dropColumn tableName="SPECIALMISSIONS_AUD" columnName="ACHIEVEMENTS"/>
         <dropColumn tableName="SPECIALREPORTS_OPERATIVES" columnName="ACHIEVEMENTS"/>
         <dropColumn tableName="SPECIALREPORTS_OPERATIVES_AUD" columnName="ACHIEVEMENTS"/>
+
+        <addColumn tableName="SPECIALMISSIONS_AUD">
+            <column name="IMAGE" type="VARCHAR(100)"/>
+            <column name="PUBLICATION" type="VARCHAR(100)"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

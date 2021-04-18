@@ -38,16 +38,16 @@ import java.util.StringJoiner;
 @Table(
         name = "MISSIONREPORTS_OPERATIVES",
         uniqueConstraints = {
-                @UniqueConstraint(name = "MISSIONREPORTS_OPERATIVES_UK", columnNames = {"MISSIONREPORT_ID","OPERATIVE_ID"})
+                @UniqueConstraint(name = "MISSIONREPORTS_OPERATIVES_UK", columnNames = {"MISSIONREPORT_ID", "OPERATIVE_ID"})
         }
 )
 @Getter
 @Setter
-public class OperativeReport extends AbstractRevisionedEntity implements Comparable<OperativeReport> {
-    @Column(name = "ACHIEVEMENTS", length = 1000)
+public class OperativeReport extends AbstractRevisionedEntity implements Comparable<OperativeReport>, HasOperative {
+    @Column(name = "ACHIEVEMENTS", length = 4000)
     private String achievements;
 
-    @Column(name = "NOTES", length = 1000)
+    @Column(name = "NOTES", length = 4000)
     private String notes;
 
     @ManyToOne(

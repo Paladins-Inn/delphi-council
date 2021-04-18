@@ -21,6 +21,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <include file="special_missions.xml" relativeToChangelogFile="true"/>
-    <include file="repair_special_missions.xml" relativeToChangelogFile="true"/>
+    <changeSet id="20210418rlichti2" author="rlichti">
+        <addColumn tableName="SPECIALMISSIONS_AUD">
+            <column name="GM" type="VARCHAR(36)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

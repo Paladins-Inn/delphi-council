@@ -30,8 +30,6 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.router.*;
 import de.codecamp.vaadin.serviceref.ServiceRef;
-import de.paladinsinn.tp.dcis.data.person.Person;
-import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMissionRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
@@ -40,7 +38,6 @@ import de.paladinsinn.tp.dcis.ui.components.DataCard;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import de.paladinsinn.tp.dcis.ui.views.missions.MissionEditorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +45,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
@@ -77,15 +73,11 @@ public class SpecialMissionListView extends Div implements Serializable, AutoClo
     @Autowired
     private LoggedInUser user;
 
-
     @Autowired
     private ServiceRef<SpecialMissionRepository> repository;
 
-    @Autowired
-    private ServiceRef<PersonRepository> personRepository;
-
     private final Grid<SpecialMission> grid = new Grid<>();
-    private final TorgButton addMission = new TorgButton("specialmission.add", MissionEditorView.class);
+    private final TorgButton addMission = new TorgButton("specialmission.add", SpecialMissionView.class);
 
     @PostConstruct
     public void init() {
@@ -102,7 +94,7 @@ public class SpecialMissionListView extends Div implements Serializable, AutoClo
 
             addMission.addClickListener(e -> e.getSource().getUI().ifPresent(
                     ui -> ui.navigate(
-                            SpecialMissionEditorView.class,
+                            SpecialMissionView.class,
                             new RouteParameters(
                                     new RouteParam("id", UUID.randomUUID().toString()),
                                     new RouteParam("gm", user.getPerson().getId().toString())
@@ -199,12 +191,6 @@ public class SpecialMissionListView extends Div implements Serializable, AutoClo
         return card;
     }
 
-    public Person getLoggedInPerson() {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        return personRepository.get().findByUsername(userName);
-
-    }
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {

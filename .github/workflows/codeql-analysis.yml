@@ -23,6 +23,7 @@ on:
 jobs:
   analyze:
     name: Analyze
+    runs-on: java
 
     strategy:
       fail-fast: false

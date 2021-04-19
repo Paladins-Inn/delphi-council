@@ -35,7 +35,7 @@ import java.util.Locale;
  * <p>
  * Oh. and just for the record: week starts at monday.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-04
  */
 @Service

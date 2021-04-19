@@ -18,7 +18,7 @@
 /**
  * views -- This package contains the views used by the DCIS.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-04
  */
 package de.paladinsinn.tp.dcis.ui.views;

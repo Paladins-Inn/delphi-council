@@ -35,7 +35,7 @@ import java.util.List;
  * @param <T> Data Type.
  * @param <F> Filter.
  * @param <I> ID Type.
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-26
  */
 public class CrudServiceDataProvider<T, F, I> extends FilterablePageableDataProvider<T, F> {

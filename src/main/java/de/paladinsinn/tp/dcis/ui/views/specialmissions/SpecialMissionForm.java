@@ -48,7 +48,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 /**
  * SpecialMissionForm -- Edits/displays the data for a mission.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.3.0  2021-04-18
  */
 @Service

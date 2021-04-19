@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * TorgNotification --
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-04
  */
 @Getter

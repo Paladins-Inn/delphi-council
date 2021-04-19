@@ -50,7 +50,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 /**
  * MissionEditForm -- Edits/displays the data for a mission.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-29
  */
 @Service

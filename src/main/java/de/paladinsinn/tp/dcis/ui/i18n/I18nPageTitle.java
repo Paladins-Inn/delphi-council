@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
  * I18nPageTitle -- Localizable page titles for Vaadin.
  *
  * @author Sven Ruppert (https://vaadin.com/learn/tutorials/i18n/dynamic-pagetitle)
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-10
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -30,7 +30,7 @@ import java.util.StringJoiner;
 /**
  * AddOperativeToSpecialMissionEvent -- Adds an {@link Operative} to a {@link SpecialMission}.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.3.0  2021-04-18
  */
 @Getter

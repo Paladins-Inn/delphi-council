@@ -78,7 +78,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * the low level layout functions. Or you can repalce the container itself via
  * set{@literal <container name>}(HorizontalLayout)</p>
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
 @SuppressWarnings("unused")
@@ -169,9 +169,11 @@ public class DataCard extends HorizontalLayout implements Serializable, AutoClos
         removeComponents(dataHeader.getChildren().toArray(Component[]::new));
         dataHeader.removeAll();
     }
+
     public HorizontalLayout getHeader() {
         return dataHeader;
     }
+
     public void setHeader(HorizontalLayout layout) {
         layout.addClassName("description");
         layout.getThemeList().add("spacing-s");

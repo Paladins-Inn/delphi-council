@@ -31,7 +31,7 @@ import java.util.StringJoiner;
 /**
  * OperativeSpecialReport -- The special report for a local table game.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.3.0  2021-04-18
  */
 @Entity

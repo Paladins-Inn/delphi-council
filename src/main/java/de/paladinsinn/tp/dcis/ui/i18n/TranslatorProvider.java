@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Scope;
 /**
  * TranslatorProvider -- A provider for Spring to a singleton {@link Translator}.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-27
  */
 @Configuration

@@ -44,7 +44,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 /**
  * Avatar -- A component for editing an avatar.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
 @SuppressWarnings("unused")

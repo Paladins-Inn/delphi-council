@@ -39,7 +39,7 @@ import java.util.Locale;
 /**
  * PersonSelector -- A ComboBox for Person with database query for data.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
 public class PersonSelector extends ComboBox<Person> implements LocaleChangeObserver, TranslatableComponent {

@@ -36,7 +36,7 @@ import java.util.Arrays;
 /**
  * AddOperativeToSpecialMissionListener --
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.3.0  2021-04-18
  */
 @Service

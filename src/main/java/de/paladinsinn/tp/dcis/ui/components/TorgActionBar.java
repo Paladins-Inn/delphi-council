@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * TorgActionBar --
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
 public class TorgActionBar extends HorizontalLayout implements LocaleChangeObserver, TranslatableComponent {

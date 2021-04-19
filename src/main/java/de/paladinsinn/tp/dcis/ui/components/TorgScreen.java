@@ -35,7 +35,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * You may use the default methods for handling the center column and have special methods to handle the left and right
  * column if needed.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.3.0  2021-04-18
  */
 @SuppressWarnings("ALL")

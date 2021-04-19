@@ -36,6 +36,7 @@
     <description>
         Software for managing Torganized Play in Germany.
     </description>
+    <url>https://github.com/Paladins-Inn/delphi-council</url>
 
     <inceptionYear>2021</inceptionYear>
 
@@ -75,14 +76,14 @@
     </developers>
 
     <issueManagement>
-        <url>https://github.com/klenkes74/delphi-council/issues</url>
+        <url>https://github.com/Paladins-Inn/delphi-council/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
 
     <scm>
-        <url>https://github.com/klenkes74/delphi-council</url>
-        <connection>scm:git:git://github.com/klenkes74/delphi-council.git</connection>
-        <developerConnection>scm:git:git@github.com:klenkes74/delphi-council.git</developerConnection>
+        <url>https://github.com/Paladins-Inn/delphi-council</url>
+        <connection>scm:git:git://github.com/Paladins-Inn/delphi-council.git</connection>
+        <developerConnection>scm:git:git@github.com:Paladins-Inn/delphi-council.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -568,6 +569,113 @@
                             <trimStackTrace>false</trimStackTrace>
                             <enableAssertions>true</enableAssertions>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>release</id>
+
+            <properties>
+                <github.global.server>github</github.global.server>
+
+                <site-plugin.version>3.9.1</site-plugin.version>
+                <info-reports-plugin.version>3.1.1</info-reports-plugin.version>
+            </properties>
+
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <version>${site-plugin.version}</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-project-info-reports-plugin</artifactId>
+                        <version>${info-reports-plugin.version}</version>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <failOnError>false</failOnError>
+                            <failOnWarnings>false</failOnWarnings>
+                        </configuration>
+                        <reportSets>
+                            <reportSet><!-- by default, id = "default" -->
+                                <reports><!-- select non-aggregate reports -->
+                                    <report>javadoc</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-report-plugin</artifactId>
+                        <version>3.0.0-M5</version>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>jdepend-maven-plugin</artifactId>
+                        <version>2.0</version>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jxr-plugin</artifactId>
+                        <version>3.0.0</version>
+                    </plugin>
+                </plugins>
+            </reporting>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <version>${site-plugin.version}</version>
+                    </plugin>
+
+                    <plugin>
+                        <!-- Deploy the web site -->
+                        <groupId>com.github.github</groupId>
+                        <artifactId>site-maven-plugin</artifactId>
+                        <version>0.12</version>
+                        <configuration>
+                            <message>Building site for my project</message>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>site</goal>
+                                </goals>
+                                <phase>site</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
+                        <configuration>
+                            <source>${java.version}</source>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

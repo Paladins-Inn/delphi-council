@@ -26,7 +26,7 @@ import java.util.Arrays;
 /**
  * Realm -- The realms of the possibility wars with their axioms.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-26
  */
 @Getter

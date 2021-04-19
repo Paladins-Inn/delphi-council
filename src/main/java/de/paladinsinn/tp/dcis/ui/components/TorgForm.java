@@ -39,7 +39,7 @@ import java.util.Optional;
 /**
  * TorgForm --
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-11
  */
 public abstract class TorgForm<T extends AbstractEntity> extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {

@@ -38,7 +38,7 @@ import java.util.StringJoiner;
  *     <li>Credentials are valid for {@link #CREDENTIALS_VALID_FOR} (by default 5 years).</li>
  * </ul>
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-29
  */
 @Embeddable

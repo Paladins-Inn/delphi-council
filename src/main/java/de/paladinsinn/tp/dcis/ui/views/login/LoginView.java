@@ -51,7 +51,7 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * We use the component {@link LoginForm} for logging in users.
  *
  * @author paulroemer (github.com/vaadin-lerning-center/spring-secured-vaadin)
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-26
  */
 @Tag("sa-login-view")

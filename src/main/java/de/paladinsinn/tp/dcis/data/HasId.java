@@ -23,7 +23,7 @@ import java.util.UUID;
 /**
  * HasId --
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-18
  */
 public interface HasId extends Serializable {

@@ -25,7 +25,7 @@ import java.util.Locale;
 /**
  * I18nSelector -- A small wrapper around {@link LanguageSelect} for setting the available languages.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-27
  */
 public class I18nSelector extends LanguageSelect {

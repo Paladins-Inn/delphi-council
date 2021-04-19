@@ -43,7 +43,7 @@ import java.util.*;
 /**
  * Translator -- Provides a nice way to read translations from Resource bundles.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-27
  */
 @Scope("singleton")

@@ -24,7 +24,7 @@ import java.util.Locale;
 /**
  * TranslatableComponent --
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
 public interface TranslatableComponent {

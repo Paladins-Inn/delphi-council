@@ -20,7 +20,7 @@ package de.paladinsinn.tp.dcis.data;
 /**
  * HasName -- The object has a name.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-18
  */
 public interface HasName extends HasId {

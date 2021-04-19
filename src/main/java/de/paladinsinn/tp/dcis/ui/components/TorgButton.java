@@ -38,7 +38,7 @@ import java.util.UUID;
 /**
  * TorgButton -- A l10n button with torg background.
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-06
  */
 @CssImport("./views/delphi-council-is.css")

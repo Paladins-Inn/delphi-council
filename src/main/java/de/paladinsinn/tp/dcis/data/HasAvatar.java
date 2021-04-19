@@ -26,7 +26,7 @@ import java.io.InputStream;
 /**
  * HasAvatar -- This resource has an avatar (image).
  *
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
 public interface HasAvatar {

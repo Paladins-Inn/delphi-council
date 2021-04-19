@@ -35,7 +35,7 @@ import java.util.List;
  * ConfigureUIServiceInitListener --
  *
  * @author paulroemer (github.com/vaadin-lerning-center/spring-secured-vaadin)
- * @author klenkes74 {literal <rlichti@kaiserpfalz-edv.de>}
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-26
  */
 @Component

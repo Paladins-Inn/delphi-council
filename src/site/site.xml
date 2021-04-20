@@ -29,6 +29,9 @@
             <item name="Roland Lichti" href="https://www.lichti.de"/>
         </links>
 
+        <menu name="Menu">
+            <item name="FAQ" href="faq.html"/>
+        </menu>
         <menu ref="reports"/>
     </body>
 </project>

@@ -53,6 +53,10 @@ public class AuthenticationHandler extends SavedRequestAwareAuthenticationSucces
     private final PersonRepository repository;
     private final String defaultLocale;
 
+    /**
+     * @param repository    the repository to request person data from.
+     * @param defaultLocale the default locale if no other is selected.
+     */
     @Autowired
     public AuthenticationHandler(
             @NotNull final PersonRepository repository,
@@ -62,6 +66,9 @@ public class AuthenticationHandler extends SavedRequestAwareAuthenticationSucces
         this.defaultLocale = defaultLocale;
     }
 
+    /**
+     * @return the logged in user.
+     */
     @Bean
     @Scope("prototype")
     public LoggedInUser createUser() {

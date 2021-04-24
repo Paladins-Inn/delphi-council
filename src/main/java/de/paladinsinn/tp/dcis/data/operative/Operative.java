@@ -121,6 +121,9 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
     private byte[] token;
 
 
+    /**
+     * @param report to add to the operatives file.
+     */
     public void addOperativeReport(@NotNull OperativeReport report) {
         if (report != null & !reports.contains(report)) {
             reports.add(report);
@@ -129,6 +132,9 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
         }
     }
 
+    /**
+     * @param report to remove from the operatives file.
+     */
     public void removeOperativeReport(@NotNull OperativeReport report) {
         if (report != null && reports.contains(report)) {
             reports.remove(report);
@@ -138,6 +144,9 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
     }
 
 
+    /**
+     * @param report to add to the operatives file.
+     */
     public void addSpecialReport(@NotNull OperativeSpecialReport report) {
         if (report != null & !specialReports.contains(report)) {
             specialReports.add(report);
@@ -146,6 +155,9 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
         }
     }
 
+    /**
+     * @param report to remove from the operatives file.
+     */
     public void removeSpecialReport(@NotNull OperativeSpecialReport report) {
         if (report != null && specialReports.contains(report)) {
             specialReports.remove(report);
@@ -216,6 +228,9 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
         token = data.readAllBytes();
     }
 
+    /**
+     * @param xp sets the new XP of this operative.
+     */
     public void setXp(@NotNull final int xp) {
         this.xp = xp;
         clearance = Clearance.valueOf(xp);

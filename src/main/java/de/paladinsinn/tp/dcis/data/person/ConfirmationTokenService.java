@@ -52,12 +52,23 @@ public class ConfirmationTokenService {
         return repository.saveAndFlush(token);
     }
 
+    /**
+     * Delete the confirmation token.
+     *
+     * @param id The token to remove.
+     */
     public void delete(@NotNull final UUID id) {
         LOG.debug("Removing token. id={}", id);
 
         repository.deleteById(id);
     }
 
+    /**
+     * Loads the given token.
+     *
+     * @param id token.
+     * @return The token with person data.
+     */
     public Optional<ConfirmationToken> load(@NotNull final UUID id) {
         LOG.debug("Loading token. id={}", id);
 

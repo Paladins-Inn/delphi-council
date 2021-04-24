@@ -50,6 +50,11 @@ public class AvatarInformation implements Serializable, Cloneable {
     @Column(name = "USE_GRAVATAR")
     private boolean gravatar;
 
+    /**
+     * @param fileName     The file name to set.
+     * @param emailAddress The gravatar email address.
+     * @return The image (either the file or gravatar link).
+     */
     public Image getAvatarImage(@NotNull final String fileName, @NotNull final String emailAddress) {
         Image result = new Image();
 
@@ -63,6 +68,10 @@ public class AvatarInformation implements Serializable, Cloneable {
         return result;
     }
 
+    /**
+     * @param emailAddress The email address to check gravatar for.
+     * @return The gravatar link.
+     */
     public String getGravatarLink(@NotNull final String emailAddress) {
         if (!gravatar)
             return "";
@@ -70,6 +79,10 @@ public class AvatarInformation implements Serializable, Cloneable {
         return "https://www.gravatar.com/avatar/" + MD5Util.computeMD5(emailAddress.trim());
     }
 
+    /**
+     * @param fileName The file name to use for the stream.
+     * @return the resource to use within Vaadin.
+     */
     public StreamResource getAvatar(@NotNull final String fileName) {
         if (avatar != null) {
             return new StreamResource(fileName, () -> new ByteArrayInputStream(avatar));
@@ -87,10 +100,16 @@ public class AvatarInformation implements Serializable, Cloneable {
     }
 
 
+    /**
+     * Disables the use of the gravatar service.
+     */
     public void disableGravatar() {
         gravatar = false;
     }
 
+    /**
+     * Enables the use of the gravatar service.
+     */
     public void enableGravatar() {
         gravatar = true;
     }

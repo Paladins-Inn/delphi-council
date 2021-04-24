@@ -15,27 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.data.operative;
+package de.paladinsinn.tp.dcis.service;
 
-import de.paladinsinn.tp.dcis.data.HasId;
-
-import javax.persistence.Transient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HasOperative --
+ * VersionController -- Returns the version.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.1.0  2021-04-18
+ * @since 0.3.0  2021-04-24
  */
-public interface HasOperative extends HasId {
-    /**
-     * @param operative New operative to this object.
-     */
-    @Transient
-    void setOperative(Operative operative);
+@RestController
+@RequestMapping("/api/version")
+public class VersionController {
+    private final String version;
 
-    /**
-     * @return the operative of this object.
-     */
-    Operative getOperative();
+    @Autowired
+    public VersionController(
+            @Value("${application.version}") final String version
+    ) {
+        this.version = version;
+    }
+
+    @GetMapping
+    public String getVersion() {
+        return version;
+    }
 }

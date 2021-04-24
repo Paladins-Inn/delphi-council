@@ -17,7 +17,6 @@
 
 package de.paladinsinn.tp.dcis.security;
 
-import com.sun.istack.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
+import javax.validation.constraints.NotNull;
 
 /**
  * SecurityConfiguration --

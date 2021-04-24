@@ -50,6 +50,11 @@ public class ConfirmationToken extends AbstractEntity {
     @JoinColumn(name = "PERSON_ID", nullable = false)
     private Person person;
 
+    /**
+     * Creates a ConfirmationToken for the given person.
+     *
+     * @param person the person the confirmation token is generated for.
+     */
     public ConfirmationToken(@NotNull final Person person) {
         this.person = person;
 

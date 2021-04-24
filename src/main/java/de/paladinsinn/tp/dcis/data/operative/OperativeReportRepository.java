@@ -23,5 +23,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface OperativeReportRepository extends JpaRepository<OperativeReport, UUID> {
+    /**
+     * @param report    mission execution to look up.
+     * @param operative operative to look up.
+     * @return The operative report for the mission.
+     */
     OperativeReport findOperativeReportByReportAndOperative(MissionReport report, Operative operative);
 }

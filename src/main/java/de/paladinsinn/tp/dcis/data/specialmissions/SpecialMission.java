@@ -107,6 +107,9 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
     @Column(name = "NOTES", length = 4000)
     private String notes;
 
+    /**
+     * @param gameMaster the GM of this local table play.
+     */
     @Transient
     public void setGameMaster(Person gameMaster) {
         Person old = this.gameMaster;
@@ -122,6 +125,9 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
     }
 
 
+    /**
+     * @param operative A new operative to this local table game.
+     */
     public void addOperativeReport(OperativeSpecialReport operative) {
         if (operative != null && !operatives.contains(operative)) {
             operatives.add(operative);
@@ -130,6 +136,9 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
         }
     }
 
+    /**
+     * @param operative The operative to remove from this local table game.
+     */
     public void removeOperativeReport(OperativeSpecialReport operative) {
         if (operative != null && operatives.contains(operative)) {
             operatives.remove(operative);

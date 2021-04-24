@@ -68,6 +68,9 @@ public class OperativeReport extends AbstractRevisionedEntity implements Compara
     @JoinColumn(name = "OPERATIVE_ID", nullable = false)
     private Operative operative;
 
+    /**
+     * @param report mission to set to this operative report.
+     */
     @Transient
     public void setMissionReport(MissionReport report) {
         MissionReport old = this.report;
@@ -82,6 +85,9 @@ public class OperativeReport extends AbstractRevisionedEntity implements Compara
         }
     }
 
+    /**
+     * @param operative New operative to this object.
+     */
     @Transient
     public void setOperative(Operative operative) {
         Operative old = this.operative;

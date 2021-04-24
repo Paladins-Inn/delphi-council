@@ -20,6 +20,7 @@ package de.paladinsinn.tp.dcis.data.person;
 import com.sun.istack.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -36,5 +37,12 @@ public interface PersonRepository extends JpaRepository<Person, UUID> {
      * @return The person (if found).
      */
     Person findByUsername(@NotNull String username);
-    Person findByRoles(@NotNull Role role);
+
+    /**
+     * Retrieves all persons holding the requested role.
+     *
+     * @param role role to collect all persons for.
+     * @return A list of persons holding the requested role.
+     */
+    List<Person> findByRoles(@NotNull Role role);
 }

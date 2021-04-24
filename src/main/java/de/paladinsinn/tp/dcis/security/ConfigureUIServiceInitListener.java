@@ -84,6 +84,9 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
         }
     }
 
+    /**
+     * @return the authencation from the security context.
+     */
     @Bean
     public Authentication getPrincipal() {
         if (SecurityUtils.isUserLoggedIn()) {

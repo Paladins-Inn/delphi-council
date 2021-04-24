@@ -67,6 +67,9 @@ public class OperativeSpecialReport extends AbstractRevisionedEntity implements 
     private Operative operative;
 
 
+    /**
+     * @param specialMission special mission report for this operative.
+     */
     @Transient
     public void setSpecialMission(SpecialMission specialMission) {
         SpecialMission old = this.specialMission;

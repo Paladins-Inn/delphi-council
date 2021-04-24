@@ -59,6 +59,16 @@ public class PersonService implements UserDetailsService {
     private final EmailSenderService emailSender;
     private final Translator translator;
 
+    /**
+     * Creates a person service.
+     *
+     * @param mailFromName                Name for sending emails from.
+     * @param mailFromAddress             Address to send emails from.
+     * @param personRepository            The repository to request persons from the persistence layer.
+     * @param confirmationTokenRepository The repository to request tokens from the persistence layer.
+     * @param emailSender                 The service for sending emails.
+     * @param translator                  The translater for i18n.
+     */
     @Autowired
     public PersonService(
             @Value("${MAIL_FROM_NAME:Registration Clerk}") @NotNull final String mailFromName,
@@ -86,6 +96,10 @@ public class PersonService implements UserDetailsService {
         return result;
     }
 
+    /**
+     * @param person person to create a confirmation token for.
+     * @return The confirmation token for the given person.
+     */
     public ConfirmationToken signUp(@NotNull Person person) {
         person.getStatus().setEnabled(false);
         Person saved = personRepository.save(person);
@@ -99,6 +113,10 @@ public class PersonService implements UserDetailsService {
         return token;
     }
 
+    /**
+     * @param email email address to send the email to.
+     * @param token The token for this person.
+     */
     public void sendConfirmationMail(@NotNull final String email, @NotNull final UUID token) {
         LOG.info("Sending confirmation request. email='{}', token={}", email, token);
 
@@ -135,6 +153,9 @@ public class PersonService implements UserDetailsService {
         return person;
     }
 
+    /**
+     * @return the user details for the logged in person.
+     */
     @Bean
     public UserDetails getUserDetails() {
         try {

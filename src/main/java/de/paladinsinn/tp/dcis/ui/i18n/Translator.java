@@ -26,6 +26,7 @@ import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 import com.vaadin.flow.server.UIInitListener;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -156,6 +157,10 @@ public class Translator implements
                     LOG.warn("Translator did not find the wanted bundle. Using default bundle. bundle={}", bundleName);
 
                     try {
+                        if (Strings.isBlank(defaultLocale)) {
+                            defaultLocale = Locale.getDefault().toString();
+                        }
+
                         bundle = ResourceBundle.getBundle(DEFAULT_BUNDLE, Locale.forLanguageTag(defaultLocale),
                                 new UnicodeResourceBundleControl());
                     } catch (NullPointerException e2) {
@@ -223,7 +228,7 @@ public class Translator implements
                 final String format,
                 final ClassLoader loader,
                 final boolean reload
-        ) throws IllegalAccessException, InstantiationException, IOException {
+        ) throws IOException {
 
             String bundleName = toBundleName(baseName, locale);
             String resourceName = toResourceName(bundleName, "properties");

@@ -24,7 +24,6 @@ import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.data.HasAvatar;
 import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
-import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +36,6 @@ import javax.persistence.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * User -- The User data.
@@ -57,6 +55,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @Getter
 @Setter
 public class Person extends AbstractRevisionedEntity implements UserDetails, HasAvatar {
+    /**
+     * Iteration count for the BCrypt password encoding.
+     */
     public static final int ITERATION_COUNT = 10;
 
     @Column(name = "NAME", length = 100, nullable = false, unique = true)
@@ -133,10 +134,16 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
     private Set<SpecialMission> specialMissions = new HashSet<>();
 
 
+    /**
+     * @return The name of the person (or "-deleted-" if the account has been deleted).
+     */
     public String getName() {
         return status.isAccountNonDeleted() ? name : "-deleted-";
     }
 
+    /**
+     * @param name the name of the person.
+     */
     public void setName(final String name) {
         if (name != null && !name.isBlank() && !"-deleted-".equals(name)) {
             this.name = name;
@@ -144,10 +151,16 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
     }
 
 
+    /**
+     * @return the first name of the person (or "-deleted-" when the account is marked as deleted)
+     */
     public String getFirstname() {
         return status.isAccountNonDeleted() ? firstname : "-deleted-";
     }
 
+    /**
+     * @param name the new first name of the person.
+     */
     public void setFirstname(final String name) {
         if (name != null && !name.isBlank() && !"-deleted-".equals(name)) {
             this.firstname = name;
@@ -155,10 +168,16 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
     }
 
 
+    /**
+     * @return the family name of the person (or "-deleted-" when the account is marked as deleted)
+     */
     public String getLastname() {
         return status.isAccountNonDeleted() ? lastname : "-deleted-";
     }
 
+    /**
+     * @param name the new family name of the person.
+     */
     public void setLastname(final String name) {
         if (name != null && !name.isBlank() && !"-deleted-".equals(name)) {
             this.lastname = name;
@@ -166,53 +185,89 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
     }
 
 
+    /**
+     * @return the username of the person (or "-deleted-" if the account is marked as deleted)
+     */
     public String getUsername() {
         return status.isAccountNonDeleted() ? username : "-deleted-";
     }
 
+    /**
+     * @param username the new username of the person.
+     */
     public void setUsername(final String username) {
         if (username != null && !username.isBlank() && !"-deleted-".equals(username)) {
             this.username = username;
         }
     }
 
+    /**
+     * @return The locale of the user.
+     */
     public Locale getLocale() {
         return Locale.forLanguageTag(locale);
     }
 
+    /**
+     * @param locale the new locale for this user.
+     */
     public void setLocale(@NotNull final Locale locale) {
         this.locale = locale.getLanguage();
     }
 
+    /**
+     * Enables the user.
+     */
     public void enable() {
         setEnabled(true);
     }
 
+    /**
+     * Disables the user.
+     */
     public void disable() {
         setEnabled(false);
     }
 
+    /**
+     * @return If the user is enabled.
+     */
     @Override
     public boolean isEnabled() {
         return getStatus().isEnabled();
     }
 
+    /**
+     * @param state TRUE=this user is enabled, FALSE=the user is disabled.
+     */
     public void setEnabled(boolean state) {
         getStatus().setEnabled(state);
     }
 
+    /**
+     * Unlocks the person.
+     */
     public void unlock() {
         setLocked(false);
     }
 
+    /**
+     * Locks the person.
+     */
     public void lock() {
         setLocked(true);
     }
 
+    /**
+     * @return If the user is locked.
+     */
     public boolean isLocked() {
         return getStatus().isLocked();
     }
 
+    /**
+     * @param state TRUE=the user is locked, FALSE=the user is unlocked.
+     */
     public void setLocked(boolean state) {
         getStatus().setLocked(state);
     }
@@ -226,14 +281,23 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         return avatar.getGravatarLink(email);
     }
 
+    /**
+     * @return If the gravatar service is alled to be used for this person.
+     */
     public boolean isGravatarAllowed() {
         return avatar.isGravatar();
     }
 
+    /**
+     * disables the gravatar service.
+     */
     public void disableGravatar() {
         avatar.setGravatar(false);
     }
 
+    /**
+     * enables the gravatar service.
+     */
     public void enableGravatar() {
         avatar.setGravatar(true);
     }
@@ -280,16 +344,25 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         status.setCredentialsChange(getModified());
     }
 
+    /**
+     * @param roles of this person.
+     */
     public void setRoles(Collection<Role> roles) {
         this.roles.clear();
         this.roles.addAll(roles);
     }
 
+    /**
+     * @return roles of this person.
+     */
     public Set<Role> getRoles() {
         return new HashSet<>(roles);
     }
 
 
+    /**
+     * @param operative A new operative of this person.
+     */
     public void addOperative(@NotNull Operative operative) {
         if (operatives.contains(operative))
             return;
@@ -298,6 +371,9 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         operative.setPlayer(this);
     }
 
+    /**
+     * @param operative Operative to be removed.
+     */
     public void removeOperative(@NotNull Operative operative) {
         if (!operatives.contains(operative))
             return;
@@ -306,7 +382,9 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         operative.setPlayer(null);
     }
 
-
+    /**
+     * @param report a new mission this person is GM for.
+     */
     public void addGameMasterReport(@NotNull MissionReport report) {
         if (reports.contains(report))
             return;
@@ -315,6 +393,9 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         report.setGameMaster(this);
     }
 
+    /**
+     * @param report deletes a mission execution for this GM.
+     */
     public void removeGameMasterReport(@NotNull MissionReport report) {
         if (!reports.contains(report))
             return;
@@ -324,6 +405,9 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
     }
 
 
+    /**
+     * @param specialMission a local table play for this GM.
+     */
     public void addSpecialMission(@NotNull SpecialMission specialMission) {
         if (specialMissions.contains(specialMission))
             return;
@@ -332,21 +416,15 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         specialMission.setGameMaster(this);
     }
 
+    /**
+     * @param specialMission a local table play for this GM.
+     */
     public void removeSpecialMission(@NotNull SpecialMission specialMission) {
         if (!specialMissions.contains(specialMission))
             return;
 
         specialMissions.remove(specialMission);
         specialMission.setGameMaster(null);
-    }
-
-
-    public Set<OperativeReport> getOperativeReports() {
-        SortedSet<OperativeReport> result = new ConcurrentSkipListSet<>();
-
-        operatives.forEach(operative -> result.addAll(operative.getReports()));
-
-        return Collections.unmodifiableSet(result);
     }
 
 
@@ -364,6 +442,10 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         return roles;
     }
 
+    /**
+     * @param role role to check for this person.
+     * @return If the person holds the requested role.
+     */
     public boolean matchRole(RoleName role) {
         return roles.stream().anyMatch(r -> role.equals(RoleName.valueOf(r.getAuthority())));
     }

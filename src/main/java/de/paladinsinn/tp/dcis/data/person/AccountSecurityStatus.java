@@ -68,28 +68,46 @@ public class AccountSecurityStatus implements Serializable, Cloneable {
     @Column(name = "DELETED")
     private OffsetDateTime deleted;
 
+    /**
+     * @return If the account is not deleted.
+     */
     public boolean isAccountNonDeleted() {
         return deleted == null;
     }
 
+    /**
+     * @return If the acount is not expired.
+     */
     public boolean isAccountNonExpired() {
         return OffsetDateTime.now(ZoneOffset.UTC)
                 .isBefore(expiry);
     }
 
+    /**
+     * @return If the account is not locked.
+     */
     public boolean isAccountNonLocked() {
         return !locked;
     }
 
+    /**
+     * Marks the date of the credential change.
+     */
     public void setCredentialsChange() {
         credentialsChange = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
+    /**
+     * @return If the credential is not expired.
+     */
     public boolean isCredentialsNonExpired() {
         return OffsetDateTime.now(ZoneOffset.UTC)
                 .isBefore(credentialsChange.plus(CREDENTIALS_VALID_FOR));
     }
 
+    /**
+     * @return If the account is enabled.
+     */
     public boolean isEnabled() {
         return enabled;
     }

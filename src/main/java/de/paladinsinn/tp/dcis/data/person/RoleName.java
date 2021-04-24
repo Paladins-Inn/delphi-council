@@ -69,6 +69,10 @@ public enum RoleName {
         );
     }
 
+    /**
+     * @param person Person to check the roles for.
+     * @return All active roles of that person.
+     */
     public Set<String> getActiveRoleNames(@NotNull final Person person) {
         HashSet<String> result = new HashSet<>(person.getRoles().size());
 

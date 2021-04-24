@@ -17,7 +17,6 @@
 
 package de.paladinsinn.tp.dcis.security;
 
-import com.sun.istack.NotNull;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
@@ -27,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.validation.constraints.NotNull;
 import java.util.Locale;
 import java.util.StringJoiner;
 
@@ -53,6 +53,10 @@ public class LoggedInUser {
 
     private final String defaultLocale;
 
+    /**
+     * @param repository repository to request person data from.
+     * @param locale     locale of the current session for this user.
+     */
     public LoggedInUser(
             @NotNull final PersonRepository repository,
             @NotNull @Value("${spring.web.locale:de}") final String locale
@@ -61,6 +65,9 @@ public class LoggedInUser {
         this.defaultLocale = locale;
     }
 
+    /**
+     * @return the logged in person.
+     */
     public Person getPerson() {
         if (person != null) {
             return person;
@@ -94,12 +101,18 @@ public class LoggedInUser {
         VaadinSession.getCurrent().setLocale(savedLocale);
     }
 
+    /**
+     * @param person logged in user.
+     */
     public void setPerson(@NotNull final Person person) {
         LOG.info("Replacing logged in user. oldUser={}, newUser={}", this.person, person);
 
         this.person = person;
     }
 
+    /**
+     * @param condition critera to add to future calls to check r/o status.
+     */
     public void allow(boolean condition) {
         this.allow = condition;
 
@@ -135,26 +148,41 @@ public class LoggedInUser {
                 readonly, isGm, isOrga, isAdmin, isJudge);
     }
 
+    /**
+     * @return if the user has only read-only access.
+     */
     public boolean isReadonly() {
         calculateReadOnly();
         return readonly;
     }
 
+    /**
+     * @return if the user is a registered GM.
+     */
     public boolean isGm() {
         calculateReadOnly();
         return isGm;
     }
 
+    /**
+     * @return if the user is part of the organisers of the campaign.
+     */
     public boolean isOrga() {
         calculateReadOnly();
         return isOrga;
     }
 
+    /**
+     * @return if the user is admin of this system.
+     */
     public boolean isAdmin() {
         calculateReadOnly();
         return isAdmin;
     }
 
+    /**
+     * @return if the user is a judge of the campaign.
+     */
     public boolean isJudge() {
         calculateReadOnly();
         return isJudge;

@@ -47,6 +47,9 @@ public class EmailSenderService {
 
     private final JavaMailSender sender;
 
+    /**
+     * @param message message to be sent.
+     */
     @Async
     public void send(@NotNull SimpleMailMessage message) {
         sender.send(message);
@@ -64,6 +67,10 @@ public class EmailSenderService {
         sender.send(message);
     }
 
+    /**
+     * @param templateResolver ???
+     * @return the template engine.
+     */
     @Bean
     public SpringTemplateEngine thymeleafTemplateEngine(ITemplateResolver templateResolver) {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();

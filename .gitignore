@@ -5,6 +5,8 @@
 .classpath
 
 *.iml
+*.iws
+*.ipr
 .DS_Store
 
 # The following files are generated/updated by vaadin-maven-plugin

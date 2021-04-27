@@ -32,9 +32,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
-                <constraints nullable="false"
-                             unique="true" uniqueConstraintName="OPERATIVES_REVID_UK"
-                />
+                <constraints nullable="false"/>
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>
 
@@ -127,7 +125,6 @@
             <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_CLEARANCE_IDX"/>
             <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_COSM_IDX"/>
             <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_USERNAME_UK"/>
-            <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_REVID_UK"/>
             <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_PK"/>
             <dropTable tableName="OPERATIVES"/>
         </rollback>

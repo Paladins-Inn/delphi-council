@@ -23,5 +23,4 @@
 
     <include file="0.1.0/changeLog.xml" relativeToChangelogFile="true"/>
     <include file="0.2.0/changeLog.xml" relativeToChangelogFile="true"/>
-    <include file="0.3.0/changeLog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

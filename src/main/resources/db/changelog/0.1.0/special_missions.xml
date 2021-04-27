@@ -35,17 +35,14 @@
                 <constraints nullable="false"/>
             </column>
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
-                <constraints nullable="false"
-                             unique="true" uniqueConstraintName="PERSONS_REVID_UK"
-                />
+                <constraints nullable="false"/>
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>
 
 
-            <column name="CODE" type="VARCHAR(20)">
+            <column name="CODE" type="VARCHAR(36)">
                 <constraints nullable="false"
-                             unique="true" uniqueConstraintName="SPECIALMISSIONS_CODE_UK"
-                />
+                             unique="true" uniqueConstraintName="SPECIALMISSIONS_CODE_UK"/>
             </column>
 
             <column name="TITLE" type="VARCHAR(100)">
@@ -81,7 +78,6 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
 
 
@@ -99,14 +95,16 @@
             </column>
             <column name="REVTYPE" type="TINYINT"/>
 
-            <column name="CODE" type="VARCHAR(20)"/>
+            <column name="GM" type="VARCHAR(36)"/>
+            <column name="IMAGE" type="VARCHAR(100)"/>
+            <column name="PUBLICATION" type="VARCHAR(100)"/>
+            <column name="CODE" type="VARCHAR(36)"/>
             <column name="TITLE" type="VARCHAR(100)"/>
             <column name="CLEARANCE" type="VARCHAR(20)"/>
             <column name="DESCRIPTION" type="VARCHAR(4000)"/>
             <column name="PAYMENT" type="INT"/>
             <column name="XP" type="INT"/>
             <column name="MISSION_DATE" type="DATE"/>
-            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
         </createTable>
 
@@ -117,7 +115,7 @@
         </createIndex>
     </changeSet>
 
-    <changeSet id="specialmissions-oeratives" author="rlichti">
+    <changeSet id="specialmissions-operatives" author="rlichti">
         <createTable tableName="SPECIALREPORTS_OPERATIVES">
             <column name="ID" type="VARCHAR(36)">
                 <constraints nullable="false"
@@ -128,9 +126,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
-                <constraints nullable="false"
-                             unique="true" uniqueConstraintName="SPECIALREPORTS_OPERATIVES_REVID_UK"
-                />
+                <constraints nullable="false"/>
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>
 
@@ -139,7 +135,6 @@
             </column>
             <column name="MODIFIED" type="TIMESTAMP"/>
 
-            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
 
             <column name="SPECIALMISSION_ID" type="VARCHAR(36)">
@@ -166,7 +161,6 @@
             <column name="SPECIALMISSION_ID" type="VARCHAR(36)"/>
             <column name="OPERATIVE_ID" type="VARCHAR(36)"/>
 
-            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
         </createTable>
 

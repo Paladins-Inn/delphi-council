@@ -36,9 +36,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
-                <constraints nullable="false"
-                             unique="true" uniqueConstraintName="PERSONS_REVID_UK"
-                />
+                <constraints nullable="false"/>
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>
 
@@ -151,9 +149,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
-                <constraints nullable="false"
-                             unique="true" uniqueConstraintName="MISSIONREPORTS_REVID_UK"
-                />
+                <constraints nullable="false"/>
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>
 
@@ -257,9 +253,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
-                <constraints nullable="false"
-                             unique="true" uniqueConstraintName="MISSIONREPORTS_OPERATIVES_REVID_UK"
-                />
+                <constraints nullable="false"/>
             </column>
             <column name="REVISIONED" type="TIMESTAMP"/>
 

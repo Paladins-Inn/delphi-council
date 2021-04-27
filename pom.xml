@@ -88,6 +88,13 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <site>
+            <id>github</id>
+            <url>scm:git:git@github.com:Paladins-Inn/delphi-council.git</url>
+        </site>
+    </distributionManagement>
+
     <properties>
         <skipTests>false</skipTests>
 
@@ -101,11 +108,15 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <propertiesEncoding>UTF-8</propertiesEncoding>
 
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <site-plugin.version>3.9.1</site-plugin.version>
+        <info-reports-plugin.version>3.1.1</info-reports-plugin.version>
+        <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
+
         <immutables.version>2.8.9-ea-1</immutables.version>
         <vaadin.version>14.5.1</vaadin.version>
         <spring-boot.version>2.4.5</spring-boot.version>
         <spring-boot.envers.version>2.5.0</spring-boot.envers.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
     </properties>
 
     <repositories>
@@ -316,6 +327,11 @@
             <artifactId>mariadb-java-client</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -346,8 +362,32 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>4.4.0</version>
+            <version>4.4.1</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java8</artifactId>
+            <version>6.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>6.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>6.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.masterthought</groupId>
+            <artifactId>cucumber-reporting</artifactId>
+            <version>4.2.3</version>
         </dependency>
     </dependencies>
 
@@ -431,6 +471,64 @@
                     <trimStackTrace>false</trimStackTrace>
                     <enableAssertions>true</enableAssertions>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <rules>
+                        <rule implementation="org.jacoco.maven.RuleConfiguration">
+                            <element>BUNDLE</element>
+                            <limits>
+                                <limit implementation="org.jacoco.report.check.Limit">
+                                    <counter>INSTRUCTION</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.80</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                    </rules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>net.masterthought</groupId>
+                <artifactId>maven-cucumber-reporting</artifactId>
+                <version>5.5.0</version>
+                <configuration>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>execution</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <projectName>cucumber-jvm-example</projectName>
+                            <jsonFiles>${project.build.outputDirectory}/cucumber-report.json</jsonFiles>
+                            <outputDirectory>${project.build.directory}/site/cucumber-reports</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
@@ -541,17 +639,11 @@
         </testResources>
     </build>
 
+
     <profiles>
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
-
-            <properties>
-                <github.global.server>github</github.global.server>
-
-                <site-plugin.version>3.9.1</site-plugin.version>
-                <info-reports-plugin.version>3.1.1</info-reports-plugin.version>
-            </properties>
 
             <reporting>
                 <plugins>
@@ -601,6 +693,7 @@
                         <artifactId>maven-jxr-plugin</artifactId>
                         <version>3.1.1</version>
                     </plugin>
+
                 </plugins>
             </reporting>
 
@@ -623,24 +716,6 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-site-plugin</artifactId>
                         <version>${site-plugin.version}</version>
-                    </plugin>
-
-                    <plugin>
-                        <!-- Deploy the web site -->
-                        <groupId>com.github.github</groupId>
-                        <artifactId>site-maven-plugin</artifactId>
-                        <version>0.12</version>
-                        <configuration>
-                            <message>Building site for my project</message>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>site</goal>
-                                </goals>
-                                <phase>site</phase>
-                            </execution>
-                        </executions>
                     </plugin>
 
                     <plugin>
@@ -692,6 +767,15 @@
                         </executions>
                         <configuration>
                             <productionMode>true</productionMode>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-publish-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <scmBranch>gh-pages</scmBranch>
                         </configuration>
                     </plugin>
                 </plugins>

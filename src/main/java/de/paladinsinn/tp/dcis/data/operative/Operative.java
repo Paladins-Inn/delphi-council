@@ -41,7 +41,6 @@ import java.util.StringJoiner;
         name = "OPERATIVES",
         uniqueConstraints = {
                 @UniqueConstraint(name = "OPERATIVES_ID_UK", columnNames = "ID"),
-                @UniqueConstraint(name = "OPERATIVES_REVID_UK", columnNames = "REVID"),
                 @UniqueConstraint(name = "OPERATIVES_NAME_UK", columnNames = {"LAST_NAME", "FIRST_NAME"})
         }
 )

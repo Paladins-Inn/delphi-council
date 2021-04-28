@@ -56,6 +56,10 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="XP" type="INT" defaultValueNumeric="5">
+                <constraints nullable="false"/>
+            </column>
+
             <column name="DESCRIPTION" type="VARCHAR(4000)">
                 <constraints nullable="false"/>
             </column>
@@ -96,6 +100,7 @@
             <column name="CODE" type="VARCHAR(20)"/>
             <column name="TITLE" type="VARCHAR(100)"/>
             <column name="CLEARANCE" type="VARCHAR(20)"/>
+            <column name="XP" type="INT"/>
             <column name="DESCRIPTION" type="VARCHAR(4000)"/>
             <column name="PAYMENT" type="INT"/>
             <column name="OBJECTIVES_SUCCESS" type="VARCHAR(4000)"/>
@@ -120,20 +125,6 @@
             <dropIndex tableName="MISSIONS" indexName="MISSION_ID_UK"/>
             <dropIndex tableName="MISSIONS" indexName="MISSIONS_PK"/>
             <dropTable tableName="MISSIONS"/>
-        </rollback>
-    </changeSet>
-    <changeSet id="missions-data" author="rlichti">
-        <loadData tableName="MISSIONS" file="missions.csv" relativeToChangelogFile="true"/>
-
-        <sql>
-            INSERT INTO MISSIONS_AUD(ID,REVTYPE,CODE,TITLE,CLEARANCE,DESCRIPTION,PAYMENT,OBJECTIVES_SUCCESS,OBJECTIVES_GOOD,OBJECTIVES_OUTSTANDING)
-            SELECT ID,0,CODE,TITLE,CLEARANCE,DESCRIPTION,PAYMENT,OBJECTIVES_SUCCESS,OBJECTIVES_GOOD,OBJECTIVES_OUTSTANDING FROM MISSIONS;
-            INSERT INTO REVINFO(REV,REVTSTMP) SELECT REV,1615716576979 FROM MISSIONS_AUD;
-        </sql>
-
-        <rollback>
-            <sql>TRUNCATE MISSIONS_AUD;</sql>
-            <sql>TRUNCATE MISSIONS;</sql>
         </rollback>
     </changeSet>
 
@@ -225,21 +216,6 @@
             <dropIndex tableName="MISSIONREPORTS" indexName="MISSIONREPORTS_PK"/>
         </rollback>
     </changeSet>
-    <changeSet id="missionreports-data" author="rlichti">
-        <loadData tableName="MISSIONREPORTS" file="missionreports.csv"
-                  relativeToChangelogFile="true"/>
-
-        <sql>
-            INSERT INTO MISSIONREPORTS_AUD(ID,REVTYPE,MISSION_ID,GM_ID,OBJECTIVES_MET,ACHIEVEMENTS,NOTES)
-            SELECT ID,0,MISSION_ID,GM_ID,OBJECTIVES_MET,ACHIEVEMENTS,NOTES FROM MISSIONREPORTS;
-            INSERT INTO REVINFO(REV,REVTSTMP) SELECT REV,1615716576979 FROM MISSIONREPORTS_AUD;
-        </sql>
-
-        <rollback>
-            <sql>TRUNCATE MISSIONREPORTS_AUD;</sql>
-            <sql>TRUNCATE MISSIONREPORTS;</sql>
-        </rollback>
-    </changeSet>
 
     <changeSet id="missions-oeratives" author="rlichti">
         <createTable tableName="MISSIONREPORTS_OPERATIVES">
@@ -304,21 +280,6 @@
         <rollback>
             <dropTable tableName="MISSIONREPORTS_OPERATIVES_AUD"/>
             <dropTable tableName="MISSIONREPORTS_OPERATIVES"/>
-        </rollback>
-    </changeSet>
-    <changeSet id="missions-operatives-data" author="rlichti">
-        <loadData tableName="MISSIONREPORTS_OPERATIVES" file="missionreports_operatives.csv"
-                  relativeToChangelogFile="true"/>
-
-        <sql>
-            INSERT INTO MISSIONREPORTS_OPERATIVES_AUD(ID,REVTYPE,MISSIONREPORT_ID,OPERATIVE_ID)
-            SELECT ID,0,MISSIONREPORT_ID,OPERATIVE_ID FROM MISSIONREPORTS_OPERATIVES;
-            INSERT INTO REVINFO(REV,REVTSTMP) SELECT REV,1615716576979 FROM MISSIONREPORTS_OPERATIVES_AUD;
-        </sql>
-
-        <rollback>
-            <sql>TRUNCATE MISSIONREPORTS_OPERATIVES_AUD;</sql>
-            <sql>TRUNCATE MISSIONREPORTS_OPERATIVES;</sql>
         </rollback>
     </changeSet>
 </databaseChangeLog>

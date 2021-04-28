@@ -31,6 +31,11 @@
 
         <menu name="Menu">
             <item name="FAQ" href="faq.html"/>
+            <item name="Cucumber Tests" href="cucumber.html"/>
+            <item name="Cucumber Details Features" href="cucumber-html-reports/overview-features.html"/>
+            <item name="Cucumber Details Steps" href="cucumber-html-reports/overview-steps.html"/>
+            <item name="Cucumber Details Tags" href="cucumber-html-reports/overview-tags.html"/>
+            <item name="Cucumber Details Fehler" href="cucumber-html-reports/overview-failures.html"/>
         </menu>
         <menu ref="reports"/>
     </body>

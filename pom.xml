@@ -30,7 +30,7 @@
 
     <groupId>de.paladinsinn.delphicouncil</groupId>
     <artifactId>delphi-council-is</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Delphi Council IS</name>
@@ -392,9 +392,6 @@
     </dependencies>
 
     <build>
-        <defaultGoal>spring-boot:run</defaultGoal>
-
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -412,33 +409,6 @@
                         <version>1.18.20</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- Clean build and startup time for Vaadin apps sometimes may exceed
-                     the default Spring Boot's 30sec timeout.  -->
-                <configuration>
-                    <wait>500</wait>
-                    <maxAttempts>240</maxAttempts>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-spring-boot</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-spring-boot</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -513,7 +483,18 @@
                 <artifactId>maven-cucumber-reporting</artifactId>
                 <version>5.5.0</version>
                 <configuration>
-
+                    <projectName>${project.name}</projectName>
+                    <buildNumber>${env.github.run_id}</buildNumber>
+                    <skip>false</skip>
+                    <outputDirectory>${project.build.directory}/site</outputDirectory>
+                    <inputDirectory>${project.build.directory}/cucumber</inputDirectory>
+                    <jsonFiles>
+                        <jsonFile>*.json</jsonFile>
+                    </jsonFiles>
+                    <mergeFeaturesWithRetest>true</mergeFeaturesWithRetest>
+                    <mergeFeaturesById>true</mergeFeaturesById>
+                    <checkBuildResult>false</checkBuildResult>
+                    <skipEmptyJSONFiles>true</skipEmptyJSONFiles>
                 </configuration>
                 <executions>
                     <execution>
@@ -522,11 +503,6 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <configuration>
-                            <projectName>cucumber-jvm-example</projectName>
-                            <jsonFiles>${project.build.outputDirectory}/cucumber-report.json</jsonFiles>
-                            <outputDirectory>${project.build.directory}/site/cucumber-reports</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

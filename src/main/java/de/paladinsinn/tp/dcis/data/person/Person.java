@@ -352,11 +352,19 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         this.roles.addAll(roles);
     }
 
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+    }
+
     /**
      * @return roles of this person.
      */
     public Set<Role> getRoles() {
-        return new HashSet<>(roles);
+        return roles;
     }
 
 
@@ -477,9 +485,9 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
         result.password = password;
         result.locale = locale;
 
-        result.roles = Set.copyOf(roles);
-        result.operatives = Set.copyOf(operatives);
-        result.reports = Set.copyOf(reports);
+        result.roles.addAll(roles);
+        result.operatives.addAll(operatives);
+        result.reports.addAll(reports);
 
         result.status = status.clone();
         result.avatar = avatar.clone();
@@ -489,11 +497,15 @@ public class Person extends AbstractRevisionedEntity implements UserDetails, Has
 
     @Override
     public String toString() {
+        StringJoiner roles = new StringJoiner(",", "[", "]");
+        this.roles.forEach(r -> roles.add(r.getAuthority()));
+
         return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
                 .merge(super.getToStringJoiner())
 
                 .add("userName='" + getName() + "'")
                 .add("status=" + getStatus())
+                .add("roles=" + roles)
 
                 .toString();
     }

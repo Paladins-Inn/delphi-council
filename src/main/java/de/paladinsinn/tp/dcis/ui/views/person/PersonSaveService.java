@@ -60,7 +60,7 @@ public class PersonSaveService extends CrudService<Person, UUID> implements Comp
 
         try {
             Person saved = repository.saveAndFlush(data);
-            LOG.info("Saved {}. data={}", getClass().getSimpleName(), data);
+            LOG.info("Saved {}. data={}, saved={}", getClass().getSimpleName(), data, saved);
 
             event.getSource().setData(saved);
 

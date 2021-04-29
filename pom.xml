@@ -30,7 +30,7 @@
 
     <groupId>de.paladinsinn.delphicouncil</groupId>
     <artifactId>delphi-council-is</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>Delphi Council IS</name>
@@ -412,6 +412,18 @@
             </plugin>
 
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- Clean build and startup time for Vaadin apps sometimes may exceed
+                     the default Spring Boot's 30sec timeout.  -->
+                <configuration>
+                    <wait>500</wait>
+                    <maxAttempts>240</maxAttempts>
+                    <excludeDevtools>false</excludeDevtools>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.version}</version>
@@ -743,6 +755,18 @@
                         </executions>
                         <configuration>
                             <productionMode>true</productionMode>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <!-- Clean build and startup time for Vaadin apps sometimes may exceed
+                             the default Spring Boot's 30sec timeout.  -->
+                        <configuration>
+                            <wait>500</wait>
+                            <maxAttempts>240</maxAttempts>
+                            <excludeDevtools>true</excludeDevtools>
                         </configuration>
                     </plugin>
 

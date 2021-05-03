@@ -110,7 +110,7 @@
 
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <site-plugin.version>3.9.1</site-plugin.version>
-        <info-reports-plugin.version>3.1.1</info-reports-plugin.version>
+        <info-reports-plugin.version>3.1.2</info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
 
         <immutables.version>2.8.9-ea-1</immutables.version>

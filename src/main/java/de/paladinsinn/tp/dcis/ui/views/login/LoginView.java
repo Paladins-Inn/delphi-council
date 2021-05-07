@@ -24,7 +24,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.login.LoginForm;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
@@ -93,9 +92,6 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
         VerticalLayout result = new VerticalLayout();
         result.setHeightFull();
 
-        /**
-         * The login component.
-         */
         title = new H1(getTranslation("login.caption"));
         description = new Div();
         description.setText(getTranslation("login.help"));
@@ -106,7 +102,7 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
 
         login = new LoginForm();
         login.setAction("login");
-        login.addForgotPasswordListener(event -> Notification.show("sorry, not implemented yet", 2000, Notification.Position.BOTTOM_STRETCH));
+        login.addForgotPasswordListener(event -> getUI().ifPresent(ui -> ui.navigate(PasswordResetView.class)));
 
         register = new TorgButton(
                 "login.register-link",

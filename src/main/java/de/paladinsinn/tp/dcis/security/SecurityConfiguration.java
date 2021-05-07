@@ -122,6 +122,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/register",
                 "/register/**",
 
+                "/password-reset",
+                "/password-reset/**",
+
                 // web application manifest
                 "/manifest.webmanifest",
                 "/sw.js",

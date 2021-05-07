@@ -61,15 +61,23 @@ public class Translator implements
     /**
      * Default bundle to use when no other bundle is selected.
      */
-    private static final String DEFAULT_BUNDLE = "messages";
+    private final String defaultBundle;
 
     @Value("${spring.web.locale:de}")
     private String defaultLocale;
 
     private final HashMap<String, HashMap<Locale, ResourceBundle>> bundles = new HashMap<>();
 
+    public Translator() {
+        this("messages");
+    }
+
+    public Translator(@NotNull final String defaultBundle) {
+        this.defaultBundle = defaultBundle;
+    }
+
     /**
-     * Reads the translation from the default bundle {@value #DEFAULT_BUNDLE}.
+     * Reads the translation from the default bundle
      *
      * @param key       The key of the bundle entry.
      * @param locale    the locale to use.
@@ -78,7 +86,7 @@ public class Translator implements
      */
     @Override
     public String getTranslation(final String key, final Locale locale, Object... arguments) {
-        return getTranslation(DEFAULT_BUNDLE, key, locale, arguments);
+        return getTranslation(defaultBundle, key, locale, arguments);
     }
 
     /**
@@ -161,7 +169,7 @@ public class Translator implements
                             defaultLocale = Locale.getDefault().toString();
                         }
 
-                        bundle = ResourceBundle.getBundle(DEFAULT_BUNDLE, Locale.forLanguageTag(defaultLocale),
+                        bundle = ResourceBundle.getBundle(defaultBundle, Locale.forLanguageTag(defaultLocale),
                                 new UnicodeResourceBundleControl());
                     } catch (NullPointerException e2) {
                         LOG.error("Resource bundle can't be read.", e2);

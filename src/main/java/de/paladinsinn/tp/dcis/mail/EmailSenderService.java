@@ -21,17 +21,18 @@ import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * EmailSenderService -- Sends emails via {@link JavaMailSender} injected into this service.
@@ -46,6 +47,7 @@ public class EmailSenderService {
     private static final Logger LOG = LoggerFactory.getLogger(EmailSenderService.class);
 
     private final JavaMailSender sender;
+    private final SpringTemplateEngine templates;
 
     /**
      * @param message message to be sent.
@@ -67,14 +69,25 @@ public class EmailSenderService {
         sender.send(message);
     }
 
-    /**
-     * @param templateResolver ???
-     * @return the template engine.
-     */
-    @Bean
-    public SpringTemplateEngine thymeleafTemplateEngine(ITemplateResolver templateResolver) {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver);
-        return templateEngine;
+    @Async
+    public void send(
+            @NotNull String to,
+            @NotNull String subject,
+            @NotNull String templateName,
+            @NotNull Map<String, Object> params,
+            @NotNull Locale locale
+    ) throws MessagingException {
+        final MimeMessage mimeMessage = sender.createMimeMessage();
+        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, MailConfig.TEMPLATE_ENCODING);
+
+        Context context = new Context(locale, params);
+
+        message.setTo(to);
+        message.setSubject(subject);
+
+        message.setText(templates.process(templateName + ".html", context), true);
+        message.setText(templates.process(templateName + ".txt", context), false);
+
+        sender.send(mimeMessage);
     }
 }

@@ -85,8 +85,10 @@ public class EmailSenderService {
         message.setTo(to);
         message.setSubject(subject);
 
-        message.setText(templates.process(templateName + ".html", context), true);
-        message.setText(templates.process(templateName + ".txt", context), false);
+        message.setText(
+                templates.process(templateName + ".txt", context),
+                templates.process(templateName + ".html", context)
+        );
 
         sender.send(mimeMessage);
     }

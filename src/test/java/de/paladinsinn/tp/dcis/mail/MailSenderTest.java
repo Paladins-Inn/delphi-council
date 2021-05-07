@@ -21,6 +21,7 @@ import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import de.paladinsinn.tp.dcis.ui.i18n.Translator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -51,7 +52,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MailSenderTest {
 
     public static final String EMAIL_ADDRESS = "test@delpi-council.org";
-    public static final String EMAIL_SUBJECT = "Passwort-Reset";
+    public static final String EMAIL_SUBJECT = "mail.password-reset.subject";
+
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
             .withConfiguration(
@@ -66,10 +68,16 @@ public class MailSenderTest {
      */
     private final EmailSenderService sut;
 
+    private final Translator i18n;
+
 
     @Autowired
-    public MailSenderTest(@NotNull final EmailSenderService sut) {
+    public MailSenderTest(
+            @NotNull final EmailSenderService sut,
+            @NotNull final Translator i18n
+    ) {
         this.sut = sut;
+        this.i18n = i18n;
     }
 
 
@@ -92,7 +100,7 @@ public class MailSenderTest {
 
         assertEquals(1, receivedMessage.getAllRecipients().length);
         assertEquals(EMAIL_ADDRESS, receivedMessage.getAllRecipients()[0].toString());
-        assertEquals(EMAIL_SUBJECT, receivedMessage.getSubject());
+        assertEquals(i18n.getTranslation(EMAIL_SUBJECT, Locale.GERMAN), receivedMessage.getSubject());
 
         // needs to remove all mime linebreaks because the token is often divided on two lines.
         assertThat(GreenMailUtil.getBody(receivedMessage).replaceAll("=[\r\n]+", ""), containsString(token.toString()));

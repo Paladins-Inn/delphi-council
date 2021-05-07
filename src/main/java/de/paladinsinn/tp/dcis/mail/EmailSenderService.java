@@ -19,8 +19,9 @@ package de.paladinsinn.tp.dcis.mail;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -43,11 +44,11 @@ import java.util.Map;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class EmailSenderService {
-    private static final Logger LOG = LoggerFactory.getLogger(EmailSenderService.class);
-
     private final JavaMailSender sender;
     private final SpringTemplateEngine templates;
+    private final MessageSource messages;
 
     /**
      * @param message message to be sent.
@@ -56,7 +57,7 @@ public class EmailSenderService {
     public void send(@NotNull SimpleMailMessage message) {
         sender.send(message);
 
-        LOG.info("Send email. from='{}', to='{}', subject='{}'",
+        log.info("Send email. from='{}', to='{}', subject='{}'",
                 message.getFrom(), message.getTo(), message.getSubject());
     }
 
@@ -72,7 +73,7 @@ public class EmailSenderService {
     @Async
     public void send(
             @NotNull String to,
-            @NotNull String subject,
+            @NotNull String subjectKey,
             @NotNull String templateName,
             @NotNull Map<String, Object> params,
             @NotNull Locale locale
@@ -81,6 +82,14 @@ public class EmailSenderService {
         final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, MailConfig.TEMPLATE_ENCODING);
 
         Context context = new Context(locale, params);
+        String subject;
+        try {
+            subject = messages.getMessage(subjectKey, null, locale);
+        } catch (NoSuchMessageException e) {
+            log.warn("subject key could not be found: key={}", subjectKey);
+
+            subject = "!" + subjectKey;
+        }
 
         message.setTo(to);
         message.setSubject(subject);

@@ -88,6 +88,8 @@ public class MailSenderTest {
         // then
         MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
 
+        log.trace("Message body:\n{}", GreenMailUtil.getBody(receivedMessage));
+
         assertEquals(1, receivedMessage.getAllRecipients().length);
         assertEquals(EMAIL_ADDRESS, receivedMessage.getAllRecipients()[0].toString());
         assertEquals(EMAIL_SUBJECT, receivedMessage.getSubject());

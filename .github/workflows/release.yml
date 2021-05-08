@@ -22,15 +22,19 @@ jobs:
 
       - name: Build
         id: build-java
-        run: mvn package -B -Pproduction
+        run: mvn package site -B -Pproduction
+
+      - name: Update github pages
+        id: update-github-pages
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          branch: gh-pages
+          folder: target/site
 
       - name: Set Image name and version
         run: |
           echo "IMAGE=$(cat target/classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
           echo "VERSION=$(cat target/classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-
-      - name: Image name and version
-        run: echo "Working on image '${{ env.IMAGE }}:${{ env.VERSION }}'."
 
       - name: Upload Artifact
         id: upload-jar

@@ -21,8 +21,7 @@ import com.sun.istack.NotNull;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.mail.EmailSenderService;
 import de.paladinsinn.tp.dcis.ui.i18n.Translator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -47,9 +46,8 @@ import java.util.UUID;
  */
 @Service
 @Transactional
+@Slf4j
 public class PersonService implements UserDetailsService {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonService.class);
-
     private final String mailFromName;
     private final String mailFromAddress;
 
@@ -102,14 +100,16 @@ public class PersonService implements UserDetailsService {
      */
     public ConfirmationToken signUp(@NotNull Person person) {
         person.getStatus().setEnabled(false);
-        Person saved = personRepository.save(person);
+
+        Person saved = personRepository.saveAndFlush(person);
+
 
         ConfirmationToken token = new ConfirmationToken(saved);
         token = confirmationTokenRepository.save(token);
 
         sendConfirmationMail(saved.getEmail(), token.getId());
 
-        LOG.info("Created user confirmation token. token={}", token);
+        log.info("Created user confirmation token. token={}", token);
         return token;
     }
 
@@ -118,7 +118,7 @@ public class PersonService implements UserDetailsService {
      * @param token The token for this person.
      */
     public void sendConfirmationMail(@NotNull final String email, @NotNull final UUID token) {
-        LOG.info("Sending confirmation request. email='{}', token={}", email, token);
+        log.info("Sending confirmation request. email='{}', token={}", email, token);
 
         final SimpleMailMessage message = new SimpleMailMessage();
 
@@ -133,7 +133,7 @@ public class PersonService implements UserDetailsService {
     }
 
     public Person confirmUser(@NotNull ConfirmationToken token) throws IllegalStateException {
-        LOG.debug("Confirming user. token={}", token);
+        log.debug("Confirming user. token={}", token);
         Person person = token.getPerson();
 
         try {
@@ -144,12 +144,12 @@ public class PersonService implements UserDetailsService {
 
             confirmationTokenRepository.delete(token.getId());
         } catch (DataAccessException e) {
-            LOG.error("Can't confirm user.", e);
+            log.error("Can't confirm user.", e);
 
             throw new IllegalStateException("Can't confirm user with token '" + token.getId() + "'.", e);
         }
 
-        LOG.info("User confirmed. token={}, person={}", token, person);
+        log.info("User confirmed. token={}, person={}", token, person);
         return person;
     }
 
@@ -162,7 +162,7 @@ public class PersonService implements UserDetailsService {
             return (UserDetails) SecurityContextHolder.getContext()
                     .getAuthentication().getDetails();
         } catch (NullPointerException e) {
-            LOG.warn("Can't retrieve user details: {}", e.getMessage());
+            log.warn("Can't retrieve user details: {}", e.getMessage());
             return null;
         }
     }

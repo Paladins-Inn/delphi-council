@@ -19,12 +19,15 @@ package de.paladinsinn.tp.dcis.ui.views.person;
 
 import com.sun.istack.NotNull;
 import com.vaadin.flow.component.ComponentEventListener;
+import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonService;
+import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
 import de.paladinsinn.tp.dcis.ui.views.login.LoginView;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 /**
  * PersonRegistrationListener --
@@ -34,16 +37,36 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PersonRegistrationListener implements ComponentEventListener<PersonRegistrationEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonRegistrationListener.class);
-
     private final PersonService personService;
 
     @Override
     public void onComponentEvent(@NotNull final PersonRegistrationEvent event) {
-        LOG.info("User want's to register. event={}", event);
+        log.info("User want's to register. person={}", event.getPerson());
 
-        personService.signUp(event.getPerson());
+        Person person = event.getPerson();
+
+        try {
+            personService.signUp(event.getPerson());
+
+
+            new TorgNotification(
+                    "registration.send-registration",
+                    null,
+                    null,
+                    Arrays.asList(person.getName(), person.getUsername(), person.getEmail())
+            ).open();
+        } catch (Exception e) {
+            log.warn("Person could not sign up. user='" + event.getPerson().getUsername() + "'", e);
+
+            new TorgNotification(
+                    "registration.signup-failed",
+                    null,
+                    null,
+                    Arrays.asList(person.getName(), person.getUsername(), person.getEmail())
+            ).open();
+        }
 
         event.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
     }

@@ -17,12 +17,12 @@
 
 package de.paladinsinn.tp.dcis.ui.views.login;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -48,7 +48,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -110,16 +109,6 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
         }
 
         setSizeFull();
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setSizeFull();
-
-        FormLayout form = new FormLayout();
-        form.setHeightFull();
-        form.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("100px", 1),
-                new FormLayout.ResponsiveStep("300px", 2),
-                new FormLayout.ResponsiveStep("600px", 4)
-        );
 
         title = new H1(getTranslation("registration.caption"));
         description = new Div();
@@ -174,41 +163,11 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
         languageSelect.setRequiredIndicatorVisible(true);
         languageSelect.setValue(VaadinSession.getCurrent().getLocale());
 
-        // save
-        // reset
-        // cancel
         actions = new TorgActionBar(
                 "buttons",
-                ev -> { // save
-                    getEventBus().fireEvent(new PersonRegistrationEvent(
-                            this,
-                            name.getValue(),
-                            lastname.getValue(), firstname.getValue(),
-                            email.getValue(),
-                            username.getValue(), password.getValue(),
-                            languageSelect.getValue()
-                    ));
-
-                    new TorgNotification(
-                            "registration.send-registration",
-                            null,
-                            null,
-                            Arrays.asList(name.getValue(), username.getValue(), email.getValue())
-                    ).open();
-
-                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
-                },
-                ev -> { // reset
-                    name.setValue(null);
-                    lastname.setValue(null);
-                    firstname.setValue(null);
-                    email.setValue(null);
-                    username.setValue(null);
-                    password.setValue(null);
-                },
-                ev -> { // cancel
-                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
-                },
+                this::save,
+                this::reset,
+                this::cancel,
                 null
         );
 
@@ -230,8 +189,32 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
 
         form.setMinWidth(400, PIXELS);
         form.setMaxWidth(600, PIXELS);
+    }
 
-        add(form);
+    private void save(ClickEvent<NativeButton> ev) {
+        getEventBus().fireEvent(new PersonRegistrationEvent(
+                this,
+                name.getValue(),
+                lastname.getValue(), firstname.getValue(),
+                email.getValue(),
+                username.getValue(), password.getValue(),
+                languageSelect.getValue()
+        ));
+    }
+
+    private void reset(@SuppressWarnings("unused") ClickEvent<NativeButton> ev) {
+        // reset
+        name.setValue(null);
+        lastname.setValue(null);
+        firstname.setValue(null);
+        email.setValue(null);
+        username.setValue(null);
+        password.setValue(null);
+    }
+
+    private void cancel(ClickEvent<NativeButton> ev) {
+        // cancel
+        ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
     }
 
 

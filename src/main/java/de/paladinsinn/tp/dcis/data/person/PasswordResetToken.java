@@ -19,6 +19,7 @@ package de.paladinsinn.tp.dcis.data.person;
 
 import com.sun.istack.NotNull;
 import de.paladinsinn.tp.dcis.data.AbstractEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,6 +39,7 @@ import java.util.StringJoiner;
 @Table(name = "PWRESETTOKENS")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 public class PasswordResetToken extends AbstractEntity {
     private static final Logger LOG = LoggerFactory.getLogger(PasswordResetToken.class);

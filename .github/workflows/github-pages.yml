@@ -22,7 +22,7 @@ jobs:
 
       - name: Build
         id: build-java
-        run: echo mvn site -B -Pproduction
+        run: mvn site -B -Pproduction
 
       - name: check-dirs
         run: |

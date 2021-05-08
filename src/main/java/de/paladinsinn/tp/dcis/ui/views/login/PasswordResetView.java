@@ -17,11 +17,12 @@
 
 package de.paladinsinn.tp.dcis.ui.views.login;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -47,19 +48,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
-
-import static com.vaadin.flow.component.Unit.PIXELS;
+import java.util.UUID;
 
 /**
- * RegistrationView --
+ * PasswordResetView -- View for sending the token and then resetting the password.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.1.0  2021-04-10
+ * @since 1.1.0  2021-05-07
  */
-@Tag("sa-registration-view")
+@Tag("sa-password-reset-view")
 @Route(PasswordResetView.ROUTE + "/:token?")
 @I18nPageTitle("password-reset.caption")
 @CssImport("./views/edit-view.css")
@@ -77,16 +76,24 @@ public class PasswordResetView extends TorgScreen implements BeforeEnterObserver
 
     private Locale locale;
 
+    // Shown in both subviews.
     private H1 title;
     private Div description;
+    private I18nSelector languageSelect;
+    private TorgActionBar actions;
 
+    // Only in token-less subview.
     private TextField username;
     private EmailField email;
-    private I18nSelector languageSelect;
 
+    // Only when token is set.
     private PasswordField password;
 
-    private TorgActionBar actions;
+    /**
+     * person to reset password for.
+     */
+    private UUID token;
+
 
     @PostConstruct
     public void init() {
@@ -102,90 +109,50 @@ public class PasswordResetView extends TorgScreen implements BeforeEnterObserver
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSizeFull();
 
-        FormLayout form = new FormLayout();
-        form.setHeightFull();
-        form.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("100px", 1),
-                new FormLayout.ResponsiveStep("300px", 2),
-                new FormLayout.ResponsiveStep("600px", 4)
-        );
 
         title = new H1(getTranslation("password-reset.caption"));
         description = new Div();
         description.setText(getTranslation("password-reset.help"));
 
-        email = new EmailField(getTranslation("person.email.caption"));
-        email.setHelperText(getTranslation("person.email.help"));
-        email.setClearButtonVisible(true);
-        email.setRequiredIndicatorVisible(true);
-
-        username = new TextField(getTranslation("person.username.caption"));
-        username.setHelperText(getTranslation("person.username.help"));
-        username.setClearButtonVisible(true);
-        username.setRequired(true);
-        username.setRequiredIndicatorVisible(true);
-        username.setMinLength(1);
-        username.setMaxLength(50);
-
-        password = new PasswordField(getTranslation("person.password.caption"));
-        password.setHelperText(getTranslation("person.password.caption"));
-        password.setClearButtonVisible(true);
-        password.setRequired(true);
-        password.setRequiredIndicatorVisible(true);
-        password.setMinLength(8);
-        password.setMaxLength(50);
-
         languageSelect = new I18nSelector("input.locale", locale);
         languageSelect.setRequiredIndicatorVisible(true);
         languageSelect.setValue(VaadinSession.getCurrent().getLocale());
 
-        // save
-        // reset
-        // cancel
         actions = new TorgActionBar(
                 "buttons",
-                ev -> { // save
-                    getEventBus().fireEvent(new StartPasswordResetEvent(
-                            this,
-                            username.getValue(),
-                            email.getValue()
-                    ));
-
-                    new TorgNotification(
-                            "password-reset.send-registration",
-                            null,
-                            null,
-                            Arrays.asList(username.getValue(), email.getValue())
-                    ).open();
-
-                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
-                },
-                ev -> { // reset
-                    email.setValue(null);
-                    username.setValue(null);
-                    password.setValue(null);
-                },
-                ev -> { // cancel
-                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
-                },
+                this::save,
+                this::reset,
+                this::cancel,
                 null
         );
+    }
 
-        form.add(title, description,
-                email, languageSelect,
-                username, password,
-                actions);
-        form.setColspan(title, 4);
-        form.setColspan(description, 4);
-        form.setColspan(email, 4);
-        form.setColspan(username, 2);
-        form.setColspan(password, 2);
-        form.setColspan(actions, 4);
+    private void save(ClickEvent<NativeButton> ev) {
+        if (token == null) {
+            getEventBus().fireEvent(new StartPasswordResetEvent(
+                    this,
+                    username.getValue(),
+                    email.getValue()
+            ));
+        } else {
+            getEventBus().fireEvent(new ResetPasswordEvent(
+                    this,
+                    token,
+                    password.getValue()
+            ));
+        }
 
-        form.setMinWidth(400, PIXELS);
-        form.setMaxWidth(600, PIXELS);
+        ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
+    }
 
-        add(form);
+    private void reset(ClickEvent<NativeButton> ev) {
+        email.setValue(null);
+        username.setValue(null);
+        password.setValue(null);
+    }
+
+    private void cancel(ClickEvent<NativeButton> ev) {
+        ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
     }
 
 
@@ -197,44 +164,83 @@ public class PasswordResetView extends TorgScreen implements BeforeEnterObserver
 
         LOG.trace("Translating form. locale={}", locale.getDisplayName());
 
-        title.setText(getTranslation("registration.caption"));
-        description.setText(getTranslation("registration.help"));
-
-        email.setLabel(getTranslation("person.email.caption"));
-        email.setHelperText(getTranslation("person.email.help"));
-
-        username.setLabel(getTranslation("person.username.caption"));
-        username.setHelperText(getTranslation("person.username.help"));
-        password.setLabel(getTranslation("person.password.caption"));
-        password.setHelperText(getTranslation("person.password.caption"));
-
+        title.setText(getTranslation("password-reset.caption"));
+        description.setText(getTranslation("password-reset.help"));
         languageSelect.setLabel(getTranslation("input.locale.caption"));
-
         actions.setLocale(locale);
+
+        if (token == null) {
+            email.setLabel(getTranslation("person.email.caption"));
+            email.setHelperText(getTranslation("password-reset.email.help"));
+
+            username.setLabel(getTranslation("person.username.caption"));
+            username.setHelperText(getTranslation("password-reset.username.help"));
+        } else {
+            password.setLabel(getTranslation("person.password.caption"));
+            password.setHelperText(getTranslation("password-reset.password.caption"));
+        }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<String> tokenString = event.getRouteParameters().get("token");
         LOG.trace("confirming new user. token={}", tokenString);
 
-        tokenString.ifPresent(token -> {
-            try {
-                LOG.info("Password reset token. token={}", token);
 
-                // FIXME 2021-05-07 rlichti Create the real password reset flow.
+        form.add(title, description, languageSelect);
+        form.setColspan(title, 4);
+        form.setColspan(description, 4);
+        form.setColspan(languageSelect, 4);
 
-            } catch (IllegalArgumentException e) {
-                new TorgNotification(
-                        "password-reset.invalid-token.wrong-format",
-                        null,
-                        null,
-                        null
-                ).open();
-            }
+        tokenString.ifPresentOrElse(
+                token -> {
+                    try {
+                        this.token = UUID.fromString(token);
+                        LOG.info("Password reset token. token={}", token);
+                    } catch (IllegalArgumentException e) {
+                        new TorgNotification(
+                                "password-reset.invalid-token",
+                                null,
+                                null,
+                                null
+                        ).open();
 
-            event.getUI().navigate(LoginView.ROUTE);
-        });
+                        event.getUI().navigate(LoginView.ROUTE);
+                    }
+
+                    password = new PasswordField(getTranslation("person.password.caption"));
+                    password.setHelperText(getTranslation("person.password.caption"));
+                    password.setClearButtonVisible(true);
+                    password.setRequired(true);
+                    password.setRequiredIndicatorVisible(true);
+                    password.setMinLength(8);
+                    password.setMaxLength(50);
+
+                    form.add(password, actions);
+                    form.setColspan(password, 4);
+                },
+                () -> {
+                    username = new TextField(getTranslation("person.username.caption"));
+                    username.setHelperText(getTranslation("password-reset.username.help"));
+                    username.setClearButtonVisible(true);
+                    username.setRequired(false);
+                    username.setRequiredIndicatorVisible(false);
+                    username.setMaxLength(50);
+
+                    email = new EmailField(getTranslation("person.email.caption"));
+                    email.setHelperText(getTranslation("password-reset.email.help"));
+                    email.setClearButtonVisible(true);
+                    email.setRequiredIndicatorVisible(false);
+                    username.setMaxLength(100);
+
+                    form.add(username, email, actions);
+                    form.setColspan(email, 4);
+                    form.setColspan(username, 4);
+                }
+        );
+
+        form.setColspan(actions, 4);
     }
 
 

@@ -19,6 +19,8 @@ package de.paladinsinn.tp.dcis.data.person;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -28,4 +30,11 @@ import java.util.UUID;
  * @since 1.1.0  2021-05-07
  */
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, UUID> {
+    /**
+     * Retrieve all token for a single person.
+     *
+     * @param person Person to find all tokens for.
+     * @return List with all tokens for the given person.
+     */
+    List<PasswordResetToken> findAllByPerson(@NotNull Person person);
 }

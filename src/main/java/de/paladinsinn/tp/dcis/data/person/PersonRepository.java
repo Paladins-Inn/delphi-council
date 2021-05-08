@@ -17,9 +17,9 @@
 
 package de.paladinsinn.tp.dcis.data.person;
 
-import com.sun.istack.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,4 +45,13 @@ public interface PersonRepository extends JpaRepository<Person, UUID> {
      * @return A list of persons holding the requested role.
      */
     List<Person> findByRoles(@NotNull Role role);
+
+    /**
+     * Retrieves the persons with either username or email address as requested.
+     *
+     * @param username The username of the person.
+     * @param email    The email address of the person.
+     * @return A list of persons matching the username or the password. It should be only one ...
+     */
+    List<Person> findByUsernameOrEmail(@NotNull String username, @NotNull String email);
 }

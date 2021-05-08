@@ -17,17 +17,26 @@
 
 package de.paladinsinn.tp.dcis.ui.views.person;
 
-import com.sun.istack.NotNull;
 import com.vaadin.flow.component.ComponentEventListener;
-import de.paladinsinn.tp.dcis.data.person.PersonService;
+import de.paladinsinn.tp.dcis.data.person.PasswordResetToken;
+import de.paladinsinn.tp.dcis.data.person.PasswordResetTokenRepository;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
 import de.paladinsinn.tp.dcis.ui.views.login.LoginView;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
- * ResetPasswordListener --
+ * ResetPasswordListener -- Resets the password for a given user with the provided new password.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 1.1.0  2021-05-07
@@ -37,14 +46,49 @@ import org.springframework.stereotype.Service;
 public class ResetPasswordListener implements ComponentEventListener<ResetPasswordEvent> {
     private static final Logger LOG = LoggerFactory.getLogger(ResetPasswordListener.class);
 
-    private final PersonService personService;
+    private final PasswordResetTokenRepository tokenRepository;
 
+    @Transactional
     @Override
     public void onComponentEvent(@NotNull final ResetPasswordEvent event) {
         LOG.info("User want's to reset his password. event={}", event);
 
-        // FIXME 2021-05-07 rlichti implement password reset event.
+        Optional<Person> person = loadByToken(event.getToken());
+
+        person.ifPresentOrElse(
+                p -> {
+                    p.setPassword(event.getPassword());
+                    removeAllPersonalToken(p);
+
+                    new TorgNotification(
+                            "password-reset.changed-password.success",
+                            null,
+                            null,
+                            Collections.singletonList(p.getUsername())
+                    ).open();
+                },
+                () -> new TorgNotification(
+                        "password-reset.invalid-token",
+                        null,
+                        null,
+                        Collections.emptyList()
+                ).open()
+        );
 
         event.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
+    }
+
+
+    private Optional<Person> loadByToken(@NotNull final UUID tokenId) {
+        Optional<PasswordResetToken> token = tokenRepository.findById(tokenId);
+
+        Optional<Person> result = Optional.empty();
+        return token.map(PasswordResetToken::getPerson).or(() -> result);
+    }
+
+    private void removeAllPersonalToken(@NotNull final Person person) {
+        List<PasswordResetToken> tokens = tokenRepository.findAllByPerson(person);
+
+        tokens.forEach(tokenRepository::delete);
     }
 }

@@ -17,8 +17,7 @@
 
 package de.paladinsinn.tp.dcis.data.person;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +43,9 @@ import java.util.StringJoiner;
 @Embeddable
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountSecurityStatus implements Serializable, Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(AccountSecurityStatus.class);
 

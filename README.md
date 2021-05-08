@@ -24,7 +24,10 @@ tl;dr (ok, only the bullshit bingo words):
 ## Distribution
 The software is distributed via quay.io. You find the images as
 
-- quay.io/klenkes74/delphi-council-is:0.3.0-SNAPSHOT (bleeding edge)
+- quay.io/klenkes74/delphi-council-is:1.2.0-SNAPSHOT (bleeding edge)
+- quay.io/klenkes74/delphi-council-is:1.1.0
+- quay.io/klenkes74/delphi-council-is:1.0.1
+- quay.io/klenkes74/delphi-council-is:1.0.0
 
 The images are prepared for consumption by OpenShift 3.11, so they run without any problems on kubernetes, too.
 

@@ -1,13 +1,13 @@
 ## This is basic continuous integration build for your Quarkus application.
 
-name: Release
+name: Github Pages
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  java-build:
+  github-pages:
     runs-on: [ java ]
     steps:
       - name: Checkout sources

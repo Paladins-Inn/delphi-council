@@ -22,8 +22,7 @@ import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
 import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
 import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReportRepository;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
@@ -39,9 +38,8 @@ import java.util.UUID;
  * @since 0.1.0  2021-03-26
  */
 @Service
+@Slf4j
 public class OperativeSpecialReportService extends CrudService<OperativeSpecialReport, UUID> implements ComponentEventListener<OperativeSpecialReportSaveEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(OperativeSpecialReportService.class);
-
     private static final String DATA_TYPE_TITLE = "mission.editor.caption";
 
     private final OperativeSpecialReportRepository repository;
@@ -61,7 +59,7 @@ public class OperativeSpecialReportService extends CrudService<OperativeSpecialR
 
         try {
             OperativeSpecialReport saved = repository.saveAndFlush(data);
-            LOG.info("Saved {}. data={}", getClass().getSimpleName(), data);
+            log.info("Saved {}. data={}", getClass().getSimpleName(), data);
 
             event.getSource().setData(saved);
 
@@ -76,7 +74,7 @@ public class OperativeSpecialReportService extends CrudService<OperativeSpecialR
 
             event.getSource().getUI().ifPresent(ui -> ui.getPage().getHistory().back());
         } catch (Exception e) {
-            LOG.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
+            log.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
 
             new TorgNotification("input.data.saved.failed",
                     ev -> {

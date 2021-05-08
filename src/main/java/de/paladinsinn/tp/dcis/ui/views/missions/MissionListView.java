@@ -43,8 +43,7 @@ import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
 import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportEditorView;
 import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,11 +68,8 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @RouteAlias(value = "", layout = MainView.class)
 @I18nPageTitle("mission.list.title")
 @CssImport("./views/lists-view.css")
+@Slf4j
 public class MissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
-    public static final Long serial = 1L;
-
-    private static final Logger LOG = LoggerFactory.getLogger(MissionListView.class);
-
     private final HashSet<TranslatableComponent> translatables = new HashSet<>();
     private Locale locale;
 
@@ -210,7 +206,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
         }
 
         for (MissionReport r : mission.getReports()) {
-            LOG.debug("Adding Link to mission report. mission={}, report={}", mission.getId(), r.getId());
+            log.debug("Adding Link to mission report. mission={}, report={}", mission.getId(), r.getId());
 
             TorgButton reportButton = new TorgButton(
                     "mission.report-link",
@@ -254,7 +250,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Locale change event. locale={}", event.getLocale());
+        log.trace("Locale change event. locale={}", event.getLocale());
 
         setLocale(event.getLocale());
         translate();
@@ -262,7 +258,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
 
     @Override
     public void translate() {
-        LOG.trace("Translate View. locale={}", locale);
+        log.trace("Translate View. locale={}", locale);
 
         for (TranslatableComponent t : translatables) {
             t.translate();
@@ -283,7 +279,7 @@ public class MissionListView extends Div implements Serializable, AutoCloseable,
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing view.");
+        log.debug("Closing view.");
 
         removeAll();
     }

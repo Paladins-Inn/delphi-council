@@ -17,8 +17,6 @@
 
 package de.paladinsinn.tp.dcis.ui.i18n;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -31,8 +29,6 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class TranslatorProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(TranslatorProvider.class);
-
     @Scope("singleton")
     @Bean
     public Translator translator() {

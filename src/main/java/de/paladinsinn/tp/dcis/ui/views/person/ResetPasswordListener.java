@@ -24,8 +24,7 @@ import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
 import de.paladinsinn.tp.dcis.ui.views.login.LoginView;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,15 +42,14 @@ import java.util.UUID;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ResetPasswordListener implements ComponentEventListener<ResetPasswordEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(ResetPasswordListener.class);
-
     private final PasswordResetTokenRepository tokenRepository;
 
     @Transactional
     @Override
     public void onComponentEvent(@NotNull final ResetPasswordEvent event) {
-        LOG.info("User want's to reset his password. event={}", event);
+        log.info("User want's to reset his password. event={}", event);
 
         Optional<Person> person = loadByToken(event.getToken());
 

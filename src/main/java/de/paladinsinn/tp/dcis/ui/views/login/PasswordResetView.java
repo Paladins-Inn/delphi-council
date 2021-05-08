@@ -43,8 +43,7 @@ import de.paladinsinn.tp.dcis.ui.views.person.ResetPasswordEvent;
 import de.paladinsinn.tp.dcis.ui.views.person.ResetPasswordListener;
 import de.paladinsinn.tp.dcis.ui.views.person.StartPasswordResetEvent;
 import de.paladinsinn.tp.dcis.ui.views.person.StartPasswordResetListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -62,9 +61,8 @@ import java.util.UUID;
 @Route(PasswordResetView.ROUTE + "/:token?")
 @I18nPageTitle("password-reset.caption")
 @CssImport("./views/edit-view.css")
+@Slf4j
 public class PasswordResetView extends TorgScreen implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
-    private static final Logger LOG = LoggerFactory.getLogger(PasswordResetView.class);
-
     public static final String ROUTE = "password-reset";
 
 
@@ -162,7 +160,7 @@ public class PasswordResetView extends TorgScreen implements BeforeEnterObserver
             locale = VaadinSession.getCurrent().getLocale();
         }
 
-        LOG.trace("Translating form. locale={}", locale.getDisplayName());
+        log.trace("Translating form. locale={}", locale.getDisplayName());
 
         title.setText(getTranslation("password-reset.caption"));
         description.setText(getTranslation("password-reset.help"));
@@ -185,7 +183,7 @@ public class PasswordResetView extends TorgScreen implements BeforeEnterObserver
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<String> tokenString = event.getRouteParameters().get("token");
-        LOG.trace("confirming new user. token={}", tokenString);
+        log.trace("confirming new user. token={}", tokenString);
 
 
         form.add(title, description, languageSelect);
@@ -197,7 +195,7 @@ public class PasswordResetView extends TorgScreen implements BeforeEnterObserver
                 token -> {
                     try {
                         this.token = UUID.fromString(token);
-                        LOG.info("Password reset token. token={}", token);
+                        log.info("Password reset token. token={}", token);
                     } catch (IllegalArgumentException e) {
                         new TorgNotification(
                                 "password-reset.invalid-token",
@@ -253,7 +251,7 @@ public class PasswordResetView extends TorgScreen implements BeforeEnterObserver
     @Override
     public void setLocale(Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale not changed. current={}, new={}", this.locale.getDisplayName(), locale.getDisplayName());
+            log.debug("Locale not changed. current={}, new={}", this.locale.getDisplayName(), locale.getDisplayName());
             return;
         }
 

@@ -42,8 +42,7 @@ import de.paladinsinn.tp.dcis.ui.views.missions.MissionForm;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.OperativeReportForm;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.OperativeReportService;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.RemoveOperativeFromMissionListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 
@@ -61,9 +60,8 @@ import java.util.*;
 @I18nPageTitle("missionreport.editor.caption")
 @CssImport("./views/edit-view.css")
 @Secured({"PLAYER", "GM", "JUDGE", "ORGA", "ADMIN"})
+@Slf4j
 public class MissionReportView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionReportView.class);
-
     @Autowired
     private LoggedInUser user;
 
@@ -92,7 +90,7 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
     @PostConstruct
     public void init() {
         setLocale(VaadinSession.getCurrent().getLocale());
-        LOG.debug("Loading form. locale={}", locale);
+        log.debug("Loading form. locale={}", locale);
 
         addClassName("missionreport-view");
 
@@ -102,20 +100,20 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<String> reportId = event.getRouteParameters().get("id");
-        LOG.trace("Entering form. reportId={}", reportId);
+        log.trace("Entering form. reportId={}", reportId);
 
         Optional<MissionReport> report = Optional.empty();
         if (reportId.isPresent()) {
             report = missionReportRepository.get().findById(UUID.fromString(reportId.get()));
         } else {
-            LOG.warn("ReportId is missing. reportId={}", reportId);
+            log.warn("ReportId is missing. reportId={}", reportId);
         }
 
         report.ifPresent(this::setReport);
     }
 
     private void setReport(@NotNull MissionReport report) {
-        LOG.trace("Loaded MissionReport. report={}", report);
+        log.trace("Loaded MissionReport. report={}", report);
 
         this.report = report;
         missionForm.setData(report.getMission());
@@ -127,7 +125,7 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Locale change event. locale={}", event.getLocale());
+        log.trace("Locale change event. locale={}", event.getLocale());
 
         setLocale(event.getLocale());
         missionForm.setLocale(event.getLocale());
@@ -138,7 +136,7 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
     @Override
     public void translate() {
         if (user == null || locale == null) {
-            LOG.warn(
+            log.warn(
                     "Can't translate mission report view. user={}, locale={}",
                     user, locale
             );
@@ -149,11 +147,11 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
         removeAll();
 
 
-        LOG.trace("Rebuild Mission Data Tab.");
+        log.trace("Rebuild Mission Data Tab.");
         Tab missionTab = new Tab(getTranslation("mission.editor.caption"));
         missionForm.translate();
 
-        LOG.trace("Rebuild Mission Report Data Tab.");
+        log.trace("Rebuild Mission Report Data Tab.");
         Tab reportTab = new Tab(getTranslation("missionreport.editor.caption"));
         missionReportForm.translate();
 
@@ -169,13 +167,13 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
         if (report != null) {
             for (OperativeReport o : report.getOperatives()) {
                 if (!canViewOperative(o.getOperative())) {
-                    LOG.debug(
+                    log.debug(
                             "Person is not allowed to display operative. user='{}', operative='{}'",
                             user.getPerson().getName(),
                             o.getOperative().getName()
                     );
                 } else {
-                    LOG.debug("Adding tab for operative. operative='{}'", o.getOperative().getName());
+                    log.debug("Adding tab for operative. operative='{}'", o.getOperative().getName());
 
                     Tab tab = new Tab(getTranslation("missionreport.operative.title",
                             o.getOperative().getName()));
@@ -232,18 +230,18 @@ public class MissionReportView extends Div implements BeforeEnterObserver, Local
         try {
             return super.getTranslation(key);
         } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
+            log.warn("Can't call translator from vaadin: {}", e.getMessage());
             return "!" + key;
         }
     }
 
     @Override
     public void close() throws Exception {
-        LOG.trace("Closing form.");
+        log.trace("Closing form.");
 
         missionForm.close();
 
         removeAll();
-        LOG.debug("Closed form.");
+        log.debug("Closed form.");
     }
 }

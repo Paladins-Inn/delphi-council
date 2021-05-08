@@ -26,8 +26,7 @@ import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.components.TorgForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -45,9 +44,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
+@Slf4j
 public class OperativeReportForm extends TorgForm<OperativeReport> {
-    private static final Logger LOG = LoggerFactory.getLogger(OperativeReportForm.class);
-
     private final OperativeReportService reportService;
     private final RemoveOperativeFromMissionListener removeOperativeFromMissionListener;
 
@@ -75,7 +73,7 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
     @PostConstruct
     public void init() {
         if (initialized || data == null || user == null) {
-            LOG.debug(
+            log.debug(
                     "Already initialized or unable to initialize. initialized={}, data={}, user={}",
                     initialized,
                     data,
@@ -115,14 +113,14 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
                     getEventBus().fireEvent(new OperativeReportSaveEvent(this, false));
                 },
                 event -> { // reset
-                    LOG.info("Resetting data from: displayed={}, new={}", data, oldData);
+                    log.info("Resetting data from: displayed={}, new={}", data, oldData);
                     resetData();
                 },
                 ev -> { // cancel
                 },
                 ev -> { // delete
                     if (user.isOrga() || user.isJudge() || data.getReport().getDate().isAfter(LocalDate.now())) {
-                        LOG.info("Removing this operative from mission");
+                        log.info("Removing this operative from mission");
                         scrape();
 
                         fireEvent(new RemoveOperativeFromMissionEvent(this, data));
@@ -147,7 +145,7 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
 
     protected void populate() {
         if (data == null) {
-            LOG.warn("Tried to polulate form data without a mission report defined.");
+            log.warn("Tried to polulate form data without a mission report defined.");
             return;
         }
 
@@ -166,7 +164,7 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
     @Override
     public void translate() {
         if (user == null || data == null || locale == null) {
-            LOG.warn(
+            log.warn(
                     "Can't build mission report group report editor due to mission data. user={}, report={}, locale={}",
                     user, data, locale
             );
@@ -174,9 +172,9 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
             return;
         }
 
-        LOG.debug("Building mission report group edit form. report={}, locale={}", data, locale);
+        log.debug("Building mission report group edit form. report={}, locale={}", data, locale);
 
-        LOG.trace("Remove all form elements.");
+        log.trace("Remove all form elements.");
         form.removeAll();
 
         // Form fields
@@ -190,7 +188,7 @@ public class OperativeReportForm extends TorgForm<OperativeReport> {
         notes.setHelperText(getTranslation("missionreport.notes.help"));
 
 
-        LOG.trace("Adding all form elements.");
+        log.trace("Adding all form elements.");
         form.add(achievements);
         form.add(notes);
 

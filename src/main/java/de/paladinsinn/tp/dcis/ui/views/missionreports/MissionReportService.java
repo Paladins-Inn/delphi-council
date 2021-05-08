@@ -21,9 +21,8 @@ import com.vaadin.flow.component.ComponentEventListener;
 import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.missions.MissionReportRepository;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
@@ -38,15 +37,12 @@ import java.util.UUID;
  * @since 0.1.0  2021-03-26
  */
 @Service
+@Slf4j
+@AllArgsConstructor
 public class MissionReportService extends CrudService<MissionReport, UUID> implements ComponentEventListener<MissionReportSaveEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionReportService.class);
     public static final String DATA_TYPE_TITLE = "missionreport.editor.caption";
 
     private final MissionReportRepository repository;
-
-    public MissionReportService(@Autowired MissionReportRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     protected MissionReportRepository getRepository() {
@@ -60,7 +56,7 @@ public class MissionReportService extends CrudService<MissionReport, UUID> imple
 
         try {
             MissionReport saved = repository.saveAndFlush(data);
-            LOG.info("Saved {}. data={}", getClass().getSimpleName(), data);
+            log.info("Saved {}. data={}", getClass().getSimpleName(), data);
 
             event.getSource().setData(saved);
 
@@ -72,7 +68,7 @@ public class MissionReportService extends CrudService<MissionReport, UUID> imple
 
             event.getSource().getUI().ifPresent(ui -> ui.getPage().getHistory().back());
         } catch (Exception e) {
-            LOG.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
+            log.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
 
             new TorgNotification("input.data.saved.failed",
                     ev -> {

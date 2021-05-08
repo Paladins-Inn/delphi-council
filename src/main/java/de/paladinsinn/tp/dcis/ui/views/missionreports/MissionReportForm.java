@@ -37,8 +37,7 @@ import de.paladinsinn.tp.dcis.ui.components.TorgForm;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nDatePicker;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionEvent;
 import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -53,9 +52,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
+@Slf4j
 public class MissionReportForm extends TorgForm<MissionReport> {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionReportForm.class);
-
     /**
      * The service for writing data to.
      */
@@ -95,7 +93,7 @@ public class MissionReportForm extends TorgForm<MissionReport> {
 
     protected void init() {
         if (initialized || data == null || user == null) {
-            LOG.debug(
+            log.debug(
                     "Already initialized or unable to initialize. initialized={}, data={}, user={}",
                     initialized, data, user
             );
@@ -128,7 +126,7 @@ public class MissionReportForm extends TorgForm<MissionReport> {
                     }
                 },
                 event -> { // reset
-                    LOG.info("Resetting data from: displayed={}, new={}", data, oldData);
+                    log.info("Resetting data from: displayed={}, new={}", data, oldData);
                     resetData();
                 },
                 event -> { // cancel
@@ -197,7 +195,7 @@ public class MissionReportForm extends TorgForm<MissionReport> {
     @Override
     protected void populate() {
         if (data == null) {
-            LOG.warn("Tried to polulate form data without a mission report defined.");
+            log.warn("Tried to polulate form data without a mission report defined.");
             return;
         }
 
@@ -215,7 +213,7 @@ public class MissionReportForm extends TorgForm<MissionReport> {
     @Override
     public void translate() {
         if (user == null || data == null || locale == null) {
-            LOG.warn(
+            log.warn(
                     "Can't build mission report group report editor due to mission data. user={}, data={}, locale={}",
                     user, data, locale
             );
@@ -223,7 +221,7 @@ public class MissionReportForm extends TorgForm<MissionReport> {
             return;
         }
 
-        LOG.debug("Building mission report group edit form. data={}, locale={}", data, locale);
+        log.debug("Building mission report group edit form. data={}, locale={}", data, locale);
 
         // Form fields
         id.setLabel(getTranslation("input.id.caption"));

@@ -32,8 +32,7 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 import de.paladinsinn.tp.dcis.data.HasAvatar;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,9 +47,8 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @since 0.1.0  2021-04-07
  */
 @SuppressWarnings("unused")
+@Slf4j
 public class Avatar extends Span implements HasSize, LocaleChangeObserver, TranslatableComponent {
-    private static final Logger LOG = LoggerFactory.getLogger(Avatar.class);
-
     private Locale locale;
     private final String i18nPrefix;
 
@@ -93,7 +91,7 @@ public class Avatar extends Span implements HasSize, LocaleChangeObserver, Trans
                         Notification.Position.BOTTOM_STRETCH
                 );
             } catch (IOException ioException) {
-                LOG.error(
+                log.error(
                         "Upload of the avatar failed. file='{}', type='{}'",
                         avatarBuffer.getFileData(), avatarBuffer.getFileData().getMimeType()
                 );
@@ -132,7 +130,7 @@ public class Avatar extends Span implements HasSize, LocaleChangeObserver, Trans
     @Override
     public void setLocale(Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("locale did not change - ignoring event. old={}, new={}", this.locale, locale);
+            log.debug("locale did not change - ignoring event. old={}, new={}", this.locale, locale);
             return;
         }
 

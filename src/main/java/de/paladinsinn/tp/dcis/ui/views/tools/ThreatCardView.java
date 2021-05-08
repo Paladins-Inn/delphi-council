@@ -23,8 +23,6 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import de.paladinsinn.tp.dcis.ui.MainView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 
@@ -38,9 +36,6 @@ import javax.annotation.PostConstruct;
 @PageTitle("Threat Card")
 @CssImport("./views/tools-view.css")
 public class ThreatCardView extends Div {
-    private static final Logger LOG = LoggerFactory.getLogger(ThreatCardView.class);
-
-
     @PostConstruct
     public void init() {
         addClassName("threat-card-view");

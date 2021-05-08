@@ -26,8 +26,7 @@ import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
 import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
 import java.util.Locale;
@@ -38,9 +37,8 @@ import java.util.Locale;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-28
  */
+@Slf4j
 public class TabbedMenu extends Component implements TranslatableComponent, LocaleChangeObserver {
-    private static final Logger LOG = LoggerFactory.getLogger(TabbedMenu.class);
-
     private Locale locale;
 
     private VerticalLayout content;
@@ -97,7 +95,7 @@ public class TabbedMenu extends Component implements TranslatableComponent, Loca
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.debug(
+        log.debug(
                 "Locale change event. component={}, event={}, locale={}",
                 getClass().getSimpleName(),
                 event,
@@ -116,7 +114,7 @@ public class TabbedMenu extends Component implements TranslatableComponent, Loca
 
     @Override
     public void setLocale(@NotNull final Locale locale) {
-        LOG.trace("Changing locale. old={}, new={}", this.locale, locale);
+        log.trace("Changing locale. old={}, new={}", this.locale, locale);
 
         this.locale = locale;
     }

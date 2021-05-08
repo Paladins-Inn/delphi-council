@@ -43,8 +43,7 @@ import de.paladinsinn.tp.dcis.ui.components.Token;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonEditView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -63,9 +62,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
+@Slf4j
 public class OperativeForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(OperativeForm.class);
-
     /**
      * The service for writing data to.
      */
@@ -125,7 +123,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
 
     private void init() {
         if (initialized || data == null || user == null) {
-            LOG.debug(
+            log.debug(
                     "Already initialized or data missing. initialized={}, data={}, user={}",
                     initialized, data, user
             );
@@ -249,7 +247,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
 
     public void setData(@NotNull Operative data) {
         if (this.data != null && this.data.equals(data)) {
-            LOG.info("Data didn't change. Ignoring event. id={}, name={}",
+            log.info("Data didn't change. Ignoring event. id={}, name={}",
                     this.data.getId(), this.data.getName());
 
             return;
@@ -257,7 +255,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
 
         this.data = data;
 
-        LOG.debug("Set data. id={}, name={}", this.data.getId(), this.data.getName());
+        log.debug("Set data. id={}, name={}", this.data.getId(), this.data.getName());
 
         init();
         populate();
@@ -268,7 +266,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
         init();
 
         if (data == null || !initialized) {
-            LOG.warn("Tried to polulate form data without a person defined.");
+            log.warn("Tried to polulate form data without a person defined.");
             return;
         }
 
@@ -303,7 +301,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Change locale event. locale={}", event.getLocale());
+        log.trace("Change locale event. locale={}", event.getLocale());
 
         setLocale(event.getLocale());
     }
@@ -316,9 +314,9 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
             return;
         }
 
-        LOG.debug("Operative edit form. operative={}, player={}, user={}, locale={}", data, data.getPlayer(), user.getPerson(), locale);
+        log.debug("Operative edit form. operative={}, player={}, user={}, locale={}", data, data.getPlayer(), user.getPerson(), locale);
 
-        LOG.trace("Remove and add all form elements.");
+        log.trace("Remove and add all form elements.");
         form.removeAll();
 
         // Form fields
@@ -326,7 +324,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
         id.setHelperText(getTranslation("input.id.help"));
 
 
-        LOG.trace("Adding all form elements.");
+        log.trace("Adding all form elements.");
 
         name.setLabel(getTranslation("operative.name.caption"));
         name.setHelperText(getTranslation("operative.name.help"));
@@ -374,7 +372,7 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
     @Override
     public void setLocale(Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale has not changed. Ignoring event. locale={}", locale);
+            log.debug("Locale has not changed. Ignoring event. locale={}", locale);
             return;
         }
 
@@ -386,14 +384,14 @@ public class OperativeForm extends Composite<Div> implements LocaleChangeObserve
         try {
             return super.getTranslation(key);
         } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
+            log.warn("Can't call translator from vaadin: {}", e.getMessage());
             return "!" + key;
         }
     }
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing form.");
+        log.debug("Closing form.");
         getContent().removeAll();
         form.removeAll();
     }

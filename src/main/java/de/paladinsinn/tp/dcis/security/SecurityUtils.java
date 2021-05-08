@@ -19,8 +19,7 @@ package de.paladinsinn.tp.dcis.security;
 
 import com.vaadin.flow.server.ServletHelper;
 import com.vaadin.flow.shared.ApplicationConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,9 +34,8 @@ import java.util.stream.Stream;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-03-26
  */
+@Slf4j
 public final class SecurityUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityUtils.class);
-
     private SecurityUtils() {
         // Util methods only
     }

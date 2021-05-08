@@ -33,8 +33,7 @@ import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -50,9 +49,8 @@ import java.util.*;
 @Route(value = "operative/:id?/:person?", layout = MainView.class)
 @I18nPageTitle("operative.editor.caption")
 @CssImport("./views/edit-view.css")
+@Slf4j
 public class OperativeEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(OperativeEditView.class);
-
     private Locale locale;
 
     @Autowired
@@ -88,7 +86,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
 
     @Override
     public void translate() {
-        LOG.trace("Translate View. locale={}", locale);
+        log.trace("Translate View. locale={}", locale);
 
         form.translate();
     }
@@ -105,7 +103,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<String> id = event.getRouteParameters().get("id");
         Optional<String> personId = event.getRouteParameters().get("person");
-        LOG.trace("Entering form. person={}, id={}", personId, id);
+        log.trace("Entering form. person={}, id={}", personId, id);
 
         id.ifPresentOrElse(
                 e -> operativeRepository.findById(UUID.fromString(e)).ifPresentOrElse(
@@ -145,7 +143,7 @@ public class OperativeEditView extends Div implements BeforeEnterObserver, Local
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing view.");
+        log.debug("Closing view.");
 
         form.close();
         removeAll();

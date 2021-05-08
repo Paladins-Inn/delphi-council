@@ -21,8 +21,7 @@ import com.vaadin.flow.server.VaadinSession;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.data.person.RoleName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -36,9 +35,9 @@ import java.util.StringJoiner;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
-public class LoggedInUser {
-    private static final Logger LOG = LoggerFactory.getLogger(LoggedInUser.class);
 
+@Slf4j
+public class LoggedInUser {
     private final PersonRepository repository;
     private Person person;
 
@@ -97,7 +96,7 @@ public class LoggedInUser {
             savedLocale = Locale.getDefault();
         }
 
-        LOG.info("Changing locale. locale={}", savedLocale);
+        log.info("Changing locale. locale={}", savedLocale);
         VaadinSession.getCurrent().setLocale(savedLocale);
     }
 
@@ -105,7 +104,7 @@ public class LoggedInUser {
      * @param person logged in user.
      */
     public void setPerson(@NotNull final Person person) {
-        LOG.info("Replacing logged in user. oldUser={}, newUser={}", this.person, person);
+        log.info("Replacing logged in user. oldUser={}, newUser={}", this.person, person);
 
         this.person = person;
     }
@@ -143,7 +142,7 @@ public class LoggedInUser {
 
         calculated = true;
 
-        LOG.debug("User access calculation done. user='{}', readonly={}, gm={}, orga={}, admin={}, judge={}",
+        log.debug("User access calculation done. user='{}', readonly={}, gm={}, orga={}, admin={}, judge={}",
                 person.getName(),
                 readonly, isGm, isOrga, isAdmin, isJudge);
     }

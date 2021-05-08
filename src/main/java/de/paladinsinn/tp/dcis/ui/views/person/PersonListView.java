@@ -45,8 +45,7 @@ import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
 import de.paladinsinn.tp.dcis.ui.views.operative.OperativeEditView;
 import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionEditorView;
 import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,9 +62,8 @@ import static com.vaadin.flow.component.Unit.PERCENTAGE;
 @I18nPageTitle("person.list.title")
 @CssImport("./views/lists-view.css")
 @Secured({"ADMIN", "ORGA", "JUDGE"})
+@Slf4j
 public class PersonListView extends Div implements AfterNavigationObserver, LocaleChangeObserver {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonListView.class);
-
     @Autowired
     private ServiceRef<PersonRepository> repository;
 
@@ -211,6 +209,6 @@ public class PersonListView extends Div implements AfterNavigationObserver, Loca
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("New locale. locale={}", event.getLocale());
+        log.trace("New locale. locale={}", event.getLocale());
     }
 }

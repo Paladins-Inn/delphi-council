@@ -22,6 +22,7 @@ import de.paladinsinn.tp.dcis.data.AbstractEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +41,9 @@ import java.util.StringJoiner;
 @Getter
 @Setter
 @NoArgsConstructor
+@Slf4j
 public class ConfirmationToken extends AbstractEntity {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfirmationToken.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfirmationToken.class);
 
     @OneToOne(
             targetEntity = Person.class,

@@ -38,8 +38,7 @@ import de.paladinsinn.tp.dcis.ui.components.Avatar;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -61,9 +60,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
+@Slf4j
 public class PersonForm extends Div implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonForm.class);
-
     /**
      * The service for writing data to.
      */
@@ -130,7 +128,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
 
     public void init() {
         if (initialized || data == null || user == null) {
-            LOG.debug("Already initialized or not initializable. initialized={}, data={}, user={}, locale={}",
+            log.debug("Already initialized or not initializable. initialized={}, data={}, user={}, locale={}",
                     initialized, data, user, locale);
             return;
         }
@@ -138,7 +136,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         addListener(PersonSaveEvent.class, personSaveService);
         ensureLocale();
 
-        LOG.debug("initializing. data={}, user={}, locale={}", data, user, locale);
+        log.debug("initializing. data={}, user={}, locale={}", data, user, locale);
 
         form = new FormLayout();
         form.setResponsiveSteps(
@@ -257,11 +255,11 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
             this.oldData = data.clone();
         } catch (CloneNotSupportedException e) {
             // should not happen
-            LOG.error("All entities need to be clonable: data={}", data);
+            log.error("All entities need to be clonable: data={}", data);
         }
         this.data = data;
 
-        LOG.debug("Set data. id={}, name={}",
+        log.debug("Set data. id={}, name={}",
                 this.data.getId(), this.data.getName());
 
         init();
@@ -293,7 +291,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
 
     private void populate() {
         if (!initialized || data == null) {
-            LOG.warn("Form is not initialized or data is not set. initialized={}, data={}", initialized, data);
+            log.warn("Form is not initialized or data is not set. initialized={}, data={}", initialized, data);
             return;
         }
 
@@ -338,14 +336,14 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         data.setUsername(username.getValue());
 
         if (!password.isEmpty()) {
-            LOG.info("Changing password. user='{}'", data.getUsername());
+            log.info("Changing password. user='{}'", data.getUsername());
             data.setPassword(password.getValue());
         }
 
         data.setEmail(email.getValue());
 
         data.setName(name.getValue());
-        LOG.info("Changing name. name='{}'", data.getName());
+        log.info("Changing name. name='{}'", data.getName());
 
         data.setLastname(lastName.getValue());
         data.setFirstname(firstName.getValue());
@@ -368,14 +366,14 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
             Role role = new Role(RoleName.valueOf(b));
             data.addRole(role);
 
-            LOG.debug("Add role: {} ({})", b, data.getRoles().contains(role));
+            log.debug("Add role: {} ({})", b, data.getRoles().contains(role));
         }
 
         data.disableGravatar();
         data.getRoles().remove(new Role(RoleName.GM));
         for (String b : flags.getValue()) {
             if (getTranslation("person.status-allow-gravatar.caption").equals(b)) {
-                LOG.debug("Allow usage of gravatar");
+                log.debug("Allow usage of gravatar");
                 data.enableGravatar();
             }
 
@@ -383,7 +381,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
                 Role role = new Role(RoleName.GM);
                 data.addRole(role);
 
-                LOG.debug("Add role: {} ({})", RoleName.GM, data.getRoles().contains(role));
+                log.debug("Add role: {} ({})", RoleName.GM, data.getRoles().contains(role));
             }
         }
 
@@ -407,7 +405,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         }
 
         // Form fields
-        LOG.trace("Adding all form elements.");
+        log.trace("Adding all form elements.");
         id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
@@ -486,7 +484,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
     @Override
     public void setLocale(Locale locale) {
         if (locale == null || (locale.equals(this.locale))) {
-            LOG.debug("Locale already set or new locale would be null, old={}, new={}", this.locale, locale);
+            log.debug("Locale already set or new locale would be null, old={}, new={}", this.locale, locale);
             return;
         }
 
@@ -498,14 +496,14 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         try {
             return super.getTranslation(key);
         } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
+            log.warn("Can't call translator from vaadin: {}", e.getMessage());
             return "!" + key;
         }
     }
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing form.");
+        log.debug("Closing form.");
         removeAll();
         status.removeAll();
         roles.removeAll();

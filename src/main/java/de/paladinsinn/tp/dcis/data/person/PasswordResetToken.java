@@ -23,8 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.util.StringJoiner;
@@ -41,9 +40,8 @@ import java.util.StringJoiner;
 @Setter
 @Builder
 @NoArgsConstructor
+@Slf4j
 public class PasswordResetToken extends AbstractEntity {
-    private static final Logger LOG = LoggerFactory.getLogger(PasswordResetToken.class);
-
     @OneToOne(
             targetEntity = Person.class,
             fetch = FetchType.EAGER

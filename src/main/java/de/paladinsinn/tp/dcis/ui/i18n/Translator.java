@@ -26,9 +26,8 @@ import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 import com.vaadin.flow.server.UIInitListener;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 
@@ -48,11 +47,10 @@ import java.util.*;
  * @since 0.1.0  2021-03-27
  */
 @Scope("singleton")
+@Slf4j
 public class Translator implements
         I18NProvider, VaadinServiceInitListener, UIInitListener, BeforeEnterListener,
         Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(Translator.class);
-
     /**
      * The languages this {@link I18NProvider} may provide.
      */
@@ -121,7 +119,7 @@ public class Translator implements
             final MessageFormat format = new MessageFormat(pattern, locale);
             return format.format(arguments);
         } catch (NullPointerException | MissingResourceException ex) {
-            LOG.warn(
+            log.warn(
                     "Translation failed. bundle={}, locale={}, key={}",
                     bundleName, locale, key
             );
@@ -139,7 +137,7 @@ public class Translator implements
      */
     private void loadBundle(@NotNull String bundleName, @NotNull Locale locale) {
         if (!bundles.containsKey(bundleName)) {
-            LOG.debug("Adding bundle. baseName='{}'", bundleName);
+            log.debug("Adding bundle. baseName='{}'", bundleName);
 
             bundles.put(bundleName, new HashMap<>());
         }
@@ -149,7 +147,7 @@ public class Translator implements
         }
 
         if (!bundles.get(bundleName).containsKey(locale)) {
-            LOG.info("Loading bundle. baseName='{}', locale='{}'", bundleName, locale.getDisplayName());
+            log.info("Loading bundle. baseName='{}', locale='{}'", bundleName, locale.getDisplayName());
 
             ResourceBundle bundle;
             try {
@@ -157,12 +155,12 @@ public class Translator implements
             } catch (NullPointerException | MissingResourceException e) {
                 Locale l = Locale.forLanguageTag(locale.getLanguage());
 
-                LOG.warn("Translator did not find the wanted locale for the bundle. bundle={}, locale={}, orig.locale={}",
+                log.warn("Translator did not find the wanted locale for the bundle. bundle={}, locale={}, orig.locale={}",
                         bundleName, l, locale);
                 try {
                     bundle = ResourceBundle.getBundle(bundleName, l, new UnicodeResourceBundleControl());
                 } catch (NullPointerException | MissingResourceException e1) {
-                    LOG.warn("Translator did not find the wanted bundle. Using default bundle. bundle={}", bundleName);
+                    log.warn("Translator did not find the wanted bundle. Using default bundle. bundle={}", bundleName);
 
                     try {
                         if (Strings.isBlank(defaultLocale)) {
@@ -172,7 +170,7 @@ public class Translator implements
                         bundle = ResourceBundle.getBundle(defaultBundle, Locale.forLanguageTag(defaultLocale),
                                 new UnicodeResourceBundleControl());
                     } catch (NullPointerException e2) {
-                        LOG.error("Resource bundle can't be read.", e2);
+                        log.error("Resource bundle can't be read.", e2);
 
                         return;
                     }
@@ -184,7 +182,7 @@ public class Translator implements
 
     @Override
     public void close() throws Exception {
-        LOG.info("Closing all bundles.");
+        log.info("Closing all bundles.");
         bundles.clear();
     }
 
@@ -198,7 +196,7 @@ public class Translator implements
         Class<?> navigationTarget = event.getNavigationTarget();
         I18nPageTitle annotation = navigationTarget.getAnnotation(I18nPageTitle.class);
         if (annotation == null) {
-            LOG.warn("No page title set for view. view={}", navigationTarget.getName());
+            log.warn("No page title set for view. view={}", navigationTarget.getName());
         } else {
             final String messageKey = (annotation.value().isEmpty())
                     ? annotation.defaultValue()

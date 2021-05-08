@@ -30,8 +30,7 @@ import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.MainView;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 
@@ -49,9 +48,8 @@ import java.util.*;
 @I18nPageTitle("person.editor.caption")
 @Secured({"ORGA", "ADMIN", "JUDGE"})
 @CssImport("./views/edit-view.css")
+@Slf4j
 public class PersonEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonEditView.class);
-
     private Locale locale;
 
     @Autowired
@@ -84,7 +82,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
 
     @Override
     public void translate() {
-        LOG.trace("Translate View. locale={}", locale);
+        log.trace("Translate View. locale={}", locale);
 
         form.setLocale(locale);
         form.translate();
@@ -93,7 +91,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
     @Override
     public void setLocale(Locale locale) {
         if (!(this.locale == null) && this.locale.equals(locale)) {
-            LOG.debug("Language not changed. locale={}", locale);
+            log.debug("Language not changed. locale={}", locale);
             return;
         }
 
@@ -106,13 +104,13 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<String> personId = event.getRouteParameters().get("id");
-        LOG.trace("Entering form. person={}", personId);
+        log.trace("Entering form. person={}", personId);
 
         Optional<Person> person = Optional.empty();
         if (personId.isPresent()) {
             person = personRepository.findById(UUID.fromString(personId.get()));
         } else {
-            LOG.warn("Person ID is missing. person={}", personId);
+            log.warn("Person ID is missing. person={}", personId);
         }
 
         person.ifPresent(form::setData);
@@ -121,7 +119,7 @@ public class PersonEditView extends Div implements BeforeEnterObserver, LocaleCh
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing view.");
+        log.debug("Closing view.");
 
         form.close();
         removeAll();

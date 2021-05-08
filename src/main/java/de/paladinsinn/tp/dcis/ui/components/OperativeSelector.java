@@ -36,8 +36,7 @@ import com.vaadin.flow.shared.Registration;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,9 +54,8 @@ import java.util.stream.Stream;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
+@Slf4j
 public class OperativeSelector extends VerticalLayout implements LocaleChangeObserver, TranslatableComponent, AutoCloseable, Serializable {
-    private static final Logger LOG = LoggerFactory.getLogger(OperativeSelector.class);
-
     private final OperativeRepository dataService;
     private final String i18nPrefix;
     private Locale locale;
@@ -80,7 +78,7 @@ public class OperativeSelector extends VerticalLayout implements LocaleChangeObs
         selector.setDataProvider(DataProvider.fromFilteringCallbacks(
                 query -> {
                     Object filter = query.getFilter().orElse(null);
-                    LOG.trace("item query. filter='{}'", filter);
+                    log.trace("item query. filter='{}'", filter);
 
                     int offset = query.getOffset();
                     int limit = query.getLimit();
@@ -92,7 +90,7 @@ public class OperativeSelector extends VerticalLayout implements LocaleChangeObs
                 },
                 query -> {
                     Object filter = query.getFilter().orElse(null);
-                    LOG.trace("count query. filter='{}'", filter);
+                    log.trace("count query. filter='{}'", filter);
 
                     return (int) dataService.count();
                 }

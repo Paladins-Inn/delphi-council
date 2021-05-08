@@ -35,8 +35,7 @@ import de.paladinsinn.tp.dcis.ui.components.TorgForm;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nDatePicker;
 import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.AddOperativeToSpecialMissionEvent;
 import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.AddOperativeToSpecialMissionListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -53,8 +52,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
+@Slf4j
 public class SpecialMissionForm extends TorgForm<SpecialMission> {
-    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionForm.class);
     public static final int DEFAULT_PAYMENT = 250;
     public static final int DEFAULT_XP = 5;
 
@@ -98,7 +97,7 @@ public class SpecialMissionForm extends TorgForm<SpecialMission> {
 
     protected void init() {
         if (data == null || user == null || initialized) {
-            LOG.debug(
+            log.debug(
                     "Can't initialize or already initialized. initialized={}, data={}, user={}",
                     initialized, data, user
             );
@@ -121,7 +120,7 @@ public class SpecialMissionForm extends TorgForm<SpecialMission> {
                     }
                 },
                 event -> { // reset
-                    LOG.info("Resetting data from: displayed={}, new={}", data, oldData);
+                    log.info("Resetting data from: displayed={}, new={}", data, oldData);
                     resetData();
                 },
                 event -> { // cancel
@@ -175,7 +174,7 @@ public class SpecialMissionForm extends TorgForm<SpecialMission> {
         operatives.setReadonly(user.isReadonly());
         operatives.setVisible(!user.isReadonly());
 
-        LOG.trace("adding all form elements.");
+        log.trace("adding all form elements.");
         form.add(
                 code, clearance, missionDate,
                 title,
@@ -200,7 +199,7 @@ public class SpecialMissionForm extends TorgForm<SpecialMission> {
 
     public void populate() {
         if (data == null) {
-            LOG.warn("Tried to populate form data without a mission defined.");
+            log.warn("Tried to populate form data without a mission defined.");
             return;
         }
 
@@ -247,7 +246,7 @@ public class SpecialMissionForm extends TorgForm<SpecialMission> {
     @Override
     public void translate() {
         if (user == null || data == null || locale == null) {
-            LOG.warn(
+            log.warn(
                     "Can't build special mission form. user={}, mission={}, locale={}",
                     user, data, locale
             );
@@ -255,10 +254,10 @@ public class SpecialMissionForm extends TorgForm<SpecialMission> {
             return;
         }
 
-        LOG.debug("Building special mission edit form. locale={}, mission={}", locale, data);
+        log.debug("Building special mission edit form. locale={}, mission={}", locale, data);
 
         // Form fields
-        LOG.trace("Translating form elements.");
+        log.trace("Translating form elements.");
         id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 

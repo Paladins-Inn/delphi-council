@@ -36,4 +36,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           branch: gh-pages
-          folder: /home/runner/_work/delphi-council/delphi-council/target/site
+          workspace: /home/runner/_work/delphi-council/delphi-council
+          folder: target/site

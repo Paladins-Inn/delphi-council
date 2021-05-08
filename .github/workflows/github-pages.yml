@@ -20,13 +20,17 @@ jobs:
         with:
           java-version: 11
 
-      - name: Build
-        id: build-java
+      - name: check-dirs
+        id: check-dirs
         run: |
-          mvn site -B -Pproduction
+          echo -n "Directory: " ; pwd
           ls -la target/site
           ls -la
           find . -name "site"
+
+      - name: Build
+        id: build-java
+        run: echo mvn site -B -Pproduction
 
       - name: Update github pages
         id: update-github-pages

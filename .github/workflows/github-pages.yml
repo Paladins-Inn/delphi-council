@@ -27,7 +27,7 @@ jobs:
       - name: check-dirs
         run: |
           echo -n "Directory: " ; pwd
-          ls -la target/site
+          ls -la $(pwd)/target/site
           ls -la
           find . -name "site"
 
@@ -36,4 +36,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           branch: gh-pages
-          folder: ./target/site
+          folder: /home/runner/_work/delphi-council/delphi-council/target/site

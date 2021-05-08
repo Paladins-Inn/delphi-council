@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AvatarInformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.person</a> &gt; <span class="el_source">AvatarInformation.java</span></div><h1>AvatarInformation.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.person;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.server.StreamResource;
+import liquibase.util.MD5Util;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Lob;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.Arrays;
+
+/**
+ * AvatarInformation --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-05
+ */
+@Embeddable
+@Getter
+@Setter
+<span class="fc" id="L45">public class AvatarInformation implements Serializable, Cloneable {</span>
+    @Lob
+    @Column(name = &quot;AVATAR&quot;, length = 16777215)
+    private byte[] avatar;
+
+    @Column(name = &quot;USE_GRAVATAR&quot;)
+    private boolean gravatar;
+
+    /**
+     * @param fileName     The file name to set.
+     * @param emailAddress The gravatar email address.
+     * @return The image (either the file or gravatar link).
+     */
+    public Image getAvatarImage(@NotNull final String fileName, @NotNull final String emailAddress) {
+<span class="nc" id="L59">        Image result = new Image();</span>
+
+<span class="nc" id="L61">        StreamResource data = getAvatar(fileName);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (data != null) {</span>
+<span class="nc" id="L63">            result.setSrc(data);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        } else if (gravatar) {</span>
+<span class="nc" id="L65">            result.setSrc(getGravatarLink(emailAddress));</span>
+        }
+
+<span class="nc" id="L68">        return result;</span>
+    }
+
+    /**
+     * @param emailAddress The email address to check gravatar for.
+     * @return The gravatar link.
+     */
+    public String getGravatarLink(@NotNull final String emailAddress) {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (!gravatar)</span>
+<span class="nc" id="L77">            return &quot;&quot;;</span>
+
+<span class="nc" id="L79">        return &quot;https://www.gravatar.com/avatar/&quot; + MD5Util.computeMD5(emailAddress.trim());</span>
+    }
+
+    /**
+     * @param fileName The file name to use for the stream.
+     * @return the resource to use within Vaadin.
+     */
+    public StreamResource getAvatar(@NotNull final String fileName) {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (avatar != null) {</span>
+<span class="nc" id="L88">            return new StreamResource(fileName, () -&gt; new ByteArrayInputStream(avatar));</span>
+        } else {
+<span class="nc" id="L90">            return null;</span>
+        }
+    }
+
+    /**
+     * @param data data to read.
+     * @throws IOException If the data can't be read.
+     */
+    public void setAvatar(InputStream data) throws IOException {
+<span class="nc" id="L99">        avatar = data.readAllBytes();</span>
+<span class="nc" id="L100">    }</span>
+
+
+    /**
+     * Disables the use of the gravatar service.
+     */
+    public void disableGravatar() {
+<span class="nc" id="L107">        gravatar = false;</span>
+<span class="nc" id="L108">    }</span>
+
+    /**
+     * Enables the use of the gravatar service.
+     */
+    public void enableGravatar() {
+<span class="nc" id="L114">        gravatar = true;</span>
+<span class="nc" id="L115">    }</span>
+
+    @Override
+    public AvatarInformation clone() throws CloneNotSupportedException {
+<span class="nc" id="L119">        AvatarInformation result = (AvatarInformation) super.clone();</span>
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (avatar != null) {</span>
+<span class="nc" id="L122">            result.avatar = Arrays.copyOf(avatar, avatar.length);</span>
+        }
+
+<span class="nc" id="L125">        result.gravatar = gravatar;</span>
+
+<span class="nc" id="L127">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui</a> &gt; <span class="el_source">MainView.java</span></div><h1>MainView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.tabs.TabsVariant;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
+import de.codecamp.vaadin.serviceref.ServiceRef;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import de.paladinsinn.tp.dcis.ui.i18n.Translator;
+import de.paladinsinn.tp.dcis.ui.views.about.AboutView;
+import de.paladinsinn.tp.dcis.ui.views.missions.MissionListView;
+import de.paladinsinn.tp.dcis.ui.views.operative.OperativesListView;
+import de.paladinsinn.tp.dcis.ui.views.person.PersonEditView;
+import de.paladinsinn.tp.dcis.ui.views.person.PersonListView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionEditorView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionListView;
+import de.paladinsinn.tp.dcis.ui.views.tools.ThreatCardView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import javax.annotation.PostConstruct;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+
+import static com.vaadin.flow.component.Unit.PIXELS;
+
+/**
+ * MainScreen -- The main view is a top-level placeholder for other views.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-27
+ */
+@PWA(name = &quot;Delphi Council Information System&quot;, shortName = &quot;DC IS&quot;, enableInstallPrompt = false)
+@JsModule(&quot;./styles/shared-styles.js&quot;)
+@Theme(value = Lumo.class, variant = Lumo.DARK)
+@CssImport(&quot;./views/delphi-council-is.css&quot;)
+<span class="nc" id="L84">public class MainView extends AppLayout implements LocaleChangeObserver, TranslatableComponent {</span>
+<span class="nc" id="L85">    private static final Logger LOG = LoggerFactory.getLogger(MainView.class);</span>
+
+    @Autowired
+    private ServiceRef&lt;Translator&gt; translator;
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    @Autowired
+    private LoggedInUser user;
+
+    private Tabs menu;
+    private H1 titleBar;
+
+    private Locale locale;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L103">        setLastLoggedIn();</span>
+
+<span class="nc" id="L105">        menu = createMenu();</span>
+
+<span class="nc" id="L107">        setPrimarySection(Section.DRAWER);</span>
+<span class="nc" id="L108">        addToNavbar(true, createHeaderContent());</span>
+<span class="nc" id="L109">        addToDrawer(createDrawerContent(menu));</span>
+<span class="nc" id="L110">    }</span>
+
+    private void setLastLoggedIn() {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (user != null) {</span>
+<span class="nc" id="L114">            LOG.debug(&quot;Setting last login date to user. user='{}'&quot;, user.getPerson().getUsername());</span>
+
+<span class="nc" id="L116">            user.getPerson().getStatus().setLastLogin(OffsetDateTime.now(ZoneOffset.UTC));</span>
+<span class="nc" id="L117">            user.setPerson(personRepository.save(user.getPerson()));</span>
+
+<span class="nc" id="L119">            locale = user.getPerson().getLocale();</span>
+<span class="nc" id="L120">            LOG.debug(&quot;Setting locale to user locale. locale={}&quot;, locale);</span>
+        } else {
+<span class="nc" id="L122">            LOG.info(&quot;No user logged in.&quot;);</span>
+<span class="nc" id="L123">            locale = VaadinSession.getCurrent().getLocale();</span>
+        }
+<span class="nc" id="L125">    }</span>
+
+    private Component createHeaderContent() {
+<span class="nc" id="L128">        HorizontalLayout layout = new HorizontalLayout();</span>
+<span class="nc" id="L129">        layout.setId(&quot;header&quot;);</span>
+<span class="nc" id="L130">        layout.getThemeList().set(&quot;dark&quot;, true);</span>
+<span class="nc" id="L131">        layout.addClassName(&quot;torg-header&quot;);</span>
+<span class="nc" id="L132">        layout.setWidthFull();</span>
+<span class="nc" id="L133">        layout.setSpacing(false);</span>
+<span class="nc" id="L134">        layout.setAlignItems(FlexComponent.Alignment.CENTER);</span>
+<span class="nc" id="L135">        layout.add(new DrawerToggle());</span>
+<span class="nc" id="L136">        titleBar = new H1();</span>
+<span class="nc" id="L137">        layout.add(titleBar);</span>
+
+<span class="nc" id="L139">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
+
+<span class="nc" id="L141">        Avatar avatar = createAvatar(authentication);</span>
+<span class="nc" id="L142">        layout.add(avatar);</span>
+
+<span class="nc" id="L144">        return layout;</span>
+    }
+
+    private Avatar createAvatar(Authentication authentication) {
+<span class="nc" id="L148">        Avatar result = new Avatar(authentication.getName());</span>
+
+<span class="nc" id="L150">        Person data = personRepository.findByUsername(authentication.getName());</span>
+<span class="nc" id="L151">        result.setImage(data.getGravatar());</span>
+
+<span class="nc" id="L153">        ContextMenu menu = new ContextMenu();</span>
+<span class="nc" id="L154">        menu.setTarget(result);</span>
+
+<span class="nc" id="L156">        menu.addItem(getTranslation(&quot;avatar.menu.account-settings&quot;),</span>
+                e -&gt; {
+<span class="nc" id="L158">                    LOG.info(&quot;User opens settings menu. event={}&quot;, e);</span>
+
+<span class="nc" id="L160">                    e.getSource().getUI().ifPresent(ui -&gt; ui.navigate(</span>
+                            PersonEditView.class,
+<span class="nc" id="L162">                            new RouteParameters(&quot;id&quot;, user.getPerson().getId().toString())</span>
+                    ));
+<span class="nc" id="L164">                }</span>
+        );
+
+<span class="nc" id="L167">        menu.addItem(getTranslation(&quot;buttons.logout.caption&quot;),</span>
+                e -&gt; {
+<span class="nc" id="L169">                    LOG.info(&quot;User wanted to log out. event={}&quot;, e);</span>
+<span class="nc" id="L170">                    e.getSource().getUI().ifPresent(ui -&gt; ui.getPage().open(&quot;/logout&quot;, &quot;_self&quot;));</span>
+<span class="nc" id="L171">                }</span>
+        );
+
+
+<span class="nc" id="L175">        return result;</span>
+    }
+
+    private Component createDrawerContent(@NotNull final Tabs menu) {
+<span class="nc" id="L179">        VerticalLayout layout = new VerticalLayout();</span>
+<span class="nc" id="L180">        layout.addClassName(&quot;torg-thunder&quot;);</span>
+<span class="nc" id="L181">        layout.setSizeFull();</span>
+<span class="nc" id="L182">        layout.setPadding(false);</span>
+<span class="nc" id="L183">        layout.setSpacing(false);</span>
+<span class="nc" id="L184">        layout.getThemeList().set(&quot;spacing-s&quot;, true);</span>
+<span class="nc" id="L185">        layout.setAlignItems(FlexComponent.Alignment.STRETCH);</span>
+<span class="nc" id="L186">        HorizontalLayout logoLayout = new HorizontalLayout();</span>
+<span class="nc" id="L187">        logoLayout.setId(&quot;logo&quot;);</span>
+<span class="nc" id="L188">        logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);</span>
+<span class="nc" id="L189">        Image logoImage = new Image(&quot;/images/logo.png&quot;, &quot;Delphi Council&quot;);</span>
+<span class="nc" id="L190">        logoImage.setMaxWidth(50, PIXELS);</span>
+<span class="nc" id="L191">        logoImage.setMaxHeight(50, PIXELS);</span>
+<span class="nc" id="L192">        logoLayout.add(logoImage);</span>
+
+<span class="nc" id="L194">        VerticalLayout logo = new VerticalLayout();</span>
+<span class="nc" id="L195">        logoLayout.add(logo);</span>
+
+<span class="nc" id="L197">        H1 systemName = new H1(translator.get().getTranslation(&quot;application.title&quot;, getLocale()));</span>
+<span class="nc" id="L198">        Div claim = new Div();</span>
+<span class="nc" id="L199">        claim.setText(translator.get().getTranslation(&quot;application.description&quot;, getLocale()));</span>
+<span class="nc" id="L200">        logo.add(systemName, claim);</span>
+
+<span class="nc" id="L202">        layout.add(logoLayout, menu);</span>
+<span class="nc" id="L203">        return layout;</span>
+    }
+
+    private Tabs createMenu() {
+<span class="nc" id="L207">        final Tabs tabs = new Tabs();</span>
+<span class="nc" id="L208">        tabs.setOrientation(Tabs.Orientation.VERTICAL);</span>
+<span class="nc" id="L209">        tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);</span>
+<span class="nc" id="L210">        tabs.setId(&quot;tabs&quot;);</span>
+<span class="nc" id="L211">        tabs.add(createMenuItems());</span>
+<span class="nc" id="L212">        return tabs;</span>
+    }
+
+    private Component[] createMenuItems() {
+<span class="nc" id="L216">        ArrayList&lt;Component&gt; result = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L218">        ArrayList&lt;Class&lt;? extends Component&gt;&gt; allTabs = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L219">        allTabs.add(MissionListView.class);</span>
+<span class="nc" id="L220">        allTabs.add(SpecialMissionListView.class);</span>
+<span class="nc" id="L221">        allTabs.add(SpecialMissionEditorView.class);</span>
+<span class="nc" id="L222">        allTabs.add(OperativesListView.class);</span>
+<span class="nc" id="L223">        allTabs.add(PersonListView.class);</span>
+<span class="nc" id="L224">        allTabs.add(ThreatCardView.class);</span>
+<span class="nc" id="L225">        allTabs.add(AboutView.class);</span>
+
+<span class="nc" id="L227">        Set&lt;String&gt; roles = readRoleFromAuthentication();</span>
+
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        for (Class&lt;? extends Component&gt; t : allTabs) {</span>
+<span class="nc" id="L230">            Secured secured = t.getAnnotation(Secured.class);</span>
+
+<span class="nc bnc" id="L232" title="All 4 branches missed.">            if (secured == null || Arrays.stream(secured.value()).anyMatch(roles::contains)) {</span>
+<span class="nc" id="L233">                LOG.trace(</span>
+                        &quot;View is either free or role matches. view={}, roles={}, rolesAllowed={}&quot;,
+<span class="nc" id="L235">                        t.getSimpleName(),</span>
+                        roles,
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                        secured != null ? Arrays.asList(secured.value()) : &quot;-not-set-&quot;</span>
+                );
+
+
+<span class="nc" id="L241">                Tab tab = createTab(getTranslation(t.getSimpleName()), t);</span>
+<span class="nc" id="L242">                result.add(tab);</span>
+<span class="nc" id="L243">            } else {</span>
+<span class="nc" id="L244">                LOG.debug(&quot;View is not allowed for user. view={}, roles={}, rolesAllowed={}&quot;,</span>
+<span class="nc" id="L245">                        t.getSimpleName(),</span>
+                        roles,
+<span class="nc" id="L247">                        Arrays.asList(secured.value())</span>
+                );
+            }
+<span class="nc" id="L250">        }</span>
+
+<span class="nc" id="L252">        return result.toArray(new Component[]{});</span>
+    }
+
+    private Set&lt;String&gt; readRoleFromAuthentication() {
+<span class="nc" id="L256">        HashSet&lt;String&gt; result = new HashSet&lt;&gt;(user.getPerson().getAuthorities().size());</span>
+
+<span class="nc" id="L258">        user.getPerson().getAuthorities().forEach(r -&gt; result.add(r.getAuthority()));</span>
+
+<span class="nc" id="L260">        return result;</span>
+    }
+
+    private static Tab createTab(String text, Class&lt;? extends Component&gt; navigationTarget) {
+<span class="nc" id="L264">        final Tab tab = new Tab();</span>
+<span class="nc" id="L265">        tab.add(new RouterLink(text, navigationTarget));</span>
+<span class="nc" id="L266">        ComponentUtil.setData(tab, Class.class, navigationTarget);</span>
+<span class="nc" id="L267">        return tab;</span>
+    }
+
+    @Override
+    protected void afterNavigation() {
+<span class="nc" id="L272">        super.afterNavigation();</span>
+<span class="nc" id="L273">        getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);</span>
+<span class="nc" id="L274">        titleBar.setText(menu.getSelectedTab().getLabel());</span>
+//        titleBar.setText(getCurrentPageTitle());
+<span class="nc" id="L276">    }</span>
+
+    private Optional&lt;Tab&gt; getTabForComponent(Component component) {
+<span class="nc" id="L279">        return menu.getChildren().filter(tab -&gt; ComponentUtil.getData(tab, Class.class).equals(component.getClass()))</span>
+<span class="nc" id="L280">                .findFirst().map(Tab.class::cast);</span>
+    }
+
+    @Override
+    public void localeChange(@NotNull final LocaleChangeEvent event) {
+<span class="nc" id="L285">        LOG.trace(&quot;Language change event. locale={}&quot;, event.getLocale());</span>
+
+<span class="nc" id="L287">        Locale locale = event.getLocale();</span>
+
+<span class="nc" id="L289">        setLocale(locale);</span>
+<span class="nc" id="L290">    }</span>
+
+    public void setLocale(@NotNull final Locale locale) {
+<span class="nc bnc" id="L293" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L294">            LOG.trace(&quot;Language did not change - ignoring event. locale={}&quot;, this.locale);</span>
+<span class="nc" id="L295">            return;</span>
+        }
+
+<span class="nc" id="L298">        this.locale = locale;</span>
+
+<span class="nc" id="L300">        translate();</span>
+<span class="nc" id="L301">    }</span>
+
+    public void translate() {
+
+<span class="nc" id="L305">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

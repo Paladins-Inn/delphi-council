@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountSecurityStatus.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.person</a> &gt; <span class="el_source">AccountSecurityStatus.java</span></div><h1>AccountSecurityStatus.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.person;
+
+import lombok.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+import java.time.Period;
+import java.time.ZoneOffset;
+import java.util.StringJoiner;
+
+/**
+ * AccountSecurityStatus -- Spring security states of an account.
+ *
+ * &lt;ul&gt;
+ *     &lt;li&gt;Accounts are valid for {@link #ACCOUNT_IS_VALID_FOR} (by default 10 years).&lt;/li&gt;
+ *     &lt;li&gt;Credentials are valid for {@link #CREDENTIALS_VALID_FOR} (by default 5 years).&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-29
+ */
+@Embeddable
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AccountSecurityStatus implements Serializable, Cloneable {
+<span class="fc" id="L50">    private static final Logger LOG = LoggerFactory.getLogger(AccountSecurityStatus.class);</span>
+
+<span class="fc" id="L52">    private static final Period CREDENTIALS_VALID_FOR = Period.ofYears(5);</span>
+<span class="fc" id="L53">    private static final Period ACCOUNT_IS_VALID_FOR = Period.ofYears(10);</span>
+
+    @Column(name = &quot;ACCOUNT_ENABLED&quot;, nullable = false)
+    private boolean enabled = true;
+
+    @Column(name = &quot;ACCOUNT_LOCKED&quot;, nullable = false)
+    private boolean locked = false;
+
+    @Column(name = &quot;ACCOUNT_EXPIRY&quot;, nullable = false)
+    private OffsetDateTime expiry = OffsetDateTime.now(ZoneOffset.UTC).plus(ACCOUNT_IS_VALID_FOR);
+
+    @Column(name = &quot;CREDENTIALS_CHANGED&quot;, nullable = false)
+    private OffsetDateTime credentialsChange = OffsetDateTime.now(ZoneOffset.UTC);
+
+    @Column(name = &quot;LAST_LOGIN&quot;)
+    private OffsetDateTime lastLogin;
+
+    @Column(name = &quot;DELETED&quot;)
+    private OffsetDateTime deleted;
+
+    /**
+     * @return If the account is not deleted.
+     */
+    public boolean isAccountNonDeleted() {
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        return deleted == null;</span>
+    }
+
+    /**
+     * @return If the acount is not expired.
+     */
+    public boolean isAccountNonExpired() {
+<span class="nc" id="L84">        return OffsetDateTime.now(ZoneOffset.UTC)</span>
+<span class="nc" id="L85">                .isBefore(expiry);</span>
+    }
+
+    /**
+     * @return If the account is not locked.
+     */
+    public boolean isAccountNonLocked() {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        return !locked;</span>
+    }
+
+    /**
+     * Marks the date of the credential change.
+     */
+    public void setCredentialsChange() {
+<span class="nc" id="L99">        credentialsChange = OffsetDateTime.now(ZoneOffset.UTC);</span>
+<span class="nc" id="L100">    }</span>
+
+    /**
+     * @return If the credential is not expired.
+     */
+    public boolean isCredentialsNonExpired() {
+<span class="nc" id="L106">        return OffsetDateTime.now(ZoneOffset.UTC)</span>
+<span class="nc" id="L107">                .isBefore(credentialsChange.plus(CREDENTIALS_VALID_FOR));</span>
+    }
+
+    /**
+     * @return If the account is enabled.
+     */
+    public boolean isEnabled() {
+<span class="nc" id="L114">        return enabled;</span>
+    }
+
+    public AccountSecurityStatus clone() throws CloneNotSupportedException {
+<span class="nc" id="L118">        AccountSecurityStatus result = (AccountSecurityStatus) super.clone();</span>
+
+<span class="nc" id="L120">        result.enabled = enabled;</span>
+<span class="nc" id="L121">        result.locked = locked;</span>
+
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (credentialsChange != null) {</span>
+<span class="nc" id="L124">            result.credentialsChange = OffsetDateTime.from(credentialsChange);</span>
+        }
+
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (lastLogin != null) {</span>
+<span class="nc" id="L128">            result.lastLogin = OffsetDateTime.from(lastLogin);</span>
+        }
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (expiry != null) {</span>
+<span class="nc" id="L132">            result.expiry = OffsetDateTime.from(expiry);</span>
+        }
+
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (deleted != null) {</span>
+<span class="nc" id="L136">            result.deleted = OffsetDateTime.from(deleted);</span>
+        }
+
+<span class="nc" id="L139">        LOG.trace(&quot;Cloned AccountSecurityStatus. orig={}, clone={}&quot;, this, result);</span>
+<span class="nc" id="L140">        return result;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L145">        return new StringJoiner(&quot;, &quot;, AccountSecurityStatus.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L146">                .add(&quot;enabled=&quot; + enabled)</span>
+<span class="nc" id="L147">                .add(&quot;locked=&quot; + locked)</span>
+<span class="nc" id="L148">                .add(&quot;credentialsChange=&quot; + credentialsChange)</span>
+<span class="nc" id="L149">                .add(&quot;lastLogin=&quot; + lastLogin)</span>
+<span class="nc" id="L150">                .add(&quot;expiry=&quot; + expiry)</span>
+<span class="nc" id="L151">                .add(&quot;deleted=&quot; + deleted)</span>
+<span class="nc" id="L152">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

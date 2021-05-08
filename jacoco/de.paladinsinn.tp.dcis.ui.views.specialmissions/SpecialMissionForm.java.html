@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpecialMissionForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.specialmissions</a> &gt; <span class="el_source">SpecialMissionForm.java</span></div><h1>SpecialMissionForm.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.specialmissions;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import de.paladinsinn.tp.dcis.data.Clearance;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.components.OperativeSelector;
+import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
+import de.paladinsinn.tp.dcis.ui.components.TorgForm;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nDatePicker;
+import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.AddOperativeToSpecialMissionEvent;
+import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.AddOperativeToSpecialMissionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+/**
+ * SpecialMissionForm -- Edits/displays the data for a mission.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.3.0  2021-04-18
+ */
+@Service
+@Scope(SCOPE_PROTOTYPE)
+public class SpecialMissionForm extends TorgForm&lt;SpecialMission&gt; {
+<span class="nc" id="L57">    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionForm.class);</span>
+    public static final int DEFAULT_PAYMENT = 250;
+    public static final int DEFAULT_XP = 5;
+
+    /**
+     * service for writing data to.
+     */
+    private final SpecialMissionService missionService;
+    private final OperativeRepository operativeRepository;
+
+    private final AddOperativeToSpecialMissionListener addOperativeToMissionListener;
+
+
+<span class="nc" id="L70">    private final TextField title = new TextField();</span>
+
+<span class="nc" id="L72">    private final TextField id = new TextField();</span>
+<span class="nc" id="L73">    private final TextField code = new TextField();</span>
+<span class="nc" id="L74">    private final ComboBox&lt;Clearance&gt; clearance = new ComboBox&lt;&gt;();</span>
+<span class="nc" id="L75">    private final DatePicker missionDate = new I18nDatePicker();</span>
+<span class="nc" id="L76">    private final TextField publication = new TextField();</span>
+<span class="nc" id="L77">    private final TextField image = new TextField();</span>
+<span class="nc" id="L78">    private final TextArea description = new TextArea();</span>
+<span class="nc" id="L79">    private final IntegerField payment = new IntegerField();</span>
+<span class="nc" id="L80">    private final IntegerField xp = new IntegerField();</span>
+
+    private OperativeSelector operatives;
+
+
+    @Autowired
+    public SpecialMissionForm(
+            @NotNull final SpecialMissionService missionService,
+            @NotNull final AddOperativeToSpecialMissionListener addOperativeToMissionListener,
+            @NotNull final OperativeRepository operativeRepository,
+            @NotNull final LoggedInUser user
+    ) {
+<span class="nc" id="L92">        super(user);</span>
+
+<span class="nc" id="L94">        this.missionService = missionService;</span>
+<span class="nc" id="L95">        this.operativeRepository = operativeRepository;</span>
+<span class="nc" id="L96">        this.addOperativeToMissionListener = addOperativeToMissionListener;</span>
+<span class="nc" id="L97">    }</span>
+
+    protected void init() {
+<span class="nc bnc" id="L100" title="All 6 branches missed.">        if (data == null || user == null || initialized) {</span>
+<span class="nc" id="L101">            LOG.debug(</span>
+                    &quot;Can't initialize or already initialized. initialized={}, data={}, user={}&quot;,
+<span class="nc" id="L103">                    initialized, data, user</span>
+            );
+<span class="nc" id="L105">            return;</span>
+        }
+
+<span class="nc" id="L108">        super.init();</span>
+
+<span class="nc" id="L110">        addListener(SpecialMissionSaveEvent.class, missionService);</span>
+<span class="nc" id="L111">        addListener(AddOperativeToSpecialMissionEvent.class, addOperativeToMissionListener);</span>
+
+<span class="nc" id="L113">        actions = new TorgActionBar(</span>
+                &quot;buttons&quot;,
+                event -&gt; { // save
+<span class="nc" id="L116">                    scrape();</span>
+<span class="nc" id="L117">                    getEventBus().fireEvent(new SpecialMissionSaveEvent(this, data));</span>
+
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                    for (Operative o : operatives.getValue()) {</span>
+<span class="nc" id="L120">                        fireEvent(new AddOperativeToSpecialMissionEvent(this, data, o));</span>
+<span class="nc" id="L121">                    }</span>
+<span class="nc" id="L122">                },</span>
+                event -&gt; { // reset
+<span class="nc" id="L124">                    LOG.info(&quot;Resetting data from: displayed={}, new={}&quot;, data, oldData);</span>
+<span class="nc" id="L125">                    resetData();</span>
+<span class="nc" id="L126">                },</span>
+                event -&gt; { // cancel
+<span class="nc" id="L128">                    getUI().ifPresent(ui -&gt; ui.getPage().getHistory().back());</span>
+<span class="nc" id="L129">                },</span>
+                null
+        );
+<span class="nc" id="L132">        actions.setReadOnly(</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">                user.isReadonly()</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">                        &amp;&amp; !user.getPerson().equals(data.getGameMaster())</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                        &amp;&amp; !user.isAdmin()</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">                        &amp;&amp; !user.isOrga()</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                        &amp;&amp; !user.isJudge()</span>
+        );
+
+<span class="nc" id="L140">        id.setReadOnly(true);</span>
+
+<span class="nc" id="L142">        code.setReadOnly(true);</span>
+
+<span class="nc" id="L144">        title.setRequired(true);</span>
+<span class="nc" id="L145">        title.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L147">        clearance.setDataProvider(Clearance.ANY.dataProvider());</span>
+<span class="nc" id="L148">        clearance.setAllowCustomValue(false);</span>
+<span class="nc" id="L149">        clearance.setRequired(true);</span>
+<span class="nc" id="L150">        clearance.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L152">        publication.setRequired(false);</span>
+<span class="nc" id="L153">        publication.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L155">        image.setRequired(false);</span>
+<span class="nc" id="L156">        image.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L158">        description.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L159">        description.setRequired(true);</span>
+<span class="nc" id="L160">        description.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L162">        payment.setMin(100);</span>
+<span class="nc" id="L163">        payment.setMax(1000);</span>
+<span class="nc" id="L164">        payment.setStep(50);</span>
+<span class="nc" id="L165">        payment.setValue(DEFAULT_PAYMENT);</span>
+<span class="nc" id="L166">        payment.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L168">        xp.setMin(1);</span>
+<span class="nc" id="L169">        xp.setMax(50);</span>
+<span class="nc" id="L170">        xp.setStep(1);</span>
+<span class="nc" id="L171">        xp.setValue(DEFAULT_XP);</span>
+<span class="nc" id="L172">        xp.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L174">        operatives = new OperativeSelector(&quot;missionreport.add-operatives&quot;, operativeRepository);</span>
+<span class="nc" id="L175">        operatives.setReadonly(user.isReadonly());</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">        operatives.setVisible(!user.isReadonly());</span>
+
+<span class="nc" id="L178">        LOG.trace(&quot;adding all form elements.&quot;);</span>
+<span class="nc" id="L179">        form.add(</span>
+                code, clearance, missionDate,
+                title,
+                publication,
+                payment, xp, image,
+                description,
+                operatives);
+
+<span class="nc" id="L187">        form.add(actions);</span>
+<span class="nc" id="L188">        form.setColspan(actions, 3);</span>
+
+
+<span class="nc" id="L191">        form.setColspan(title, 3);</span>
+<span class="nc" id="L192">        form.setColspan(publication, 3);</span>
+<span class="nc" id="L193">        form.setColspan(description, 3);</span>
+
+<span class="nc" id="L195">        getContent().add(form);</span>
+
+<span class="nc" id="L197">        initialized = true;</span>
+<span class="nc" id="L198">    }</span>
+
+
+    public void populate() {
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        if (data == null) {</span>
+<span class="nc" id="L203">            LOG.warn(&quot;Tried to populate form data without a mission defined.&quot;);</span>
+<span class="nc" id="L204">            return;</span>
+        }
+
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        if (data.getId() != null) {</span>
+<span class="nc" id="L208">            id.setValue(data.getId().toString());</span>
+        }
+
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (data.getCode() != null) {</span>
+<span class="nc" id="L212">            code.setValue(data.getCode().toString());</span>
+        } else {
+<span class="nc" id="L214">            code.setValue(UUID.randomUUID().toString());</span>
+        }
+
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (data.getGameMaster() != null) {</span>
+<span class="nc" id="L218">            data.setGameMaster(user.getPerson());</span>
+        }
+
+<span class="nc" id="L221">        bindData(data.getMissionDate(), missionDate);</span>
+
+<span class="nc" id="L223">        bindData(data.getTitle(), title);</span>
+<span class="nc" id="L224">        bindData(data.getClearance(), clearance);</span>
+<span class="nc" id="L225">        bindData(data.getPublication(), publication);</span>
+<span class="nc" id="L226">        bindData(data.getImageUrl(), image);</span>
+<span class="nc" id="L227">        bindData(data.getDescription(), description);</span>
+<span class="nc" id="L228">        bindData(data.getPayment(), payment);</span>
+<span class="nc" id="L229">        bindData(data.getXp(), xp);</span>
+<span class="nc" id="L230">    }</span>
+
+    protected void scrape() {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (data == null) data = new SpecialMission();</span>
+
+<span class="nc" id="L235">        data.setCode(UUID.fromString(code.getValue()));</span>
+<span class="nc" id="L236">        data.setTitle(title.getValue());</span>
+<span class="nc" id="L237">        data.setClearance(clearance.getValue());</span>
+<span class="nc" id="L238">        data.setMissionDate(missionDate.getValue());</span>
+<span class="nc" id="L239">        data.setPublication(publication.getValue());</span>
+<span class="nc" id="L240">        data.setImageUrl(image.getValue());</span>
+<span class="nc" id="L241">        data.setDescription(description.getValue());</span>
+<span class="nc" id="L242">        data.setPayment(payment.getValue());</span>
+<span class="nc" id="L243">        data.setXp(xp.getValue());</span>
+<span class="nc" id="L244">        data.preUpdate();</span>
+<span class="nc" id="L245">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L249" title="All 6 branches missed.">        if (user == null || data == null || locale == null) {</span>
+<span class="nc" id="L250">            LOG.warn(</span>
+                    &quot;Can't build special mission form. user={}, mission={}, locale={}&quot;,
+                    user, data, locale
+            );
+
+<span class="nc" id="L255">            return;</span>
+        }
+
+<span class="nc" id="L258">        LOG.debug(&quot;Building special mission edit form. locale={}, mission={}&quot;, locale, data);</span>
+
+        // Form fields
+<span class="nc" id="L261">        LOG.trace(&quot;Translating form elements.&quot;);</span>
+<span class="nc" id="L262">        id.setLabel(getTranslation(&quot;input.id.caption&quot;));</span>
+<span class="nc" id="L263">        id.setHelperText(getTranslation(&quot;input.id.help&quot;));</span>
+
+<span class="nc" id="L265">        code.setLabel(getTranslation(&quot;mission.code.caption&quot;));</span>
+<span class="nc" id="L266">        code.setHelperText(getTranslation(&quot;mission.code.help&quot;));</span>
+
+<span class="nc" id="L268">        title.setLabel(getTranslation(&quot;mission.title.caption&quot;));</span>
+<span class="nc" id="L269">        title.setHelperText(getTranslation(&quot;mission.title.help&quot;));</span>
+
+<span class="nc" id="L271">        clearance.setLabel(getTranslation(&quot;torg.clearance.caption&quot;));</span>
+<span class="nc" id="L272">        clearance.setHelperText(getTranslation(&quot;torg.clearance.help&quot;));</span>
+<span class="nc" id="L273">        clearance.setItemLabelGenerator((ItemLabelGenerator&lt;Clearance&gt;) item -&gt; getTranslation(&quot;torg.clearance.&quot; + item.name()));</span>
+
+<span class="nc" id="L275">        missionDate.setLabel(getTranslation(&quot;specialmission.date.caption&quot;));</span>
+<span class="nc" id="L276">        missionDate.setHelperText(getTranslation(&quot;specialmission.date.help&quot;));</span>
+
+<span class="nc" id="L278">        publication.setLabel(getTranslation(&quot;mission.publication.caption&quot;));</span>
+<span class="nc" id="L279">        publication.setHelperText(getTranslation(&quot;mission.publication.help&quot;));</span>
+
+<span class="nc" id="L281">        image.setLabel(getTranslation(&quot;mission.image.caption&quot;));</span>
+<span class="nc" id="L282">        image.setHelperText(getTranslation(&quot;mission.image.help&quot;));</span>
+
+<span class="nc" id="L284">        description.setLabel(getTranslation(&quot;mission.description.caption&quot;));</span>
+<span class="nc" id="L285">        description.setHelperText(getTranslation(&quot;mission.description.help&quot;));</span>
+
+<span class="nc" id="L287">        payment.setLabel(getTranslation(&quot;mission.payment.caption&quot;));</span>
+<span class="nc" id="L288">        payment.setHelperText(getTranslation(&quot;mission.description.help&quot;));</span>
+
+<span class="nc" id="L290">        xp.setLabel(getTranslation(&quot;mission.xp.caption&quot;));</span>
+<span class="nc" id="L291">        xp.setHeight(getTranslation(&quot;mission.xp.help&quot;));</span>
+<span class="nc" id="L292">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

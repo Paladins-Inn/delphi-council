@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TorgScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">TorgScreen.java</span></div><h1>TorgScreen.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.StringJoiner;
+
+import static com.vaadin.flow.component.Unit.PERCENTAGE;
+import static com.vaadin.flow.component.Unit.PIXELS;
+
+/**
+ * TorgScreen -- A generic full screen in TORG design.
+ * &lt;p&gt;
+ * You may use the default methods for handling the center column and have special methods to handle the left and right
+ * column if needed.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.3.0  2021-04-18
+ */
+@SuppressWarnings(&quot;ALL&quot;)
+public class TorgScreen extends Div {
+<span class="nc" id="L44">    private static final Logger LOG = LoggerFactory.getLogger(TorgScreen.class);</span>
+
+    private final VerticalLayout left, center, right;
+    protected final FormLayout form;
+
+<span class="nc" id="L49">    public TorgScreen() {</span>
+<span class="nc" id="L50">        setSizeFull();</span>
+<span class="nc" id="L51">        HorizontalLayout layout = new HorizontalLayout();</span>
+<span class="nc" id="L52">        layout.setSizeFull();</span>
+
+<span class="nc" id="L54">        form = new FormLayout();</span>
+<span class="nc" id="L55">        left = generateLeftBorder();</span>
+<span class="nc" id="L56">        right = generateRightBorder();</span>
+<span class="nc" id="L57">        center = generateContentBox();</span>
+<span class="nc" id="L58">        center.setWidth(25, PERCENTAGE);</span>
+
+
+<span class="nc" id="L61">        layout.add(left, center, right);</span>
+<span class="nc" id="L62">        layout.setFlexGrow(2, left);</span>
+<span class="nc" id="L63">        layout.setFlexGrow(1, center);</span>
+<span class="nc" id="L64">        layout.setFlexGrow(1, right);</span>
+
+<span class="nc" id="L66">        super.add(layout);</span>
+<span class="nc" id="L67">    }</span>
+
+    private VerticalLayout generateRightBorder() {
+        final VerticalLayout right;
+<span class="nc" id="L71">        right = generateBorder();</span>
+<span class="nc" id="L72">        right.setWidth(25, PERCENTAGE);</span>
+<span class="nc" id="L73">        return right;</span>
+    }
+
+    private VerticalLayout generateLeftBorder() {
+        final VerticalLayout left;
+<span class="nc" id="L78">        left = generateBorder();</span>
+<span class="nc" id="L79">        left.setWidth(50, PERCENTAGE);</span>
+<span class="nc" id="L80">        return left;</span>
+    }
+
+    private VerticalLayout generateBorder() {
+<span class="nc" id="L84">        VerticalLayout result = new VerticalLayout();</span>
+
+<span class="nc" id="L86">        result.setClassName(&quot;torg-marble&quot;);</span>
+<span class="nc" id="L87">        result.setHeightFull();</span>
+
+<span class="nc" id="L89">        Div space = new Div();</span>
+<span class="nc" id="L90">        space.setMinWidth(10, PIXELS);</span>
+<span class="nc" id="L91">        space.setMaxWidth(50, PERCENTAGE);</span>
+<span class="nc" id="L92">        result.add(space);</span>
+
+<span class="nc" id="L94">        return result;</span>
+    }
+
+    private VerticalLayout generateContentBox() {
+<span class="nc" id="L98">        VerticalLayout result = new VerticalLayout();</span>
+<span class="nc" id="L99">        result.setHeightFull();</span>
+<span class="nc" id="L100">        result.setMinWidth(10, PIXELS);</span>
+<span class="nc" id="L101">        result.setMaxWidth(25, PERCENTAGE);</span>
+
+<span class="nc" id="L103">        form.setHeightFull();</span>
+<span class="nc" id="L104">        form.setMinWidth(400, PIXELS);</span>
+<span class="nc" id="L105">        form.setMaxWidth(600, PIXELS);</span>
+
+<span class="nc" id="L107">        form.setResponsiveSteps(</span>
+                new FormLayout.ResponsiveStep(&quot;1px&quot;, 1),
+                new FormLayout.ResponsiveStep(&quot;300px&quot;, 2),
+                new FormLayout.ResponsiveStep(&quot;600px&quot;, 4)
+        );
+<span class="nc" id="L112">        result.add(form);</span>
+
+<span class="nc" id="L114">        return result;</span>
+    }
+
+    @Override
+    public void add(Component... components) {
+<span class="nc" id="L119">        LOG.debug(&quot;Adding center components: {}&quot;, (Object[]) components);</span>
+
+<span class="nc" id="L121">        center.add(components);</span>
+<span class="nc" id="L122">    }</span>
+
+    @Override
+    public void add(String text) {
+<span class="nc" id="L126">        LOG.debug(&quot;Adding center text: '{}'&quot;, text);</span>
+
+<span class="nc" id="L128">        center.add(text);</span>
+<span class="nc" id="L129">    }</span>
+
+    @Override
+    public void remove(Component... components) {
+<span class="nc" id="L133">        LOG.debug(&quot;Removing center components: {}&quot;, (Object[]) components);</span>
+
+<span class="nc" id="L135">        center.remove(components);</span>
+<span class="nc" id="L136">    }</span>
+
+    @Override
+    public void removeAll() {
+<span class="nc" id="L140">        LOG.debug(&quot;Removing all center components.&quot;);</span>
+
+<span class="nc" id="L142">        center.removeAll();</span>
+<span class="nc" id="L143">    }</span>
+
+    @Override
+    public void addComponentAtIndex(int index, Component component) {
+<span class="nc" id="L147">        LOG.debug(&quot;Add center component. index={}, component={}&quot;, index, component);</span>
+
+<span class="nc" id="L149">        center.addComponentAtIndex(index, component);</span>
+<span class="nc" id="L150">    }</span>
+
+    @Override
+    public void addComponentAsFirst(Component component) {
+<span class="nc" id="L154">        LOG.debug(&quot;Add center component as first. component={}&quot;, component);</span>
+
+<span class="nc" id="L156">        center.addComponentAsFirst(component);</span>
+<span class="nc" id="L157">    }</span>
+
+
+    public void addInLeftBorder(Component... components) {
+<span class="nc" id="L161">        LOG.debug(&quot;Adding left components: {}&quot;, (Object[]) components);</span>
+
+<span class="nc" id="L163">        left.add(components);</span>
+<span class="nc" id="L164">    }</span>
+
+    public void addInLeftBorder(String text) {
+<span class="nc" id="L167">        LOG.debug(&quot;Adding left text: '{}'&quot;, text);</span>
+
+<span class="nc" id="L169">        left.add(text);</span>
+<span class="nc" id="L170">    }</span>
+
+    public void removeFromLeftBorder(Component... components) {
+<span class="nc" id="L173">        LOG.debug(&quot;Removing left components: {}&quot;, (Object[]) components);</span>
+
+<span class="nc" id="L175">        left.remove(components);</span>
+<span class="nc" id="L176">    }</span>
+
+    public void removeAllFromLeftBorder() {
+<span class="nc" id="L179">        LOG.debug(&quot;Removing all left components.&quot;);</span>
+
+<span class="nc" id="L181">        left.removeAll();</span>
+<span class="nc" id="L182">    }</span>
+
+    public void addComponentAtIndexInLeftBorder(int index, Component component) {
+<span class="nc" id="L185">        LOG.debug(&quot;Add left component. index={}, component={}&quot;, index, component);</span>
+
+<span class="nc" id="L187">        left.addComponentAtIndex(index, component);</span>
+<span class="nc" id="L188">    }</span>
+
+    public void addComponentAsFirstInLeftBorder(Component component) {
+<span class="nc" id="L191">        LOG.debug(&quot;Add left component as first. component={}&quot;, component);</span>
+
+<span class="nc" id="L193">        left.addComponentAsFirst(component);</span>
+<span class="nc" id="L194">    }</span>
+
+
+    public void addInRightBorder(Component... components) {
+<span class="nc" id="L198">        LOG.debug(&quot;Adding right components: {}&quot;, (Object[]) components);</span>
+
+<span class="nc" id="L200">        right.add(components);</span>
+<span class="nc" id="L201">    }</span>
+
+    public void addInRightBorder(String text) {
+<span class="nc" id="L204">        LOG.debug(&quot;Adding right text: '{}'&quot;, text);</span>
+
+<span class="nc" id="L206">        right.add(text);</span>
+<span class="nc" id="L207">    }</span>
+
+    public void removeFromRightBorder(Component... components) {
+<span class="nc" id="L210">        LOG.debug(&quot;Removing right components: {}&quot;, (Object[]) components);</span>
+
+<span class="nc" id="L212">        right.remove(components);</span>
+<span class="nc" id="L213">    }</span>
+
+    public void removeAllFromRightBorder() {
+<span class="nc" id="L216">        LOG.debug(&quot;Removing all right components.&quot;);</span>
+
+<span class="nc" id="L218">        right.removeAll();</span>
+<span class="nc" id="L219">    }</span>
+
+    public void addComponentAtIndexInRightBorder(int index, Component component) {
+<span class="nc" id="L222">        LOG.debug(&quot;Add right component. index={}, component={}&quot;, index, component);</span>
+
+<span class="nc" id="L224">        right.addComponentAtIndex(index, component);</span>
+<span class="nc" id="L225">    }</span>
+
+    public void addComponentAsFirstInRightBorder(Component component) {
+<span class="nc" id="L228">        LOG.debug(&quot;Add right component as first. component={}&quot;, component);</span>
+
+<span class="nc" id="L230">        right.addComponentAsFirst(component);</span>
+<span class="nc" id="L231">    }</span>
+
+
+    @Override
+    public String toString() {
+<span class="nc" id="L236">        return new StringJoiner(&quot;, &quot;, TorgScreen.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L237">                .add(&quot;center=&quot; + center.getChildren())</span>
+<span class="nc" id="L238">                .add(&quot;left=&quot; + left.getChildren())</span>
+<span class="nc" id="L239">                .add(&quot;right=&quot; + right.getChildren())</span>
+<span class="nc" id="L240">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cosm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data</a> &gt; <span class="el_source">Cosm.java</span></div><h1>Cosm.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import lombok.Getter;
+
+import java.util.Arrays;
+
+/**
+ * Realm -- The realms of the possibility wars with their axioms.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-26
+ */
+<span class="fc" id="L32">@Getter</span>
+public enum Cosm {
+<span class="fc" id="L34">    AYSLE(24, 16, 18, 14),</span>
+<span class="fc" id="L35">    CORE_EARTH(9, 23, 10, 23),</span>
+<span class="fc" id="L36">    CYBERPAPACY(14, 18, 16, 26),</span>
+<span class="fc" id="L37">    LIVING_LAND(1, 7, 24, 6),</span>
+<span class="fc" id="L38">    NILE_EMPIRE(14, 20, 18, 20),</span>
+<span class="fc" id="L39">    ORRORSH(16, 18, 16, 18),</span>
+<span class="fc" id="L40">    PAN_PACIFICA(4, 24, 8, 24),</span>
+<span class="fc" id="L41">    THARKOLD(12, 25, 4, 25),</span>
+
+<span class="fc" id="L43">    AKASHA(1, 26, 1, 28),</span>
+<span class="fc" id="L44">    AYSLE_THARKOLD(24, 25, 18, 25),</span>
+<span class="fc" id="L45">    ELFAME(24, 11, 18, 14),</span>
+<span class="fc" id="L46">    FAIRY_TALE_AYSLE(24, 16, 18, 14),</span>
+<span class="fc" id="L47">    Mechopotamia(9, 9, 12, 8),</span>
+<span class="fc" id="L48">    TheDeadWorld(3, 7, 4, 8),</span>
+<span class="fc" id="L49">    Tombspace(0, 0, 0, 0),</span>
+<span class="fc" id="L50">    Ukhaan(8, 27, 5, 27),</span>
+<span class="fc" id="L51">    Waldeck(14, 11, 2, 12);</span>
+
+    private final int magic;
+    private final int social;
+    private final int spirit;
+    private final int tech;
+
+    Cosm(
+            @NotNull final int magic,
+            @NotNull final int social,
+            @NotNull final int spirit,
+            @NotNull final int tech
+<span class="fc" id="L63">    ) {</span>
+<span class="fc" id="L64">        this.magic = magic;</span>
+<span class="fc" id="L65">        this.social = social;</span>
+<span class="fc" id="L66">        this.spirit = spirit;</span>
+<span class="fc" id="L67">        this.tech = tech;</span>
+<span class="fc" id="L68">    }</span>
+
+    public ListDataProvider&lt;Cosm&gt; dataProvider() {
+<span class="nc" id="L71">        return new ListDataProvider&lt;&gt;(Arrays.asList(</span>
+                AYSLE, CORE_EARTH, CYBERPAPACY, LIVING_LAND, NILE_EMPIRE, ORRORSH, PAN_PACIFICA, THARKOLD,
+                AKASHA, AYSLE_THARKOLD, ELFAME, FAIRY_TALE_AYSLE, Mechopotamia, TheDeadWorld, Tombspace, Ukhaan, Waldeck
+        ));
+    }
+
+
+    public int[] axioms() {
+<span class="nc" id="L79">        return new int[]{magic, social, spirit, tech};</span>
+    }
+
+    public int magic() {
+<span class="nc" id="L83">        return magic;</span>
+    }
+
+    public int social() {
+<span class="nc" id="L87">        return social;</span>
+    }
+
+    public int spirit() {
+<span class="nc" id="L91">        return spirit;</span>
+    }
+
+    public int tech() {
+<span class="nc" id="L95">        return tech;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

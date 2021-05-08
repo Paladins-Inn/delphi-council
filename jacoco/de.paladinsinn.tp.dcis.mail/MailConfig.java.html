@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MailConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.mail</a> &gt; <span class="el_source">MailConfig.java</span></div><h1>MailConfig.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.mail;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+
+import javax.validation.constraints.NotNull;
+import java.util.*;
+
+import static org.thymeleaf.templatemode.TemplateMode.HTML;
+import static org.thymeleaf.templatemode.TemplateMode.TEXT;
+
+/**
+ * MailConfig --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 1.1.0  2021-05-07
+ */
+@Configuration
+<span class="fc" id="L47">@Slf4j</span>
+@Getter
+@ToString
+@EqualsAndHashCode
+public class MailConfig {
+    public static final String TEMPLATE_ENCODING = &quot;UTF-8&quot;;
+
+    private final JavaMailSender sender;
+
+    public MailConfig(
+            @NotNull final JavaMailSender sender
+<span class="fc" id="L58">    ) {</span>
+<span class="fc" id="L59">        this.sender = sender;</span>
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * @param templateResolver List of available template resolvers.
+     * @return the template engine.
+     */
+    @Bean
+    public SpringTemplateEngine thymeleafTemplateEngine(Collection&lt;ITemplateResolver&gt; templateResolver, MessageSource messageSource) {
+<span class="fc" id="L68">        SpringTemplateEngine templateEngine = new SpringTemplateEngine();</span>
+
+<span class="fc" id="L70">        String message = messageSource.getMessage(&quot;mail.password-reset.subject&quot;, null, Locale.GERMANY);</span>
+<span class="fc" id="L71">        log.debug(&quot;Found message for subject: {}&quot;, message);</span>
+
+<span class="fc" id="L73">        templateEngine.setMessageSource(messageSource);</span>
+<span class="fc" id="L74">        templateResolver.forEach(templateEngine::setTemplateResolver);</span>
+
+<span class="fc" id="L76">        return templateEngine;</span>
+    }
+
+
+    @Bean
+    public Set&lt;ITemplateResolver&gt; templateResolver() {
+<span class="fc" id="L82">        HashSet&lt;ITemplateResolver&gt; result = new HashSet&lt;&gt;(2);</span>
+
+<span class="fc" id="L84">        result.add(createTemplateResolver(1, HTML));</span>
+<span class="fc" id="L85">        result.add(createTemplateResolver(2, TEXT));</span>
+
+<span class="fc" id="L87">        return result;</span>
+    }
+
+    private ITemplateResolver createTemplateResolver(int order, TemplateMode mode) {
+<span class="fc" id="L91">        final ClassLoaderTemplateResolver result = new ClassLoaderTemplateResolver();</span>
+
+<span class="fc" id="L93">        result.setOrder(order);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        result.setResolvablePatterns(Collections.singleton(mode == HTML ? &quot;*.html&quot; : &quot;*.txt&quot;));</span>
+<span class="fc" id="L95">        result.setTemplateMode(mode);</span>
+<span class="fc" id="L96">        result.setCharacterEncoding(TEMPLATE_ENCODING);</span>
+<span class="fc" id="L97">        result.setCacheable(false);</span>
+
+<span class="fc" id="L99">        return result;</span>
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+<span class="fc" id="L104">        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();</span>
+<span class="fc" id="L105">        messageSource.setBasename(&quot;messages&quot;);</span>
+<span class="fc" id="L106">        messageSource.setDefaultEncoding(TEMPLATE_ENCODING);</span>
+
+<span class="fc" id="L108">        log.debug(&quot;Resource bundle: {}&quot;, messageSource.getBasenameSet());</span>
+
+<span class="fc" id="L110">        return messageSource;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

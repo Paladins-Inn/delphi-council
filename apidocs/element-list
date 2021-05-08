@@ -6,6 +6,7 @@ de.paladinsinn.tp.dcis.data.person
 de.paladinsinn.tp.dcis.data.specialmissions
 de.paladinsinn.tp.dcis.mail
 de.paladinsinn.tp.dcis.security
+de.paladinsinn.tp.dcis.service
 de.paladinsinn.tp.dcis.ui
 de.paladinsinn.tp.dcis.ui.components
 de.paladinsinn.tp.dcis.ui.i18n

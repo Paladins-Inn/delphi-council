@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpecialMission.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.specialmissions</a> &gt; <span class="el_source">SpecialMission.java</span></div><h1>SpecialMission.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.specialmissions;
+
+import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.data.Clearance;
+import de.paladinsinn.tp.dcis.data.HasClearance;
+import de.paladinsinn.tp.dcis.data.HasId;
+import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.UUID;
+
+/**
+ * SpecialMission -- A private table mission.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-18
+ */
+@Entity
+@Audited
+@Table(
+        name = &quot;SPECIALMISSIONS&quot;,
+        uniqueConstraints = {
+                @UniqueConstraint(name = &quot;SPECIALMISSIONS_CODE_UK&quot;, columnNames = &quot;CODE&quot;),
+                @UniqueConstraint(name = &quot;SPECIALMISSIONS_TITLE_UK&quot;, columnNames = &quot;TITLE&quot;)
+        }
+)
+@Getter
+@Setter
+<span class="fc" id="L56">public class SpecialMission extends AbstractRevisionedEntity implements HasId, HasClearance, Cloneable {</span>
+<span class="fc" id="L57">    private static final Logger LOG = LoggerFactory.getLogger(SpecialMission.class);</span>
+
+    @org.hibernate.annotations.Type(type = &quot;org.hibernate.type.UUIDCharType&quot;)
+    @Column(name = &quot;CODE&quot;, length = 36, nullable = false, updatable = false, unique = true)
+    private UUID code;
+
+    @Column(name = &quot;TITLE&quot;, nullable = false)
+    private String title;
+
+    @Column(name = &quot;CLEARANCE&quot;, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Clearance clearance;
+
+    @Column(name = &quot;DESCRIPTION&quot;, length = 4000)
+    private String description;
+
+    @Column(name = &quot;PAYMENT&quot;, nullable = false)
+    private int payment;
+
+    @Column(name = &quot;XP&quot;, nullable = false)
+    private int xp;
+
+    @Column(name = &quot;IMAGE&quot;)
+    private String imageUrl;
+
+    @Column(name = &quot;PUBLICATION&quot;)
+    private String publication;
+
+    @ManyToOne(
+            targetEntity = Person.class,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            optional = false
+    )
+    @JoinColumn(name = &quot;GM&quot;, nullable = false)
+    private Person gameMaster;
+
+<span class="fc" id="L94">    @OneToMany(</span>
+            targetEntity = OperativeSpecialReport.class,
+            mappedBy = &quot;specialMission&quot;,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            orphanRemoval = true
+    )
+    private Set&lt;OperativeSpecialReport&gt; operatives = new HashSet&lt;&gt;();
+
+
+    @Column(name = &quot;MISSION_DATE&quot;)
+    private LocalDate missionDate;
+
+    @Column(name = &quot;NOTES&quot;, length = 4000)
+    private String notes;
+
+    /**
+     * @param gameMaster the GM of this local table play.
+     */
+    @Transient
+    public void setGameMaster(Person gameMaster) {
+<span class="nc" id="L115">        Person old = this.gameMaster;</span>
+<span class="nc" id="L116">        this.gameMaster = gameMaster;</span>
+
+<span class="nc bnc" id="L118" title="All 4 branches missed.">        if (gameMaster != null &amp;&amp; !gameMaster.equals(old)) {</span>
+<span class="nc" id="L119">            gameMaster.addSpecialMission(this);</span>
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            if (old != null) {</span>
+<span class="nc" id="L122">                old.removeSpecialMission(this);</span>
+            }
+        }
+<span class="nc" id="L125">    }</span>
+
+
+    /**
+     * @param operative A new operative to this local table game.
+     */
+    public void addOperativeReport(OperativeSpecialReport operative) {
+<span class="nc bnc" id="L132" title="All 4 branches missed.">        if (operative != null &amp;&amp; !operatives.contains(operative)) {</span>
+<span class="nc" id="L133">            operatives.add(operative);</span>
+
+<span class="nc" id="L135">            operative.setSpecialMission(this);</span>
+        }
+<span class="nc" id="L137">    }</span>
+
+    /**
+     * @param operative The operative to remove from this local table game.
+     */
+    public void removeOperativeReport(OperativeSpecialReport operative) {
+<span class="nc bnc" id="L143" title="All 4 branches missed.">        if (operative != null &amp;&amp; operatives.contains(operative)) {</span>
+<span class="nc" id="L144">            operatives.remove(operative);</span>
+
+<span class="nc" id="L146">            operative.setSpecialMission(null);</span>
+        }
+<span class="nc" id="L148">    }</span>
+
+
+    @Override
+    public void prePersist() {
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (code == null) {</span>
+<span class="nc" id="L154">            code = UUID.randomUUID();</span>
+        }
+<span class="nc" id="L156">    }</span>
+
+
+    @Override
+    public SpecialMission clone() throws CloneNotSupportedException {
+<span class="nc" id="L161">        SpecialMission result = (SpecialMission) super.clone();</span>
+
+<span class="nc" id="L163">        result.code = code;</span>
+<span class="nc" id="L164">        result.title = title;</span>
+<span class="nc" id="L165">        result.clearance = clearance;</span>
+<span class="nc" id="L166">        result.description = description;</span>
+<span class="nc" id="L167">        result.payment = payment;</span>
+<span class="nc" id="L168">        result.xp = xp;</span>
+<span class="nc" id="L169">        result.imageUrl = imageUrl;</span>
+<span class="nc" id="L170">        result.publication = publication;</span>
+
+<span class="nc" id="L172">        return result;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L177">        return new StringJoiner(&quot;, &quot;, SpecialMission.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L178">                .add(&quot;code=&quot; + code)</span>
+<span class="nc" id="L179">                .add(&quot;title='&quot; + title + &quot;'&quot;)</span>
+<span class="nc" id="L180">                .add(&quot;clearance=&quot; + clearance)</span>
+<span class="nc" id="L181">                .add(&quot;payment=&quot; + payment)</span>
+<span class="nc" id="L182">                .add(&quot;xp=&quot; + xp)</span>
+<span class="nc" id="L183">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

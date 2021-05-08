@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data</a> &gt; <span class="el_source">AbstractEntity.java</span></div><h1>AbstractEntity.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data;
+
+import de.paladinsinn.tp.dcis.data.person.Person;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.UUID;
+
+@MappedSuperclass
+@Getter
+@Setter
+<span class="fc" id="L35">public abstract class AbstractEntity implements Cloneable, HasId {</span>
+    @Id
+    @GenericGenerator(name = &quot;uuid2&quot;, strategy = &quot;uuid2&quot;)
+    @GeneratedValue(generator = &quot;uuid2&quot;)
+    @org.hibernate.annotations.Type(type = &quot;org.hibernate.type.UUIDCharType&quot;)
+    @Column(name = &quot;ID&quot;, length = 36, nullable = false, updatable = false, unique = true)
+    protected UUID id;
+
+    @Version
+    @Column(name = &quot;VERSION&quot;, nullable = false)
+    protected int version;
+
+    @Column(name = &quot;CREATED&quot;, nullable = false, updatable = false)
+    protected OffsetDateTime created;
+    @Column(name = &quot;MODIFIED&quot;)
+    protected OffsetDateTime modified;
+
+    public int getVersion() {
+<span class="nc" id="L53">        return version;</span>
+    }
+
+    protected OffsetDateTime getNowUTC() {
+<span class="nc" id="L57">        return OffsetDateTime.now(ZoneOffset.UTC);</span>
+    }
+
+    @PrePersist
+    public void doPrePersist() {
+<span class="nc" id="L62">        created = getNowUTC();</span>
+<span class="nc" id="L63">        modified = created;</span>
+
+<span class="nc" id="L65">        prePersist();</span>
+<span class="nc" id="L66">    }</span>
+
+    public void prePersist() {
+<span class="nc" id="L69">    }</span>
+
+    @PreUpdate
+    public void doPreUpdate() {
+<span class="nc" id="L73">        modified = getNowUTC();</span>
+
+<span class="nc" id="L75">        preUpdate();</span>
+<span class="nc" id="L76">    }</span>
+
+    public void preUpdate() {
+<span class="nc" id="L79">    }</span>
+
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (!(o instanceof Person)) return false;</span>
+<span class="nc" id="L86">        Person person = (Person) o;</span>
+<span class="nc" id="L87">        return id.equals(person.getId());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L92">        return Objects.hash(getId());</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L97">        StringJoiner result = getToStringJoiner();</span>
+
+<span class="nc" id="L99">        return result.toString();</span>
+    }
+
+    protected StringJoiner getToStringJoiner() {
+<span class="nc" id="L103">        StringJoiner result = new StringJoiner(&quot;, &quot;, getClass().getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L104">                .add(&quot;hash=&quot; + System.identityHashCode(this))</span>
+<span class="nc" id="L105">                .add(&quot;id=&quot; + id)</span>
+<span class="nc" id="L106">                .add(&quot;created=&quot; + created);</span>
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (modified != null) {</span>
+<span class="nc" id="L109">            result.add(&quot;modified=&quot; + modified);</span>
+        }
+
+<span class="nc" id="L112">        return result;</span>
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+<span class="nc" id="L117">        AbstractEntity result = (AbstractEntity) super.clone();</span>
+
+<span class="nc" id="L119">        result.id = id;</span>
+<span class="nc" id="L120">        result.version = version;</span>
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (created != null) {</span>
+<span class="nc" id="L123">            result.created = OffsetDateTime.from(created);</span>
+        }
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (modified != null) {</span>
+<span class="nc" id="L127">            result.modified = OffsetDateTime.from(modified);</span>
+        }
+
+<span class="nc" id="L130">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

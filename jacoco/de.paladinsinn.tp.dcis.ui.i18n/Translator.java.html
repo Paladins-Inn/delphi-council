@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Translator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.i18n</a> &gt; <span class="el_source">Translator.java</span></div><h1>Translator.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.i18n;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.i18n.I18NProvider;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterListener;
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.UIInitEvent;
+import com.vaadin.flow.server.UIInitListener;
+import com.vaadin.flow.server.VaadinServiceInitListener;
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
+import java.util.*;
+
+/**
+ * Translator -- Provides a nice way to read translations from Resource bundles.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-27
+ */
+@Scope(&quot;singleton&quot;)
+public class Translator implements
+        I18NProvider, VaadinServiceInitListener, UIInitListener, BeforeEnterListener,
+        Serializable, AutoCloseable {
+<span class="fc" id="L54">    private static final Logger LOG = LoggerFactory.getLogger(Translator.class);</span>
+
+    /**
+     * The languages this {@link I18NProvider} may provide.
+     */
+<span class="fc" id="L59">    public static final List&lt;Locale&gt; PROVIDED_LANGUAGES = Arrays.asList(Locale.GERMAN, Locale.ENGLISH);</span>
+
+    /**
+     * Default bundle to use when no other bundle is selected.
+     */
+    private final String defaultBundle;
+
+    @Value(&quot;${spring.web.locale:de}&quot;)
+    private String defaultLocale;
+
+<span class="fc" id="L69">    private final HashMap&lt;String, HashMap&lt;Locale, ResourceBundle&gt;&gt; bundles = new HashMap&lt;&gt;();</span>
+
+    public Translator() {
+<span class="fc" id="L72">        this(&quot;messages&quot;);</span>
+<span class="fc" id="L73">    }</span>
+
+<span class="fc" id="L75">    public Translator(@NotNull final String defaultBundle) {</span>
+<span class="fc" id="L76">        this.defaultBundle = defaultBundle;</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * Reads the translation from the default bundle
+     *
+     * @param key       The key of the bundle entry.
+     * @param locale    the locale to use.
+     * @param arguments Arguments for the translation.
+     * @return The translated text or {@literal !&lt;key&gt;}
+     */
+    @Override
+    public String getTranslation(final String key, final Locale locale, Object... arguments) {
+<span class="fc" id="L89">        return getTranslation(defaultBundle, key, locale, arguments);</span>
+    }
+
+    /**
+     * Returns the translation from a resource accompanying the class given as bundleObject.
+     *
+     * @param bundleObject The class to be translated.
+     * @param key          The key for the translation.
+     * @param locale       The locale to use.
+     * @param arguments    Arguments to the translation.
+     * @return The translated string or {@literal !&lt;key&gt;}.
+     */
+    public String getTranslation(final Object bundleObject, final String key, final Locale locale, final Object... arguments) {
+<span class="fc" id="L102">        String bundleName = bundleObject.getClass().getCanonicalName().replace(&quot;.&quot;, &quot;/&quot;);</span>
+
+<span class="fc" id="L104">        return getTranslation(bundleName, key, locale, arguments);</span>
+    }
+
+    /**
+     * Reads the translation from the bundle with the given name.
+     *
+     * @param bundleName The name of the bundle. The locale and the postfix {@literal .properties} will be appended.
+     * @param key        The key of the bundle entry.
+     * @param locale     the locale to use.
+     * @param arguments  Arguments for the translation.
+     * @return The translated text or {@literal !&lt;key&gt;}
+     */
+    public String getTranslation(final String bundleName, final String key, final Locale locale, Object... arguments) {
+<span class="fc" id="L117">        loadBundle(bundleName, locale);</span>
+
+        try {
+<span class="fc" id="L120">            final String pattern = bundles.get(bundleName).get(locale).getString(key);</span>
+<span class="fc" id="L121">            final MessageFormat format = new MessageFormat(pattern, locale);</span>
+<span class="fc" id="L122">            return format.format(arguments);</span>
+<span class="fc" id="L123">        } catch (NullPointerException | MissingResourceException ex) {</span>
+<span class="fc" id="L124">            LOG.warn(</span>
+                    &quot;Translation failed. bundle={}, locale={}, key={}&quot;,
+                    bundleName, locale, key
+            );
+<span class="fc" id="L128">            return &quot;!&quot; + key;</span>
+        }
+    }
+
+
+
+    /**
+     * Loads the bundle into the cache.
+     *
+     * @param bundleName The base filename for the translation bundle.
+     * @param locale     The locale to load the bundle for.
+     */
+    private void loadBundle(@NotNull String bundleName, @NotNull Locale locale) {
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (!bundles.containsKey(bundleName)) {</span>
+<span class="fc" id="L142">            LOG.debug(&quot;Adding bundle. baseName='{}'&quot;, bundleName);</span>
+
+<span class="fc" id="L144">            bundles.put(bundleName, new HashMap&lt;&gt;());</span>
+        }
+
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">        if (locale == null) {</span>
+<span class="nc" id="L148">            locale = Locale.forLanguageTag(defaultLocale);</span>
+        }
+
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (!bundles.get(bundleName).containsKey(locale)) {</span>
+<span class="fc" id="L152">            LOG.info(&quot;Loading bundle. baseName='{}', locale='{}'&quot;, bundleName, locale.getDisplayName());</span>
+
+            ResourceBundle bundle;
+            try {
+<span class="fc" id="L156">                bundle = ResourceBundle.getBundle(bundleName, locale, new UnicodeResourceBundleControl());</span>
+<span class="fc" id="L157">            } catch (NullPointerException | MissingResourceException e) {</span>
+<span class="fc" id="L158">                Locale l = Locale.forLanguageTag(locale.getLanguage());</span>
+
+<span class="fc" id="L160">                LOG.warn(&quot;Translator did not find the wanted locale for the bundle. bundle={}, locale={}, orig.locale={}&quot;,</span>
+                        bundleName, l, locale);
+                try {
+<span class="nc" id="L163">                    bundle = ResourceBundle.getBundle(bundleName, l, new UnicodeResourceBundleControl());</span>
+<span class="fc" id="L164">                } catch (NullPointerException | MissingResourceException e1) {</span>
+<span class="fc" id="L165">                    LOG.warn(&quot;Translator did not find the wanted bundle. Using default bundle. bundle={}&quot;, bundleName);</span>
+
+                    try {
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">                        if (Strings.isBlank(defaultLocale)) {</span>
+<span class="fc" id="L169">                            defaultLocale = Locale.getDefault().toString();</span>
+                        }
+
+<span class="fc" id="L172">                        bundle = ResourceBundle.getBundle(defaultBundle, Locale.forLanguageTag(defaultLocale),</span>
+                                new UnicodeResourceBundleControl());
+<span class="nc" id="L174">                    } catch (NullPointerException e2) {</span>
+<span class="nc" id="L175">                        LOG.error(&quot;Resource bundle can't be read.&quot;, e2);</span>
+
+<span class="nc" id="L177">                        return;</span>
+<span class="fc" id="L178">                    }</span>
+<span class="nc" id="L179">                }</span>
+<span class="fc" id="L180">            }</span>
+<span class="fc" id="L181">            bundles.get(bundleName).put(locale, bundle);</span>
+        }
+<span class="fc" id="L183">    }</span>
+
+    @Override
+    public void close() throws Exception {
+<span class="fc" id="L187">        LOG.info(&quot;Closing all bundles.&quot;);</span>
+<span class="fc" id="L188">        bundles.clear();</span>
+<span class="fc" id="L189">    }</span>
+
+    @Override
+    public List&lt;Locale&gt; getProvidedLocales() {
+<span class="fc" id="L193">        return PROVIDED_LANGUAGES;</span>
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+<span class="nc" id="L198">        Class&lt;?&gt; navigationTarget = event.getNavigationTarget();</span>
+<span class="nc" id="L199">        I18nPageTitle annotation = navigationTarget.getAnnotation(I18nPageTitle.class);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (annotation == null) {</span>
+<span class="nc" id="L201">            LOG.warn(&quot;No page title set for view. view={}&quot;, navigationTarget.getName());</span>
+        } else {
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            final String messageKey = (annotation.value().isEmpty())</span>
+<span class="nc" id="L204">                    ? annotation.defaultValue()</span>
+<span class="nc" id="L205">                    : annotation.value();</span>
+
+<span class="nc bnc" id="L207" title="All 2 branches missed.">            Locale locale = event.getUI().getLocale() != null</span>
+<span class="nc" id="L208">                    ? event.getUI().getLocale()</span>
+<span class="nc" id="L209">                    : Locale.forLanguageTag(defaultLocale);</span>
+
+<span class="nc" id="L211">            String pageTitle = getTranslation(messageKey, locale);</span>
+
+<span class="nc" id="L213">            UI.getCurrent().getPage().setTitle(pageTitle);</span>
+        }
+<span class="nc" id="L215">    }</span>
+
+    @Override
+    public void uiInit(UIInitEvent event) {
+<span class="nc" id="L219">        event.getUI().addBeforeEnterListener(this);</span>
+<span class="nc" id="L220">    }</span>
+
+    @Override
+    public void serviceInit(ServiceInitEvent event) {
+<span class="nc" id="L224">        event.getSource().addUIInitListener(this);</span>
+<span class="nc" id="L225">    }</span>
+
+    /**
+     * @author peholmst
+     * @since 0.1.0
+     */
+    private static class UnicodeResourceBundleControl extends ResourceBundle.Control {
+        @Override
+        public ResourceBundle newBundle(
+                final String baseName,
+                final Locale locale,
+                final String format,
+                final ClassLoader loader,
+                final boolean reload
+        ) throws IOException {
+
+<span class="fc" id="L241">            String bundleName = toBundleName(baseName, locale);</span>
+<span class="fc" id="L242">            String resourceName = toResourceName(bundleName, &quot;properties&quot;);</span>
+<span class="fc" id="L243">            final URL resourceURL = loader.getResource(resourceName);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            if (resourceURL == null)</span>
+<span class="fc" id="L245">                return null;</span>
+
+<span class="fc" id="L247">            try (BufferedReader in = new BufferedReader(new InputStreamReader(resourceURL.openStream(), StandardCharsets.UTF_8))) {</span>
+<span class="fc" id="L248">                return new PropertyResourceBundle(in);</span>
+            }
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TorgActionBar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">TorgActionBar.java</span></div><h1>TorgActionBar.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * TorgActionBar --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-07
+ */
+public class TorgActionBar extends HorizontalLayout implements LocaleChangeObserver, TranslatableComponent {
+<span class="nc" id="L42">    private static final Logger LOG = LoggerFactory.getLogger(TorgActionBar.class);</span>
+
+    private final String i18nKey;
+    private final Object[] i18nParameters;
+    private Locale locale;
+
+    private final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; save;
+    private final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; reset;
+    private final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; cancel;
+    private final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; delete;
+
+    private final Map&lt;ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt;, String&gt; additionalActions;
+
+    public TorgActionBar(
+            @NotNull final String i18nKey,
+            final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; save,
+            final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; reset,
+            final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; cancel,
+            final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; delete,
+            final Object... i18nParameters
+<span class="nc" id="L62">    ) {</span>
+<span class="nc" id="L63">        this.i18nKey = i18nKey;</span>
+<span class="nc" id="L64">        this.i18nParameters = i18nParameters;</span>
+
+<span class="nc" id="L66">        this.save = save;</span>
+<span class="nc" id="L67">        this.reset = reset;</span>
+<span class="nc" id="L68">        this.delete = delete;</span>
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (cancel != null) {</span>
+<span class="nc" id="L71">            this.cancel = cancel;</span>
+        } else {
+<span class="nc" id="L73">            LOG.debug(&quot;Adding back button as cancel.&quot;);</span>
+
+<span class="nc" id="L75">            this.cancel = event -&gt; event.getSource()</span>
+<span class="nc" id="L76">                    .getUI().ifPresent(ui -&gt; ui.getPage().getHistory().back());</span>
+        }
+
+<span class="nc" id="L79">        this.additionalActions = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L81" title="All 4 branches missed.">        if (isEnabled() &amp;&amp; isVisible()) {</span>
+<span class="nc" id="L82">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;save&quot;), this.save);</span>
+<span class="nc" id="L83">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;reset&quot;), this.reset);</span>
+<span class="nc" id="L84">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;cancel&quot;), this.cancel);</span>
+<span class="nc" id="L85">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;delete&quot;), this.delete);</span>
+        }
+<span class="nc" id="L87">    }</span>
+
+    public void addAction(
+            @NotNull final String i18nKey,
+            @NotNull final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; action
+    ) {
+<span class="nc" id="L93">        additionalActions.put(action, i18nKey);</span>
+
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if (isEnabled() &amp;&amp; isVisible()) {</span>
+<span class="nc" id="L96">            addButton(i18nKey, action);</span>
+        }
+<span class="nc" id="L98">    }</span>
+
+
+    /**
+     * Sets the read-only mode of this {@code HasValue} to given mode. The user
+     * can't change the value when in read-only mode.
+     * &lt;p&gt;
+     * A {@code HasValue} with a visual component in read-only mode typically
+     * looks visually different to signal to the user that the value cannot be
+     * edited.
+     *
+     * @param readOnly a boolean value specifying whether the component is put
+     *                 read-only mode or not
+     */
+    public void setReadOnly(boolean readOnly) {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        super.setEnabled(!readOnly);</span>
+<span class="nc" id="L114">    }</span>
+
+    /**
+     * Returns whether this {@code HasValue} is in read-only mode or not.
+     *
+     * @return {@code false} if the user can modify the value, {@code true} if
+     * not.
+     */
+    public boolean isReadOnly() {
+<span class="nc" id="L123">        return super.isEnabled();</span>
+    }
+
+    @Override
+    public void translate() {
+<span class="nc" id="L128">        removeAll();</span>
+
+<span class="nc bnc" id="L130" title="All 4 branches missed.">        if (isEnabled() &amp;&amp; isVisible()) {</span>
+<span class="nc" id="L131">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;save&quot;), save);</span>
+<span class="nc" id="L132">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;reset&quot;), reset);</span>
+<span class="nc" id="L133">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;cancel&quot;), cancel);</span>
+<span class="nc" id="L134">            addButton(String.format(&quot;%s.%s&quot;, this.i18nKey, &quot;delete&quot;), delete);</span>
+
+<span class="nc" id="L136">            additionalActions.forEach((key, value) -&gt; addButton(value, key));</span>
+        }
+<span class="nc" id="L138">    }</span>
+
+    @Override
+    public void removeAll() {
+<span class="nc" id="L142">        getChildren().forEach(b -&gt; {</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (b instanceof AutoCloseable) {</span>
+                try {
+<span class="nc" id="L145">                    ((AutoCloseable) b).close();</span>
+<span class="nc" id="L146">                } catch (Exception e) {</span>
+<span class="nc" id="L147">                    LOG.error(&quot;Problem while closing. button=&quot; + b, e);</span>
+<span class="nc" id="L148">                }</span>
+            }
+<span class="nc" id="L150">        });</span>
+
+<span class="nc" id="L152">        super.removeAll();</span>
+<span class="nc" id="L153">    }</span>
+
+    private void addButton(
+            @NotNull final String i18nKey,
+            @NotNull final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; action
+    ) {
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        if (action != null) {</span>
+<span class="nc" id="L160">            LOG.trace(&quot;Add button. i18nKey={}, i18nParameters={}&quot;, i18nKey, i18nParameters);</span>
+
+<span class="nc" id="L162">            add(new TorgButton(</span>
+                    i18nKey,
+                    action,
+                    i18nParameters
+            ));
+        }
+<span class="nc" id="L168">    }</span>
+
+    @Override
+    public void localeChange(@NotNull final LocaleChangeEvent event) {
+<span class="nc" id="L172">        setLocale(event.getLocale());</span>
+<span class="nc" id="L173">    }</span>
+
+    @Override
+    public void setLocale(@NotNull final Locale locale) {
+<span class="nc bnc" id="L177" title="All 4 branches missed.">        if (locale != null &amp;&amp; !locale.equals(this.locale)) {</span>
+<span class="nc" id="L178">            this.locale = locale;</span>
+
+<span class="nc" id="L180">            translate();</span>
+        } else {
+<span class="nc" id="L182">            LOG.debug(&quot;Locale didn't change - ignoring change. old={}, new={}&quot;, this.locale, locale);</span>
+        }
+<span class="nc" id="L184">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

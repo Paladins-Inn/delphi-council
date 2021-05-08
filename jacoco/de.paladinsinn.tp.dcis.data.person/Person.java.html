@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Person.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.person</a> &gt; <span class="el_source">Person.java</span></div><h1>Person.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.person;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.server.StreamResource;
+import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.data.HasAvatar;
+import de.paladinsinn.tp.dcis.data.missions.MissionReport;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import lombok.*;
+import org.hibernate.envers.Audited;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.persistence.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+/**
+ * User -- The User data.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-13
+ */
+@Entity
+@Table(
+        name = &quot;PERSONS&quot;,
+        uniqueConstraints = {
+                @UniqueConstraint(name = &quot;PERSONS_USERNAME_UK&quot;, columnNames = &quot;USERNAME&quot;),
+                @UniqueConstraint(name = &quot;PERSONS_ID_UK&quot;, columnNames = &quot;ID&quot;),
+                @UniqueConstraint(name = &quot;PERSONS_EMAIL_UK&quot;, columnNames = &quot;EMAIL&quot;)
+        }
+)
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Person extends AbstractRevisionedEntity implements UserDetails, HasAvatar {
+    /**
+     * Iteration count for the BCrypt password encoding.
+     */
+    public static final int ITERATION_COUNT = 10;
+
+    @Column(name = &quot;NAME&quot;, length = 100, nullable = false, unique = true)
+    @Audited
+    private String name;
+
+    @Column(name = &quot;USERNAME&quot;, length = 20, nullable = false, unique = true, updatable = false)
+    @Audited
+    private String username;
+
+    @Column(name = &quot;FIRST_NAME&quot;, length = 100, nullable = false)
+    @Audited
+    private String firstname;
+
+    @Column(name = &quot;LAST_NAME&quot;, length = 100, nullable = false)
+    @Audited
+    private String lastname;
+
+    @Column(name = &quot;EMAIL&quot;, length = 100, nullable = false, unique = true)
+    @Audited
+    private String email;
+
+    @Column(name = &quot;PASSWORD&quot;, length = 100, nullable = false)
+    @Audited
+    private String password;
+
+    @Embedded
+    private AccountSecurityStatus status = new AccountSecurityStatus();
+
+    @Embedded
+    private AvatarInformation avatar = new AvatarInformation();
+
+    @ElementCollection(
+            targetClass = Role.class,
+            fetch = FetchType.EAGER
+    )
+    @CollectionTable(
+            name = &quot;ROLES&quot;,
+            joinColumns = @JoinColumn(name = &quot;PERSON_ID&quot;)
+    )
+    private Set&lt;Role&gt; roles = new HashSet&lt;&gt;();
+
+    @Column(name = &quot;LOCALE&quot;, length = 20, nullable = false)
+    private String locale;
+
+    @OneToMany(
+            targetEntity = Operative.class,
+            mappedBy = &quot;player&quot;,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+
+            orphanRemoval = true
+    )
+    private Set&lt;Operative&gt; operatives = new HashSet&lt;&gt;();
+
+    @OneToMany(
+            targetEntity = MissionReport.class,
+            mappedBy = &quot;gameMaster&quot;,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+
+            orphanRemoval = true
+    )
+    private Set&lt;MissionReport&gt; reports = new HashSet&lt;&gt;();
+
+    @OneToMany(
+            targetEntity = SpecialMission.class,
+            mappedBy = &quot;gameMaster&quot;,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+
+            orphanRemoval = true
+    )
+    private Set&lt;SpecialMission&gt; specialMissions = new HashSet&lt;&gt;();
+
+
+    /**
+     * @return The name of the person (or &quot;-deleted-&quot; if the account has been deleted).
+     */
+    public String getName() {
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        return status.isAccountNonDeleted() ? name : &quot;-deleted-&quot;;</span>
+    }
+
+    /**
+     * @param name the name of the person.
+     */
+    public void setName(final String name) {
+<span class="nc bnc" id="L150" title="All 6 branches missed.">        if (name != null &amp;&amp; !name.isBlank() &amp;&amp; !&quot;-deleted-&quot;.equals(name)) {</span>
+<span class="nc" id="L151">            this.name = name;</span>
+        }
+<span class="nc" id="L153">    }</span>
+
+
+    /**
+     * @return the first name of the person (or &quot;-deleted-&quot; when the account is marked as deleted)
+     */
+    public String getFirstname() {
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        return status.isAccountNonDeleted() ? firstname : &quot;-deleted-&quot;;</span>
+    }
+
+    /**
+     * @param name the new first name of the person.
+     */
+    public void setFirstname(final String name) {
+<span class="nc bnc" id="L167" title="All 6 branches missed.">        if (name != null &amp;&amp; !name.isBlank() &amp;&amp; !&quot;-deleted-&quot;.equals(name)) {</span>
+<span class="nc" id="L168">            this.firstname = name;</span>
+        }
+<span class="nc" id="L170">    }</span>
+
+
+    /**
+     * @return the family name of the person (or &quot;-deleted-&quot; when the account is marked as deleted)
+     */
+    public String getLastname() {
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        return status.isAccountNonDeleted() ? lastname : &quot;-deleted-&quot;;</span>
+    }
+
+    /**
+     * @param name the new family name of the person.
+     */
+    public void setLastname(final String name) {
+<span class="nc bnc" id="L184" title="All 6 branches missed.">        if (name != null &amp;&amp; !name.isBlank() &amp;&amp; !&quot;-deleted-&quot;.equals(name)) {</span>
+<span class="nc" id="L185">            this.lastname = name;</span>
+        }
+<span class="nc" id="L187">    }</span>
+
+
+    /**
+     * @return the username of the person (or &quot;-deleted-&quot; if the account is marked as deleted)
+     */
+    public String getUsername() {
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">        return status.isAccountNonDeleted() ? username : &quot;-deleted-&quot;;</span>
+    }
+
+    /**
+     * @param username the new username of the person.
+     */
+    public void setUsername(final String username) {
+<span class="nc bnc" id="L201" title="All 6 branches missed.">        if (username != null &amp;&amp; !username.isBlank() &amp;&amp; !&quot;-deleted-&quot;.equals(username)) {</span>
+<span class="nc" id="L202">            this.username = username;</span>
+        }
+<span class="nc" id="L204">    }</span>
+
+    /**
+     * @return The locale of the user.
+     */
+    public Locale getLocale() {
+<span class="nc" id="L210">        return Locale.forLanguageTag(locale);</span>
+    }
+
+    /**
+     * @param locale the new locale for this user.
+     */
+    public void setLocale(@NotNull final Locale locale) {
+<span class="nc" id="L217">        this.locale = locale.getLanguage();</span>
+<span class="nc" id="L218">    }</span>
+
+    /**
+     * Enables the user.
+     */
+    public void enable() {
+<span class="nc" id="L224">        setEnabled(true);</span>
+<span class="nc" id="L225">    }</span>
+
+    /**
+     * Disables the user.
+     */
+    public void disable() {
+<span class="nc" id="L231">        setEnabled(false);</span>
+<span class="nc" id="L232">    }</span>
+
+    /**
+     * @return If the user is enabled.
+     */
+    @Override
+    public boolean isEnabled() {
+<span class="nc" id="L239">        return getStatus().isEnabled();</span>
+    }
+
+    /**
+     * @param state TRUE=this user is enabled, FALSE=the user is disabled.
+     */
+    public void setEnabled(boolean state) {
+<span class="nc" id="L246">        getStatus().setEnabled(state);</span>
+<span class="nc" id="L247">    }</span>
+
+    /**
+     * Unlocks the person.
+     */
+    public void unlock() {
+<span class="nc" id="L253">        setLocked(false);</span>
+<span class="nc" id="L254">    }</span>
+
+    /**
+     * Locks the person.
+     */
+    public void lock() {
+<span class="nc" id="L260">        setLocked(true);</span>
+<span class="nc" id="L261">    }</span>
+
+    /**
+     * @return If the user is locked.
+     */
+    public boolean isLocked() {
+<span class="nc" id="L267">        return getStatus().isLocked();</span>
+    }
+
+    /**
+     * @param state TRUE=the user is locked, FALSE=the user is unlocked.
+     */
+    public void setLocked(boolean state) {
+<span class="nc" id="L274">        getStatus().setLocked(state);</span>
+<span class="nc" id="L275">    }</span>
+
+    /**
+     * &lt;a href=&quot;https://www.gravatar.com/&quot;&gt;Gravatar&lt;/a&gt; delivers an avatar by using the email address.
+     *
+     * @return the gravatar of the email address of this user.
+     */
+    public String getGravatar() {
+<span class="nc" id="L283">        return avatar.getGravatarLink(email);</span>
+    }
+
+    /**
+     * @return If the gravatar service is alled to be used for this person.
+     */
+    public boolean isGravatarAllowed() {
+<span class="nc" id="L290">        return avatar.isGravatar();</span>
+    }
+
+    /**
+     * disables the gravatar service.
+     */
+    public void disableGravatar() {
+<span class="nc" id="L297">        avatar.setGravatar(false);</span>
+<span class="nc" id="L298">    }</span>
+
+    /**
+     * enables the gravatar service.
+     */
+    public void enableGravatar() {
+<span class="nc" id="L304">        avatar.setGravatar(true);</span>
+<span class="nc" id="L305">    }</span>
+
+    @Override
+    public Image getAvatarImage() {
+<span class="nc" id="L309">        return avatar.getAvatarImage(getId().toString() + &quot;.png&quot;, email);</span>
+    }
+
+    @Override
+    public StreamResource getAvatar() {
+<span class="nc" id="L314">        return avatar.getAvatar(getId() + &quot;.png&quot;);</span>
+    }
+
+    @Override
+    public void setAvatar(InputStream stream) throws IOException {
+<span class="nc" id="L319">        avatar.setAvatar(stream);</span>
+<span class="nc" id="L320">    }</span>
+
+    /**
+     * Checks the password handed in.
+     *
+     * @param pw The password to check.
+     * @return TRUE if the passwords match.
+     */
+    @SuppressWarnings(&quot;unused&quot;)
+    public boolean checkPassword(final String pw) {
+<span class="nc" id="L330">        boolean result = new BCryptPasswordEncoder().matches(pw, password);</span>
+
+<span class="nc bnc" id="L332" title="All 2 branches missed.">        if (result) status.setLastLogin(getNowUTC());</span>
+<span class="nc" id="L333">        return result;</span>
+    }
+
+    /**
+     * Updates the password of the user.
+     *
+     * @param pw The new password.
+     */
+    @SuppressWarnings(&quot;unused&quot;)
+    public void setPassword(final String pw) {
+<span class="nc" id="L343">        password = new BCryptPasswordEncoder().encode(pw);</span>
+
+<span class="nc" id="L345">        preUpdate();</span>
+<span class="nc" id="L346">        status.setCredentialsChange(getModified());</span>
+<span class="nc" id="L347">    }</span>
+
+    /**
+     * @param roles of this person.
+     */
+    public void setRoles(Collection&lt;Role&gt; roles) {
+<span class="nc" id="L353">        this.roles.clear();</span>
+<span class="nc" id="L354">        this.roles.addAll(roles);</span>
+<span class="nc" id="L355">    }</span>
+
+    public void addRole(Role role) {
+<span class="nc" id="L358">        this.roles.add(role);</span>
+<span class="nc" id="L359">    }</span>
+
+    public void removeRole(Role role) {
+<span class="nc" id="L362">        this.roles.remove(role);</span>
+<span class="nc" id="L363">    }</span>
+
+    /**
+     * @return roles of this person.
+     */
+    public Set&lt;Role&gt; getRoles() {
+<span class="nc" id="L369">        return roles;</span>
+    }
+
+
+    /**
+     * @param operative A new operative of this person.
+     */
+    public void addOperative(@NotNull Operative operative) {
+<span class="nc bnc" id="L377" title="All 2 branches missed.">        if (operatives.contains(operative))</span>
+<span class="nc" id="L378">            return;</span>
+
+<span class="nc" id="L380">        operatives.add(operative);</span>
+<span class="nc" id="L381">        operative.setPlayer(this);</span>
+<span class="nc" id="L382">    }</span>
+
+    /**
+     * @param operative Operative to be removed.
+     */
+    public void removeOperative(@NotNull Operative operative) {
+<span class="nc bnc" id="L388" title="All 2 branches missed.">        if (!operatives.contains(operative))</span>
+<span class="nc" id="L389">            return;</span>
+
+<span class="nc" id="L391">        operatives.remove(operative);</span>
+<span class="nc" id="L392">        operative.setPlayer(null);</span>
+<span class="nc" id="L393">    }</span>
+
+    /**
+     * @param report a new mission this person is GM for.
+     */
+    public void addGameMasterReport(@NotNull MissionReport report) {
+<span class="nc bnc" id="L399" title="All 2 branches missed.">        if (reports.contains(report))</span>
+<span class="nc" id="L400">            return;</span>
+
+<span class="nc" id="L402">        reports.add(report);</span>
+<span class="nc" id="L403">        report.setGameMaster(this);</span>
+<span class="nc" id="L404">    }</span>
+
+    /**
+     * @param report deletes a mission execution for this GM.
+     */
+    public void removeGameMasterReport(@NotNull MissionReport report) {
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        if (!reports.contains(report))</span>
+<span class="nc" id="L411">            return;</span>
+
+<span class="nc" id="L413">        reports.remove(report);</span>
+<span class="nc" id="L414">        report.setGameMaster(null);</span>
+<span class="nc" id="L415">    }</span>
+
+
+    /**
+     * @param specialMission a local table play for this GM.
+     */
+    public void addSpecialMission(@NotNull SpecialMission specialMission) {
+<span class="nc bnc" id="L422" title="All 2 branches missed.">        if (specialMissions.contains(specialMission))</span>
+<span class="nc" id="L423">            return;</span>
+
+<span class="nc" id="L425">        specialMissions.add(specialMission);</span>
+<span class="nc" id="L426">        specialMission.setGameMaster(this);</span>
+<span class="nc" id="L427">    }</span>
+
+    /**
+     * @param specialMission a local table play for this GM.
+     */
+    public void removeSpecialMission(@NotNull SpecialMission specialMission) {
+<span class="nc bnc" id="L433" title="All 2 branches missed.">        if (!specialMissions.contains(specialMission))</span>
+<span class="nc" id="L434">            return;</span>
+
+<span class="nc" id="L436">        specialMissions.remove(specialMission);</span>
+<span class="nc" id="L437">        specialMission.setGameMaster(null);</span>
+<span class="nc" id="L438">    }</span>
+
+
+    /**
+     * Marks the user as deleted.
+     */
+    @SuppressWarnings(&quot;unused&quot;)
+    public void markDeleted() {
+<span class="nc" id="L446">        status.setDeleted(getNowUTC());</span>
+<span class="nc" id="L447">    }</span>
+
+
+    @Override
+    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+<span class="nc" id="L452">        return roles;</span>
+    }
+
+    /**
+     * @param role role to check for this person.
+     * @return If the person holds the requested role.
+     */
+    public boolean matchRole(RoleName role) {
+<span class="nc" id="L460">        return roles.stream().anyMatch(r -&gt; role.equals(RoleName.valueOf(r.getAuthority())));</span>
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+<span class="nc" id="L465">        return status.isAccountNonExpired();</span>
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+<span class="nc" id="L470">        return status.isAccountNonLocked();</span>
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+<span class="nc" id="L475">        return status.isCredentialsNonExpired();</span>
+    }
+
+    @Override
+    public Person clone() throws CloneNotSupportedException {
+<span class="nc" id="L480">        Person result = (Person) super.clone();</span>
+
+<span class="nc" id="L482">        result.name = name;</span>
+<span class="nc" id="L483">        result.username = username;</span>
+<span class="nc" id="L484">        result.firstname = firstname;</span>
+<span class="nc" id="L485">        result.lastname = lastname;</span>
+<span class="nc" id="L486">        result.email = email;</span>
+<span class="nc" id="L487">        result.password = password;</span>
+<span class="nc" id="L488">        result.locale = locale;</span>
+
+<span class="nc" id="L490">        result.roles.addAll(roles);</span>
+<span class="nc" id="L491">        result.operatives.addAll(operatives);</span>
+<span class="nc" id="L492">        result.reports.addAll(reports);</span>
+
+<span class="nc" id="L494">        result.status = status.clone();</span>
+<span class="nc" id="L495">        result.avatar = avatar.clone();</span>
+
+<span class="nc" id="L497">        return result;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L502">        StringJoiner roles = new StringJoiner(&quot;,&quot;, &quot;[&quot;, &quot;]&quot;);</span>
+<span class="nc" id="L503">        this.roles.forEach(r -&gt; roles.add(r.getAuthority()));</span>
+
+<span class="nc" id="L505">        return new StringJoiner(&quot;, &quot;, getClass().getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L506">                .merge(super.getToStringJoiner())</span>
+
+<span class="nc" id="L508">                .add(&quot;userName='&quot; + getName() + &quot;'&quot;)</span>
+<span class="nc" id="L509">                .add(&quot;status=&quot; + getStatus())</span>
+<span class="nc" id="L510">                .add(&quot;roles=&quot; + roles)</span>
+
+<span class="nc" id="L512">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Token.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">Token.java</span></div><h1>Token.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.upload.*;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.shared.Registration;
+import de.paladinsinn.tp.dcis.data.HasAvatar;
+import de.paladinsinn.tp.dcis.data.HasToken;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import static com.vaadin.flow.component.Unit.PIXELS;
+
+/**
+ * Avatar -- A component for editing a token.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-07
+ */
+@SuppressWarnings(&quot;unused&quot;)
+public class Token extends Span implements HasSize, LocaleChangeObserver, TranslatableComponent {
+<span class="nc" id="L53">    private static final Logger LOG = LoggerFactory.getLogger(Token.class);</span>
+
+    private Locale locale;
+    private final String i18nPrefix;
+
+<span class="nc" id="L58">    private final Image token = new Image();</span>
+<span class="nc" id="L59">    private final MemoryBuffer tokenBuffer = new MemoryBuffer();</span>
+<span class="nc" id="L60">    private final Upload tokenUpload = new Upload(tokenBuffer);</span>
+
+
+    public Token(
+            @NotNull final String i18nPrefix,
+
+            @NotNull final HasToken data,
+            @NotNull final int minWidth,
+            @NotNull final int maxWidth,
+
+            @NotNull final int minHeight,
+            @NotNull final int maxHeight,
+
+            @NotNull final int maxFileSize
+<span class="nc" id="L74">    ) {</span>
+<span class="nc" id="L75">        this.i18nPrefix = i18nPrefix;</span>
+
+<span class="nc" id="L77">        token.setMinWidth(minWidth, PIXELS);</span>
+<span class="nc" id="L78">        token.setMaxWidth(maxWidth, PIXELS);</span>
+
+<span class="nc" id="L80">        token.setMinHeight(minHeight, PIXELS);</span>
+<span class="nc" id="L81">        token.setMaxHeight(maxHeight, PIXELS);</span>
+
+<span class="nc" id="L83">        tokenUpload.setMaxFiles(1);</span>
+<span class="nc" id="L84">        tokenUpload.setMaxFileSize(maxFileSize);</span>
+<span class="nc" id="L85">        tokenUpload.setDropAllowed(true);</span>
+<span class="nc" id="L86">        tokenUpload.setAcceptedFileTypes(&quot;image/png&quot;, &quot;image/jpg&quot;, &quot;image/jpeg&quot;, &quot;image/gif&quot;);</span>
+<span class="nc" id="L87">        tokenUpload.addFinishedListener(e -&gt; {</span>
+            try {
+<span class="nc" id="L89">                data.setToken(tokenBuffer.getInputStream());</span>
+
+<span class="nc" id="L91">                Notification.show(</span>
+<span class="nc" id="L92">                        getTranslation(&quot;input.upload.success&quot;, tokenBuffer.getFileName()),</span>
+                        1000,
+                        Notification.Position.BOTTOM_STRETCH
+                );
+<span class="nc" id="L96">            } catch (IOException ioException) {</span>
+<span class="nc" id="L97">                LOG.error(</span>
+                        &quot;Upload of the avatar failed. file='{}', type='{}'&quot;,
+<span class="nc" id="L99">                        tokenBuffer.getFileData(), tokenBuffer.getFileData().getMimeType()</span>
+                );
+<span class="nc" id="L101">                Notification.show(</span>
+<span class="nc" id="L102">                        getTranslation(&quot;input.upload.failed&quot;, ioException.getLocalizedMessage()),</span>
+                        2000,
+                        Notification.Position.BOTTOM_STRETCH
+                );
+<span class="nc" id="L106">            }</span>
+<span class="nc" id="L107">        });</span>
+
+<span class="nc" id="L109">        locale = VaadinSession.getCurrent().getLocale();</span>
+<span class="nc" id="L110">    }</span>
+
+
+    public void setValue(@NotNull final HasAvatar data) {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (data.getAvatar() != null)</span>
+<span class="nc" id="L115">            token.setSrc(data.getAvatar());</span>
+<span class="nc" id="L116">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L120">        removeAll();</span>
+
+<span class="nc" id="L122">        token.setTitle(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;caption&quot;)));</span>
+<span class="nc" id="L123">        tokenUpload.setDropLabelIcon(token);</span>
+
+<span class="nc" id="L125">        add(tokenUpload);</span>
+<span class="nc" id="L126">    }</span>
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L130">        setLocale(event.getLocale());</span>
+<span class="nc" id="L131">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L135" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L136">            LOG.debug(&quot;locale did not change - ignoring event. old={}, new={}&quot;, this.locale, locale);</span>
+<span class="nc" id="L137">            return;</span>
+        }
+
+<span class="nc" id="L140">        this.locale = locale;</span>
+
+<span class="nc" id="L142">        translate();</span>
+<span class="nc" id="L143">    }</span>
+
+    public Registration addAllFinishedListener(ComponentEventListener&lt;AllFinishedEvent&gt; listener) {
+<span class="nc" id="L146">        return tokenUpload.addAllFinishedListener(listener);</span>
+    }
+
+    public void setMaxFiles(int maxFiles) {
+<span class="nc" id="L150">        tokenUpload.setMaxFiles(maxFiles);</span>
+<span class="nc" id="L151">    }</span>
+
+    public int getMaxFiles() {
+<span class="nc" id="L154">        return tokenUpload.getMaxFiles();</span>
+    }
+
+    public void setMaxFileSize(int maxFileSize) {
+<span class="nc" id="L158">        tokenUpload.setMaxFileSize(maxFileSize);</span>
+<span class="nc" id="L159">    }</span>
+
+    public int getMaxFileSize() {
+<span class="nc" id="L162">        return tokenUpload.getMaxFileSize();</span>
+    }
+
+    public void setAutoUpload(boolean autoUpload) {
+<span class="nc" id="L166">        tokenUpload.setAutoUpload(autoUpload);</span>
+<span class="nc" id="L167">    }</span>
+
+    public boolean isAutoUpload() {
+<span class="nc" id="L170">        return tokenUpload.isAutoUpload();</span>
+    }
+
+    public void setDropAllowed(boolean dropAllowed) {
+<span class="nc" id="L174">        tokenUpload.setDropAllowed(dropAllowed);</span>
+<span class="nc" id="L175">    }</span>
+
+    public boolean isDropAllowed() {
+<span class="nc" id="L178">        return tokenUpload.isDropAllowed();</span>
+    }
+
+    public void setAcceptedFileTypes(String... acceptedFileTypes) {
+<span class="nc" id="L182">        tokenUpload.setAcceptedFileTypes(acceptedFileTypes);</span>
+<span class="nc" id="L183">    }</span>
+
+    public List&lt;String&gt; getAcceptedFileTypes() {
+<span class="nc" id="L186">        return tokenUpload.getAcceptedFileTypes();</span>
+    }
+
+    public void setUploadButton(Component uploadButton) {
+<span class="nc" id="L190">        tokenUpload.setUploadButton(uploadButton);</span>
+<span class="nc" id="L191">    }</span>
+
+    public Component getUploadButton() {
+<span class="nc" id="L194">        return tokenUpload.getUploadButton();</span>
+    }
+
+    public void setDropLabel(Component dropLabel) {
+<span class="nc" id="L198">        tokenUpload.setDropLabel(dropLabel);</span>
+<span class="nc" id="L199">    }</span>
+
+    public Component getDropLabel() {
+<span class="nc" id="L202">        return tokenUpload.getDropLabel();</span>
+    }
+
+    public void setDropLabelIcon(Component dropLabelIcon) {
+<span class="nc" id="L206">        tokenUpload.setDropLabelIcon(dropLabelIcon);</span>
+<span class="nc" id="L207">    }</span>
+
+    public Component getDropLabelIcon() {
+<span class="nc" id="L210">        return tokenUpload.getDropLabelIcon();</span>
+    }
+
+    public void interruptUpload() {
+<span class="nc" id="L214">        tokenUpload.interruptUpload();</span>
+<span class="nc" id="L215">    }</span>
+
+    public boolean isUploading() {
+<span class="nc" id="L218">        return tokenUpload.isUploading();</span>
+    }
+
+    public Registration addProgressListener(ComponentEventListener&lt;ProgressUpdateEvent&gt; listener) {
+<span class="nc" id="L222">        return tokenUpload.addProgressListener(listener);</span>
+    }
+
+    public Registration addFailedListener(ComponentEventListener&lt;FailedEvent&gt; listener) {
+<span class="nc" id="L226">        return tokenUpload.addFailedListener(listener);</span>
+    }
+
+    public Registration addFinishedListener(ComponentEventListener&lt;FinishedEvent&gt; listener) {
+<span class="nc" id="L230">        return tokenUpload.addFinishedListener(listener);</span>
+    }
+
+    public Registration addStartedListener(ComponentEventListener&lt;StartedEvent&gt; listener) {
+<span class="nc" id="L234">        return tokenUpload.addStartedListener(listener);</span>
+    }
+
+    public Registration addSucceededListener(ComponentEventListener&lt;SucceededEvent&gt; listener) {
+<span class="nc" id="L238">        return tokenUpload.addSucceededListener(listener);</span>
+    }
+
+    public Registration addFileRejectedListener(ComponentEventListener&lt;FileRejectedEvent&gt; listener) {
+<span class="nc" id="L242">        return tokenUpload.addFileRejectedListener(listener);</span>
+    }
+
+    public Receiver getReceiver() {
+<span class="nc" id="L246">        return tokenUpload.getReceiver();</span>
+    }
+
+    public void setReceiver(Receiver receiver) {
+<span class="nc" id="L250">        tokenUpload.setReceiver(receiver);</span>
+<span class="nc" id="L251">    }</span>
+
+    public void setI18n(UploadI18N i18n) {
+<span class="nc" id="L254">        tokenUpload.setI18n(i18n);</span>
+<span class="nc" id="L255">    }</span>
+
+    public UploadI18N getI18n() {
+<span class="nc" id="L258">        return tokenUpload.getI18n();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

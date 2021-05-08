@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AboutView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.about</a> &gt; <span class="el_source">AboutView.java</span></div><h1>AboutView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.about;
+
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.router.Route;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.components.TorgScreen;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+
+@Route(value = &quot;about&quot;, layout = MainView.class)
+@I18nPageTitle(&quot;about.title&quot;)
+@CssImport(&quot;./views/about-view.css&quot;)
+public class AboutView extends TorgScreen {
+
+<span class="nc" id="L34">    public AboutView() {</span>
+<span class="nc" id="L35">        H1 title = new H1(getTranslation(&quot;application.title&quot;));</span>
+<span class="nc" id="L36">        H2 description = new H2(getTranslation(&quot;application.description&quot;));</span>
+<span class="nc" id="L37">        H2 version = new H2(getTranslation(&quot;application.version&quot;));</span>
+<span class="nc" id="L38">        Span torgLicense = new Span(getTranslation(&quot;application.torg-license&quot;));</span>
+
+<span class="nc" id="L40">        add(title, description, version, torgLicense);</span>
+<span class="nc" id="L41">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

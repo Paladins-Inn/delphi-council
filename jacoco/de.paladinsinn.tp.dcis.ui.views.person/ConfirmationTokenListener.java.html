@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfirmationTokenListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.person</a> &gt; <span class="el_source">ConfirmationTokenListener.java</span></div><h1>ConfirmationTokenListener.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.person;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.ComponentEventListener;
+import de.paladinsinn.tp.dcis.data.person.ConfirmationToken;
+import de.paladinsinn.tp.dcis.data.person.ConfirmationTokenService;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonService;
+import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
+import de.paladinsinn.tp.dcis.ui.views.login.LoginView;
+import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+/**
+ * PersonRegistrationListener --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-10
+ */
+@Service
+@AllArgsConstructor
+public class ConfirmationTokenListener implements ComponentEventListener&lt;ConfirmationTokenEvent&gt; {
+<span class="fc" id="L45">    private static final Logger LOG = LoggerFactory.getLogger(ConfirmationTokenListener.class);</span>
+
+    private final PersonService personService;
+    private final ConfirmationTokenService tokenService;
+
+    @Override
+    public void onComponentEvent(@NotNull final ConfirmationTokenEvent event) {
+<span class="nc" id="L52">        LOG.info(&quot;User wants to confirm registration. event={}&quot;, event);</span>
+
+<span class="nc" id="L54">        Optional&lt;ConfirmationToken&gt; token = tokenService.load(event.getToken());</span>
+
+<span class="nc" id="L56">        token.ifPresentOrElse(</span>
+                t -&gt; {
+                    try {
+<span class="nc" id="L59">                        Person user = personService.confirmUser(t);</span>
+
+<span class="nc" id="L61">                        new TorgNotification(</span>
+                                &quot;registration.invalid-token.user-confirmed&quot;,
+                                null,
+                                null,
+<span class="nc" id="L65">                                Arrays.asList(event.getToken().toString(), user.getName(), user.getUsername())</span>
+<span class="nc" id="L66">                        ).open();</span>
+<span class="nc" id="L67">                    } catch (IllegalStateException e) {</span>
+<span class="nc" id="L68">                        new TorgNotification(</span>
+                                &quot;registration.invalid-token.confirmation-failure&quot;,
+                                null,
+                                null,
+<span class="nc" id="L72">                                Arrays.asList(event.getToken().toString())</span>
+<span class="nc" id="L73">                        ).open();</span>
+<span class="nc" id="L74">                    }</span>
+<span class="nc" id="L75">                },</span>
+<span class="nc" id="L76">                () -&gt; new TorgNotification(</span>
+                        &quot;registration.invalid-token.unknown-token&quot;,
+                        null,
+                        null,
+<span class="nc" id="L80">                        Arrays.asList(event.getToken().toString())</span>
+<span class="nc" id="L81">                ).open()</span>
+        );
+
+<span class="nc" id="L84">        event.getSource().getUI().ifPresent(ui -&gt; ui.navigate(LoginView.ROUTE));</span>
+<span class="nc" id="L85">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.person</a> &gt; <span class="el_source">PersonForm.java</span></div><h1>PersonForm.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.person;
+
+import ch.carnet.kasparscherrer.LanguageSelect;
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.Role;
+import de.paladinsinn.tp.dcis.data.person.RoleName;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.components.Avatar;
+import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Optional;
+
+import static java.time.ZoneOffset.UTC;
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+/**
+ * PersonForm -- Edits/displays the data for a person.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-05
+ */
+@Service
+@Scope(SCOPE_PROTOTYPE)
+public class PersonForm extends Div implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+<span class="nc" id="L65">    private static final Logger LOG = LoggerFactory.getLogger(PersonForm.class);</span>
+
+    /**
+     * The service for writing data to.
+     */
+    private final PersonSaveService personSaveService;
+
+    /**
+     * Details of the logged in user.
+     */
+    private final LoggedInUser user;
+
+    /**
+     * The locale of this form.
+     */
+    private Locale locale;
+
+    /**
+     * The mission report to edit.
+     */
+    private Person data;
+    private Person oldData;
+
+
+    /**
+     * If this form is alread initialized.
+     */
+<span class="nc" id="L92">    private boolean initialized = false;</span>
+
+    // The form components.
+    private FormLayout form;
+
+    private TextField id;
+
+    private TextField username;
+    private PasswordField password;
+    private EmailField email;
+
+    private TextField name;
+    private TextField lastName;
+    private TextField firstName;
+
+    private LanguageSelect language;
+
+    private CheckboxGroup&lt;String&gt; roles;
+    private CheckboxGroup&lt;String&gt; status;
+    private CheckboxGroup&lt;String&gt; flags;
+
+    private Avatar avatar;
+
+    private DateTimePicker lastLogin;
+    private DateTimePicker deleted;
+    private DateTimePicker lastPasswordChange;
+    private DateTimePicker expiryDate;
+
+    private TorgActionBar actions;
+
+
+    @Autowired
+    public PersonForm(
+            @NotNull final PersonSaveService personSaveService,
+<span class="nc" id="L126">            LoggedInUser user) {</span>
+<span class="nc" id="L127">        this.personSaveService = personSaveService;</span>
+<span class="nc" id="L128">        this.user = user;</span>
+<span class="nc" id="L129">    }</span>
+
+    public void init() {
+<span class="nc bnc" id="L132" title="All 6 branches missed.">        if (initialized || data == null || user == null) {</span>
+<span class="nc" id="L133">            LOG.debug(&quot;Already initialized or not initializable. initialized={}, data={}, user={}, locale={}&quot;,</span>
+<span class="nc" id="L134">                    initialized, data, user, locale);</span>
+<span class="nc" id="L135">            return;</span>
+        }
+
+<span class="nc" id="L138">        addListener(PersonSaveEvent.class, personSaveService);</span>
+<span class="nc" id="L139">        ensureLocale();</span>
+
+<span class="nc" id="L141">        LOG.debug(&quot;initializing. data={}, user={}, locale={}&quot;, data, user, locale);</span>
+
+<span class="nc" id="L143">        form = new FormLayout();</span>
+<span class="nc" id="L144">        form.setResponsiveSteps(</span>
+                new FormLayout.ResponsiveStep(&quot;1px&quot;, 1),
+                new FormLayout.ResponsiveStep(&quot;400px&quot;, 2),
+                new FormLayout.ResponsiveStep(&quot;800px&quot;, 3)
+        );
+
+<span class="nc" id="L150">        id = generateTextField(true, false);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        username = generateTextField(!user.isAdmin(), true);</span>
+<span class="nc" id="L152">        password = generatePasswordField(user.isReadonly(), false);</span>
+<span class="nc" id="L153">        email = generateEmailField(user.isReadonly(), true);</span>
+<span class="nc" id="L154">        name = generateTextField(user.isReadonly(), true);</span>
+<span class="nc" id="L155">        lastName = generateTextField(user.isReadonly(), true);</span>
+<span class="nc" id="L156">        firstName = generateTextField(user.isReadonly(), true);</span>
+
+<span class="nc" id="L158">        language = new I18nSelector(data.getLocale());</span>
+<span class="nc" id="L159">        language.setRequiredIndicatorVisible(true);</span>
+<span class="nc" id="L160">        lastLogin = new DateTimePicker();</span>
+<span class="nc" id="L161">        deleted = new DateTimePicker();</span>
+<span class="nc" id="L162">        lastPasswordChange = new DateTimePicker();</span>
+<span class="nc" id="L163">        expiryDate = new DateTimePicker();</span>
+<span class="nc" id="L164">        expiryDate.setRequiredIndicatorVisible(true);</span>
+
+<span class="nc" id="L166">        status = new CheckboxGroup&lt;&gt;();</span>
+
+<span class="nc" id="L168">        flags = new CheckboxGroup&lt;&gt;();</span>
+
+<span class="nc" id="L170">        roles = new CheckboxGroup&lt;&gt;();</span>
+<span class="nc" id="L171">        roles.setItems(RoleName.PERSON.getRoleNamesWithoutGM());</span>
+
+<span class="nc" id="L173">        avatar = new Avatar(</span>
+                &quot;person.avatar&quot;,
+                data,
+                50, 150,
+                50, 150,
+                16777215
+        );
+<span class="nc" id="L180">        FormLayout.FormItem avatarItem = form.addFormItem(avatar, getTranslation(&quot;person.avatar.caption&quot;));</span>
+
+<span class="nc" id="L182">        actions = new TorgActionBar(</span>
+                &quot;buttons&quot;,
+                event -&gt; { // save
+<span class="nc" id="L185">                    scrape();</span>
+<span class="nc" id="L186">                    getEventBus().fireEvent(new PersonSaveEvent(this, false));</span>
+<span class="nc" id="L187">                },</span>
+                ev -&gt; { // reset
+<span class="nc" id="L189">                    data = oldData;</span>
+<span class="nc" id="L190">                    populate();</span>
+<span class="nc" id="L191">                },</span>
+                ev -&gt; { // cancel
+<span class="nc" id="L193">                    getUI().ifPresent(ui -&gt; ui.getPage().getHistory().back());</span>
+<span class="nc" id="L194">                },</span>
+                null
+        );
+
+
+<span class="nc" id="L199">        form.add(username, password, status,</span>
+                email, flags,
+                name, language,
+                lastName, firstName, new Span(),
+                roles, expiryDate,
+                lastPasswordChange, lastLogin, deleted);
+
+<span class="nc" id="L206">        actions.translate();</span>
+<span class="nc" id="L207">        form.add(actions);</span>
+
+<span class="nc" id="L209">        form.setColspan(avatarItem, 3);</span>
+<span class="nc" id="L210">        form.setColspan(email, 2);</span>
+<span class="nc" id="L211">        form.setColspan(name, 2);</span>
+<span class="nc" id="L212">        form.setColspan(roles, 2);</span>
+<span class="nc" id="L213">        form.setColspan(actions, 3);</span>
+<span class="nc" id="L214">        add(form);</span>
+
+        // mark as initialized.
+<span class="nc" id="L217">        initialized = true;</span>
+<span class="nc" id="L218">    }</span>
+
+    private EmailField generateEmailField(boolean readonly, boolean required) {
+<span class="nc" id="L221">        EmailField result = new EmailField();</span>
+
+<span class="nc" id="L223">        result.setReadOnly(readonly);</span>
+<span class="nc" id="L224">        result.setRequiredIndicatorVisible(required);</span>
+
+<span class="nc" id="L226">        return result;</span>
+    }
+
+    private PasswordField generatePasswordField(boolean readonly, boolean required) {
+<span class="nc" id="L230">        PasswordField result = new PasswordField();</span>
+
+<span class="nc" id="L232">        result.setReadOnly(readonly);</span>
+<span class="nc" id="L233">        result.setRequired(required);</span>
+<span class="nc" id="L234">        result.setRequiredIndicatorVisible(required);</span>
+
+<span class="nc" id="L236">        return result;</span>
+    }
+
+    private TextField generateTextField(boolean readonly, boolean required) {
+<span class="nc" id="L240">        TextField result = new TextField();</span>
+
+<span class="nc" id="L242">        result.setReadOnly(readonly);</span>
+<span class="nc" id="L243">        result.setRequired(required);</span>
+<span class="nc" id="L244">        result.setRequiredIndicatorVisible(required);</span>
+
+<span class="nc" id="L246">        return result;</span>
+    }
+
+    private void ensureLocale() {
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        if (locale == null) {</span>
+<span class="nc" id="L251">            locale = VaadinSession.getCurrent().getLocale();</span>
+        }
+<span class="nc" id="L253">    }</span>
+
+    public void setData(@NotNull Person data) {
+        try {
+<span class="nc" id="L257">            this.oldData = data.clone();</span>
+<span class="nc" id="L258">        } catch (CloneNotSupportedException e) {</span>
+            // should not happen
+<span class="nc" id="L260">            LOG.error(&quot;All entities need to be clonable: data={}&quot;, data);</span>
+<span class="nc" id="L261">        }</span>
+<span class="nc" id="L262">        this.data = data;</span>
+
+<span class="nc" id="L264">        LOG.debug(&quot;Set data. id={}, name={}&quot;,</span>
+<span class="nc" id="L265">                this.data.getId(), this.data.getName());</span>
+
+<span class="nc" id="L267">        init();</span>
+<span class="nc" id="L268">        populate();</span>
+<span class="nc" id="L269">        recalculateReadOnly();</span>
+<span class="nc" id="L270">    }</span>
+
+    private void recalculateReadOnly() {
+<span class="nc" id="L273">        user.allow(user.getPerson().getId().equals(data.getId()));</span>
+
+<span class="nc" id="L275">        password.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L276">        email.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L277">        name.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L278">        lastName.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L279">        firstName.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L280">        language.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L281">        lastLogin.setReadOnly(true);</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        deleted.setReadOnly(!user.isAdmin());</span>
+<span class="nc" id="L283">        lastPasswordChange.setReadOnly(true);</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">        expiryDate.setReadOnly(!user.isAdmin());</span>
+<span class="nc bnc" id="L285" title="All 6 branches missed.">        status.setReadOnly(!user.isAdmin() &amp;&amp; !user.isOrga() &amp;&amp; !user.isJudge());</span>
+<span class="nc" id="L286">        flags.setReadOnly(user.isReadonly());</span>
+<span class="nc bnc" id="L287" title="All 4 branches missed.">        roles.setReadOnly(!user.isAdmin() &amp;&amp; !user.isOrga());</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        actions.setReadOnly(user.isReadonly()</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">                &amp;&amp; !user.getPerson().equals(data)</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">                &amp;&amp; !user.isAdmin()</span>
+        );
+<span class="nc" id="L292">    }</span>
+
+    private void populate() {
+<span class="nc bnc" id="L295" title="All 4 branches missed.">        if (!initialized || data == null) {</span>
+<span class="nc" id="L296">            LOG.warn(&quot;Form is not initialized or data is not set. initialized={}, data={}&quot;, initialized, data);</span>
+<span class="nc" id="L297">            return;</span>
+        }
+
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        if (data.getId() != null) {</span>
+<span class="nc" id="L301">            id.setValue(data.getId().toString());</span>
+        }
+<span class="nc" id="L303">        username.setValue(data.getUsername());</span>
+<span class="nc" id="L304">        email.setValue(data.getEmail());</span>
+
+<span class="nc" id="L306">        avatar.setValue(data);</span>
+
+<span class="nc" id="L308">        name.setValue(data.getName());</span>
+<span class="nc" id="L309">        lastName.setValue(data.getLastname());</span>
+<span class="nc" id="L310">        firstName.setValue(data.getFirstname());</span>
+
+<span class="nc" id="L312">        lastLogin.setValue(data.getStatus().getLastLogin().toLocalDateTime());</span>
+<span class="nc" id="L313">        expiryDate.setValue(data.getStatus().getExpiry().toLocalDateTime());</span>
+<span class="nc" id="L314">        lastPasswordChange.setValue(data.getStatus().getCredentialsChange().toLocalDateTime());</span>
+
+<span class="nc" id="L316">        roles.setValue(RoleName.PERSON.getActiveRoleNames(data));</span>
+
+<span class="nc" id="L318">        flags.addSelectionListener(e -&gt; {</span>
+<span class="nc" id="L319">            roles.getValue().remove(RoleName.GM.name());</span>
+<span class="nc" id="L320">            data.disableGravatar();</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">            for (String s : e.getAllSelectedItems()) {</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">                if (s.equals(getTranslation(&quot;person.status-is-gm.caption&quot;))) {</span>
+<span class="nc" id="L323">                    roles.getValue().add(RoleName.GM.name());</span>
+                }
+
+<span class="nc bnc" id="L326" title="All 2 branches missed.">                if (s.equals(getTranslation(&quot;person.status-allow-gravatar.caption&quot;))) {</span>
+<span class="nc" id="L327">                    data.enableGravatar();</span>
+                }
+<span class="nc" id="L329">            }</span>
+<span class="nc" id="L330">        });</span>
+
+<span class="nc" id="L332">        language.setValue(data.getLocale());</span>
+<span class="nc" id="L333">    }</span>
+
+    private void scrape() {
+<span class="nc bnc" id="L336" title="All 2 branches missed.">        if (data == null) data = new Person();</span>
+
+<span class="nc" id="L338">        data.setUsername(username.getValue());</span>
+
+<span class="nc bnc" id="L340" title="All 2 branches missed.">        if (!password.isEmpty()) {</span>
+<span class="nc" id="L341">            LOG.info(&quot;Changing password. user='{}'&quot;, data.getUsername());</span>
+<span class="nc" id="L342">            data.setPassword(password.getValue());</span>
+        }
+
+<span class="nc" id="L345">        data.setEmail(email.getValue());</span>
+
+<span class="nc" id="L347">        data.setName(name.getValue());</span>
+<span class="nc" id="L348">        LOG.info(&quot;Changing name. name='{}'&quot;, data.getName());</span>
+
+<span class="nc" id="L350">        data.setLastname(lastName.getValue());</span>
+<span class="nc" id="L351">        data.setFirstname(firstName.getValue());</span>
+
+<span class="nc" id="L353">        data.getStatus().setLocked(false);</span>
+<span class="nc" id="L354">        data.getStatus().setEnabled(true);</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">        for (String b : status.getValue()) {</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">            if (getTranslation(&quot;person.status-locked.caption&quot;).equals(b)) {</span>
+<span class="nc" id="L357">                data.getStatus().setLocked(true);</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">            } else if (getTranslation(&quot;person.status-enabled.caption&quot;).equals(b)) {</span>
+<span class="nc" id="L359">                data.getStatus().setEnabled(true);</span>
+            }
+<span class="nc" id="L361">        }</span>
+<span class="nc" id="L362">        data.getStatus().setLastLogin(lastLogin.getValue().atOffset(UTC));</span>
+<span class="nc" id="L363">        data.getStatus().setCredentialsChange(lastPasswordChange.getValue().atOffset(UTC));</span>
+<span class="nc" id="L364">        data.getStatus().setExpiry(expiryDate.getValue().atOffset(UTC));</span>
+
+<span class="nc" id="L366">        data.getRoles().clear();</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        for (String b : roles.getValue()) {</span>
+<span class="nc" id="L368">            Role role = new Role(RoleName.valueOf(b));</span>
+<span class="nc" id="L369">            data.addRole(role);</span>
+
+<span class="nc" id="L371">            LOG.debug(&quot;Add role: {} ({})&quot;, b, data.getRoles().contains(role));</span>
+<span class="nc" id="L372">        }</span>
+
+<span class="nc" id="L374">        data.disableGravatar();</span>
+<span class="nc" id="L375">        data.getRoles().remove(new Role(RoleName.GM));</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">        for (String b : flags.getValue()) {</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">            if (getTranslation(&quot;person.status-allow-gravatar.caption&quot;).equals(b)) {</span>
+<span class="nc" id="L378">                LOG.debug(&quot;Allow usage of gravatar&quot;);</span>
+<span class="nc" id="L379">                data.enableGravatar();</span>
+            }
+
+<span class="nc bnc" id="L382" title="All 2 branches missed.">            if (getTranslation(&quot;person.status-is-gm.caption&quot;).equals(b)) {</span>
+<span class="nc" id="L383">                Role role = new Role(RoleName.GM);</span>
+<span class="nc" id="L384">                data.addRole(role);</span>
+
+<span class="nc" id="L386">                LOG.debug(&quot;Add role: {} ({})&quot;, RoleName.GM, data.getRoles().contains(role));</span>
+            }
+<span class="nc" id="L388">        }</span>
+
+
+<span class="nc bnc" id="L391" title="All 2 branches missed.">        if (deleted.getValue() != null) {</span>
+<span class="nc" id="L392">            data.getStatus().setDeleted(deleted.getValue().atOffset(UTC));</span>
+        }
+
+<span class="nc" id="L395">        data.setLocale(language.getValue());</span>
+<span class="nc" id="L396">    }</span>
+
+    public Optional&lt;Person&gt; getData() {
+<span class="nc" id="L399">        return Optional.ofNullable(data);</span>
+    }
+
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        if (locale == null) {</span>
+<span class="nc" id="L406">            setLocale(VaadinSession.getCurrent().getLocale());</span>
+        }
+
+        // Form fields
+<span class="nc" id="L410">        LOG.trace(&quot;Adding all form elements.&quot;);</span>
+<span class="nc" id="L411">        id.setLabel(getTranslation(&quot;input.id.caption&quot;));</span>
+<span class="nc" id="L412">        id.setHelperText(getTranslation(&quot;input.id.help&quot;));</span>
+
+<span class="nc" id="L414">        name.setLabel(getTranslation(&quot;person.name.caption&quot;));</span>
+<span class="nc" id="L415">        name.setHelperText(getTranslation(&quot;person.name.help&quot;));</span>
+
+<span class="nc" id="L417">        email.setLabel(getTranslation(&quot;person.email.caption&quot;));</span>
+<span class="nc" id="L418">        email.setHelperText(getTranslation(&quot;person.email.help&quot;));</span>
+
+<span class="nc" id="L420">        username.setLabel(getTranslation(&quot;person.username.caption&quot;));</span>
+<span class="nc" id="L421">        username.setHelperText(getTranslation(&quot;person.username.help&quot;));</span>
+<span class="nc" id="L422">        password.setLabel(getTranslation(&quot;person.password.caption&quot;));</span>
+<span class="nc" id="L423">        password.setHelperText(getTranslation(&quot;person.password.help&quot;));</span>
+
+<span class="nc" id="L425">        roles.setLabel(getTranslation(&quot;person.roles.caption&quot;));</span>
+<span class="nc" id="L426">        roles.setHelperText(getTranslation(&quot;person.roles.help&quot;));</span>
+
+<span class="nc" id="L428">        String statusEnabled = getTranslation(&quot;person.status-enabled.caption&quot;);</span>
+<span class="nc" id="L429">        String statusLocked = getTranslation(&quot;person.status-locked.caption&quot;);</span>
+<span class="nc" id="L430">        HashSet&lt;String&gt; statusOptionsSelected = new HashSet&lt;&gt;(2);</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">        if (data.isEnabled()) {</span>
+<span class="nc" id="L432">            statusOptionsSelected.add(getTranslation(&quot;person.status-enabled.caption&quot;));</span>
+        }
+<span class="nc bnc" id="L434" title="All 2 branches missed.">        if (!data.isAccountNonLocked()) {</span>
+<span class="nc" id="L435">            statusOptionsSelected.add(getTranslation(&quot;person.status-locked.caption&quot;));</span>
+        }
+<span class="nc" id="L437">        status.removeAll();</span>
+<span class="nc" id="L438">        status.setLabel(getTranslation(&quot;person.status.caption&quot;));</span>
+<span class="nc" id="L439">        status.setHelperText(getTranslation(&quot;person.status.help&quot;));</span>
+<span class="nc" id="L440">        status.setItems(Arrays.asList(statusEnabled, statusLocked));</span>
+<span class="nc" id="L441">        status.setValue(statusOptionsSelected);</span>
+
+<span class="nc" id="L443">        updateFlags();</span>
+
+<span class="nc" id="L445">        lastName.setLabel(getTranslation(&quot;person.last-name.caption&quot;));</span>
+<span class="nc" id="L446">        lastName.setHelperText(getTranslation(&quot;person.last-name.help&quot;));</span>
+<span class="nc" id="L447">        firstName.setLabel(getTranslation(&quot;person.first-name.caption&quot;));</span>
+<span class="nc" id="L448">        firstName.setHelperText(getTranslation(&quot;person.first-name.help&quot;));</span>
+<span class="nc" id="L449">        deleted.setLabel(getTranslation(&quot;person.deleted.caption&quot;));</span>
+<span class="nc" id="L450">        deleted.setHelperText(getTranslation(&quot;person.deleted.help&quot;));</span>
+<span class="nc" id="L451">        expiryDate.setLabel(getTranslation(&quot;person.expiry-date.caption&quot;));</span>
+<span class="nc" id="L452">        expiryDate.setHelperText(getTranslation(&quot;person.expiry-date.help&quot;));</span>
+<span class="nc" id="L453">        lastPasswordChange.setLabel(getTranslation(&quot;person.last-password-change.caption&quot;));</span>
+<span class="nc" id="L454">        lastPasswordChange.setHelperText(getTranslation(&quot;person.last-password-change.help&quot;));</span>
+<span class="nc" id="L455">        lastLogin.setLabel(getTranslation(&quot;person.last-login.caption&quot;));</span>
+<span class="nc" id="L456">        lastLogin.setHelperText(getTranslation(&quot;person.last-login.help&quot;));</span>
+
+<span class="nc" id="L458">        actions.translate();</span>
+<span class="nc" id="L459">    }</span>
+
+    private void updateFlags() {
+<span class="nc" id="L462">        final HashSet&lt;String&gt; userChangeableFlagSelected = new HashSet&lt;&gt;(2);</span>
+
+<span class="nc bnc" id="L464" title="All 2 branches missed.">        if (data.isGravatarAllowed()) {</span>
+<span class="nc" id="L465">            userChangeableFlagSelected.add(getTranslation(&quot;person.status-allow-gravatar.caption&quot;));</span>
+        }
+<span class="nc bnc" id="L467" title="All 2 branches missed.">        if (roles.getValue().contains(RoleName.GM.name())) {</span>
+<span class="nc" id="L468">            userChangeableFlagSelected.add(getTranslation(&quot;person.status-is-gm.caption&quot;));</span>
+        }
+
+<span class="nc" id="L471">        flags.removeAll();</span>
+<span class="nc" id="L472">        flags.setLabel(getTranslation(&quot;person.user-changeable-flags.caption&quot;));</span>
+<span class="nc" id="L473">        flags.setItems(Arrays.asList(</span>
+<span class="nc" id="L474">                getTranslation(&quot;person.status-is-gm.caption&quot;),</span>
+<span class="nc" id="L475">                getTranslation(&quot;person.status-allow-gravatar.caption&quot;)</span>
+        ));
+<span class="nc" id="L477">        flags.setValue(userChangeableFlagSelected);</span>
+<span class="nc" id="L478">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L483">        setLocale(event.getLocale());</span>
+<span class="nc" id="L484">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L488" title="All 4 branches missed.">        if (locale == null || (locale.equals(this.locale))) {</span>
+<span class="nc" id="L489">            LOG.debug(&quot;Locale already set or new locale would be null, old={}, new={}&quot;, this.locale, locale);</span>
+<span class="nc" id="L490">            return;</span>
+        }
+
+<span class="nc" id="L493">        this.locale = locale;</span>
+<span class="nc" id="L494">        translate();</span>
+<span class="nc" id="L495">    }</span>
+
+    private String getTranslation(@NotNull final String key) {
+        try {
+<span class="nc" id="L499">            return super.getTranslation(key);</span>
+<span class="nc" id="L500">        } catch (NullPointerException e) {</span>
+<span class="nc" id="L501">            LOG.warn(&quot;Can't call translator from vaadin: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L502">            return &quot;!&quot; + key;</span>
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L508">        LOG.debug(&quot;Closing form.&quot;);</span>
+<span class="nc" id="L509">        removeAll();</span>
+<span class="nc" id="L510">        status.removeAll();</span>
+<span class="nc" id="L511">        roles.removeAll();</span>
+<span class="nc" id="L512">        form.removeAll();</span>
+<span class="nc" id="L513">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

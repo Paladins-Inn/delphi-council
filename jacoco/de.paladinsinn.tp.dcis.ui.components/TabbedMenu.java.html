@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TabbedMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">TabbedMenu.java</span></div><h1>TabbedMenu.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import java.util.Locale;
+
+/**
+ * TabbedMenu --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-28
+ */
+<span class="nc" id="L41">public class TabbedMenu extends Component implements TranslatableComponent, LocaleChangeObserver {</span>
+<span class="nc" id="L42">    private static final Logger LOG = LoggerFactory.getLogger(TabbedMenu.class);</span>
+
+    private Locale locale;
+
+    private VerticalLayout content;
+    private VerticalLayout header;
+    private Tabs menu;
+    private VerticalLayout footer;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L53">        locale = VaadinSession.getCurrent().getLocale();</span>
+
+<span class="nc" id="L55">        content = new VerticalLayout();</span>
+<span class="nc" id="L56">        content.setSizeFull();</span>
+<span class="nc" id="L57">        content.setPadding(false);</span>
+<span class="nc" id="L58">        content.setSpacing(false);</span>
+<span class="nc" id="L59">        content.getThemeList().set(&quot;spacing-s&quot;, true);</span>
+<span class="nc" id="L60">        content.setAlignItems(FlexComponent.Alignment.STRETCH);</span>
+
+<span class="nc" id="L62">        header = new VerticalLayout();</span>
+<span class="nc" id="L63">        menu = new Tabs();</span>
+<span class="nc" id="L64">        footer = new VerticalLayout();</span>
+
+<span class="nc" id="L66">        content.add(header, menu, footer);</span>
+
+<span class="nc" id="L68">    }</span>
+
+    public void setHeader(@NotNull final Component component) {
+<span class="nc" id="L71">        header.removeAll();</span>
+<span class="nc" id="L72">        header.add(component);</span>
+<span class="nc" id="L73">    }</span>
+
+    public void addHeader(@NotNull final Component component) {
+<span class="nc" id="L76">        header.add(component);</span>
+<span class="nc" id="L77">    }</span>
+
+    public void removeHeader(@NotNull final Component component) {
+<span class="nc" id="L80">        header.remove(component);</span>
+<span class="nc" id="L81">    }</span>
+
+
+    public void setFooter(@NotNull final Component component) {
+<span class="nc" id="L85">        footer.removeAll();</span>
+<span class="nc" id="L86">        footer.add(component);</span>
+<span class="nc" id="L87">    }</span>
+
+    public void addFooter(@NotNull final Component component) {
+<span class="nc" id="L90">        footer.add(component);</span>
+<span class="nc" id="L91">    }</span>
+
+    public void removeFooter(@NotNull final Component component) {
+<span class="nc" id="L94">        footer.remove(component);</span>
+<span class="nc" id="L95">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L100">        LOG.debug(</span>
+                &quot;Locale change event. component={}, event={}, locale={}&quot;,
+<span class="nc" id="L102">                getClass().getSimpleName(),</span>
+                event,
+<span class="nc" id="L104">                event.getLocale()</span>
+        );
+
+<span class="nc" id="L107">        setLocale(event.getLocale());</span>
+
+
+<span class="nc" id="L110">    }</span>
+
+    @Override
+    public void translate() {
+
+<span class="nc" id="L115">    }</span>
+
+    @Override
+    public void setLocale(@NotNull final Locale locale) {
+<span class="nc" id="L119">        LOG.trace(&quot;Changing locale. old={}, new={}&quot;, this.locale, locale);</span>
+
+<span class="nc" id="L121">        this.locale = locale;</span>
+<span class="nc" id="L122">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

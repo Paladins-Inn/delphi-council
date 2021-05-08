@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Clearance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data</a> &gt; <span class="el_source">Clearance.java</span></div><h1>Clearance.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.data.provider.ListDataProvider;
+
+import java.util.Arrays;
+
+/**
+ * Clearance --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-26
+ */
+<span class="fc" id="L31">public enum Clearance {</span>
+<span class="fc" id="L32">    ANY(-1),</span>
+<span class="fc" id="L33">    ALPHA(0),</span>
+<span class="fc" id="L34">    BETA(50),</span>
+<span class="fc" id="L35">    GAMMA(200),</span>
+<span class="fc" id="L36">    DELTA(500),</span>
+<span class="fc" id="L37">    OMEGA(1000);</span>
+
+    private final int xp;
+
+<span class="fc" id="L41">    Clearance(@NotNull final int xp) {</span>
+<span class="fc" id="L42">        this.xp = xp;</span>
+<span class="fc" id="L43">    }</span>
+
+    public int getMinXP() {
+<span class="nc" id="L46">        return xp;</span>
+    }
+
+    /**
+     * Calculates the clearance for the given amount of XP.
+     *
+     * @param xp The xp to match the security clearance level.
+     * @return The Delphi Council Security Clearance level.
+     */
+    public static Clearance valueOf(int xp) {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (xp &gt;= Clearance.OMEGA.getMinXP()) {</span>
+<span class="nc" id="L57">            return Clearance.OMEGA;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        } else if (xp &gt;= Clearance.DELTA.getMinXP()) {</span>
+<span class="nc" id="L59">            return Clearance.DELTA;</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        } else if (xp &gt;= Clearance.GAMMA.getMinXP()) {</span>
+<span class="nc" id="L61">            return Clearance.GAMMA;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        } else if (xp &gt;= Clearance.BETA.getMinXP()) {</span>
+<span class="nc" id="L63">            return Clearance.BETA;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        } else if (xp &gt;= Clearance.ALPHA.getMinXP()) {</span>
+<span class="nc" id="L65">            return Clearance.ALPHA;</span>
+        } else {
+<span class="nc" id="L67">            return Clearance.ANY;</span>
+        }
+    }
+
+    public ListDataProvider&lt;Clearance&gt; dataProvider() {
+<span class="nc" id="L72">        return new ListDataProvider&lt;&gt;(Arrays.asList(ANY, ALPHA, BETA, GAMMA, DELTA, OMEGA));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

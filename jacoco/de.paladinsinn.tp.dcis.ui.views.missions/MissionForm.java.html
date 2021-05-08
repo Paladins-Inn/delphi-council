@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MissionForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.missions</a> &gt; <span class="el_source">MissionForm.java</span></div><h1>MissionForm.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.missions;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.Clearance;
+import de.paladinsinn.tp.dcis.data.missions.Mission;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Optional;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+/**
+ * MissionEditForm -- Edits/displays the data for a mission.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-29
+ */
+@Service
+@Scope(SCOPE_PROTOTYPE)
+public class MissionForm extends Composite&lt;Div&gt; implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+<span class="nc" id="L59">    private static final Logger LOG = LoggerFactory.getLogger(MissionForm.class);</span>
+    public static final int DEFAULT_PAYMENT = 250;
+    public static final int DEFAULT_XP = 5;
+
+    /**
+     * service for writing data to.
+     */
+    private final MissionService missionService;
+
+    /**
+     * The locale of the form.
+     */
+    private Locale locale;
+
+    private final LoggedInUser user;
+
+<span class="nc" id="L75">    private final TextField title = new TextField();</span>
+<span class="nc" id="L76">    private final FormLayout form = new FormLayout();</span>
+
+<span class="nc" id="L78">    private final TextField id = new TextField();</span>
+<span class="nc" id="L79">    private final TextField code = new TextField();</span>
+<span class="nc" id="L80">    private final ComboBox&lt;Clearance&gt; clearance = new ComboBox&lt;&gt;();</span>
+<span class="nc" id="L81">    private final TextField publication = new TextField();</span>
+<span class="nc" id="L82">    private final TextField image = new TextField();</span>
+<span class="nc" id="L83">    private final TextArea description = new TextArea();</span>
+<span class="nc" id="L84">    private final IntegerField payment = new IntegerField();</span>
+<span class="nc" id="L85">    private final IntegerField xp = new IntegerField();</span>
+<span class="nc" id="L86">    private final TextArea objectivesSuccess = new TextArea();</span>
+<span class="nc" id="L87">    private final TextArea objectivesGood = new TextArea();</span>
+<span class="nc" id="L88">    private final TextArea objectivesOutstanding = new TextArea();</span>
+
+    private TorgActionBar actions;
+
+    /**
+     * mission data
+     */
+    private Mission data;
+
+    /**
+     * If the form is already initialized.
+     */
+<span class="nc" id="L100">    private boolean initialized = false;</span>
+
+    @Autowired
+    public MissionForm(
+            @NotNull final MissionService missionService,
+            @NotNull final LoggedInUser user
+<span class="nc" id="L106">    ) {</span>
+<span class="nc" id="L107">        this.missionService = missionService;</span>
+<span class="nc" id="L108">        this.user = user;</span>
+<span class="nc" id="L109">    }</span>
+
+    private void init() {
+<span class="nc bnc" id="L112" title="All 6 branches missed.">        if (data == null || user == null || initialized) {</span>
+<span class="nc" id="L113">            LOG.debug(</span>
+                    &quot;Can't initialize or already initialized. initialized={}, data={}, user={}&quot;,
+<span class="nc" id="L115">                    initialized, data, user</span>
+            );
+<span class="nc" id="L117">            return;</span>
+        }
+
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (locale == null) {</span>
+<span class="nc" id="L121">            locale = VaadinSession.getCurrent().getLocale();</span>
+        }
+
+<span class="nc" id="L124">        addListener(MissionSaveEvent.class, missionService);</span>
+
+<span class="nc" id="L126">        form.setResponsiveSteps(</span>
+                new FormLayout.ResponsiveStep(&quot;1px&quot;, 1),
+                new FormLayout.ResponsiveStep(&quot;400px&quot;, 2),
+                new FormLayout.ResponsiveStep(&quot;800px&quot;, 3)
+        );
+
+<span class="nc" id="L132">        actions = new TorgActionBar(</span>
+                &quot;buttons&quot;,
+                event -&gt; {
+<span class="nc" id="L135">                    scrape();</span>
+<span class="nc" id="L136">                    getEventBus().fireEvent(new MissionSaveEvent(this, false));</span>
+<span class="nc" id="L137">                },</span>
+                null,
+                null,
+                null
+        );
+<span class="nc" id="L142">        actions.setReadOnly(</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                user.isReadonly()</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                        &amp;&amp; !user.isAdmin()</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">                        &amp;&amp; !user.isOrga()</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                        &amp;&amp; !user.isJudge()</span>
+        );
+
+
+<span class="nc" id="L150">        id.setReadOnly(true);</span>
+
+<span class="nc" id="L152">        code.setRequired(true);</span>
+<span class="nc" id="L153">        code.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L155">        title.setRequired(true);</span>
+<span class="nc" id="L156">        title.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L158">        clearance.setDataProvider(Clearance.ANY.dataProvider());</span>
+<span class="nc" id="L159">        clearance.setAllowCustomValue(false);</span>
+<span class="nc" id="L160">        clearance.setRequired(true);</span>
+<span class="nc" id="L161">        clearance.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L163">        publication.setRequired(false);</span>
+<span class="nc" id="L164">        publication.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L166">        image.setRequired(false);</span>
+<span class="nc" id="L167">        image.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L169">        description.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L170">        description.setRequired(true);</span>
+<span class="nc" id="L171">        description.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L173">        payment.setMin(100);</span>
+<span class="nc" id="L174">        payment.setMax(1000);</span>
+<span class="nc" id="L175">        payment.setStep(50);</span>
+<span class="nc" id="L176">        payment.setValue(DEFAULT_PAYMENT);</span>
+<span class="nc" id="L177">        payment.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L179">        xp.setMin(1);</span>
+<span class="nc" id="L180">        xp.setMax(50);</span>
+<span class="nc" id="L181">        xp.setStep(1);</span>
+<span class="nc" id="L182">        xp.setValue(DEFAULT_XP);</span>
+<span class="nc" id="L183">        xp.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L185">        objectivesSuccess.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L186">        objectivesSuccess.setRequired(true);</span>
+<span class="nc" id="L187">        objectivesSuccess.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L189">        objectivesGood.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L190">        objectivesGood.setRequired(true);</span>
+<span class="nc" id="L191">        objectivesGood.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L193">        objectivesOutstanding.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L194">        objectivesOutstanding.setRequired(true);</span>
+<span class="nc" id="L195">        objectivesOutstanding.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L197">        getContent().add(form);</span>
+
+<span class="nc" id="L199">        initialized = true;</span>
+<span class="nc" id="L200">    }</span>
+
+    public void setData(@NotNull Mission data) {
+<span class="nc bnc" id="L203" title="All 4 branches missed.">        if (this.data != null &amp;&amp; this.data.equals(data)) {</span>
+<span class="nc" id="L204">            LOG.info(&quot;Mission report didn't change. Ignoring event. code={}, id={}&quot;,</span>
+<span class="nc" id="L205">                    this.data.getCode(), this.data.getId());</span>
+
+<span class="nc" id="L207">            return;</span>
+        }
+
+<span class="nc" id="L210">        LOG.debug(&quot;Set mission. id={}, code={}, title={}&quot;, data.getId(), data.getCode(), data.getName());</span>
+
+<span class="nc" id="L212">        this.data = data;</span>
+
+<span class="nc" id="L214">        init();</span>
+<span class="nc" id="L215">        populate();</span>
+<span class="nc" id="L216">        translate();</span>
+<span class="nc" id="L217">    }</span>
+
+    public void populate() {
+<span class="nc bnc" id="L220" title="All 2 branches missed.">        if (data == null) {</span>
+<span class="nc" id="L221">            LOG.warn(&quot;Tried to populate form data without a mission defined.&quot;);</span>
+<span class="nc" id="L222">            return;</span>
+        }
+
+<span class="nc bnc" id="L225" title="All 2 branches missed.">        if (data.getId() != null) {</span>
+<span class="nc" id="L226">            id.setValue(data.getId().toString());</span>
+        }
+
+<span class="nc" id="L229">        bindData(data.getCode(), code);</span>
+<span class="nc" id="L230">        bindData(data.getName(), title);</span>
+<span class="nc" id="L231">        bindData(data.getClearance(), clearance);</span>
+<span class="nc" id="L232">        bindData(data.getPublication(), publication);</span>
+<span class="nc" id="L233">        bindData(data.getImage(), image);</span>
+<span class="nc" id="L234">        bindData(data.getDescription(), description);</span>
+<span class="nc" id="L235">        bindData(data.getPayment(), payment);</span>
+<span class="nc" id="L236">        bindData(data.getXp(), xp);</span>
+<span class="nc" id="L237">        bindData(data.getObjectivesSuccess(), objectivesSuccess);</span>
+<span class="nc" id="L238">        bindData(data.getObjectivesGood(), objectivesGood);</span>
+<span class="nc" id="L239">        bindData(data.getObjectivesOutstanding(), objectivesOutstanding);</span>
+<span class="nc" id="L240">    }</span>
+
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    private void bindData(final Object data, @NotNull HasValue component) {
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (data != null) {</span>
+<span class="nc" id="L245">            component.setValue(data);</span>
+        }
+<span class="nc" id="L247">    }</span>
+
+    private void scrape() {
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        if (data == null) data = new Mission();</span>
+
+<span class="nc" id="L252">        data.setCode(code.getValue());</span>
+<span class="nc" id="L253">        data.setName(title.getValue());</span>
+<span class="nc" id="L254">        data.setClearance(clearance.getValue());</span>
+<span class="nc" id="L255">        data.setPublication(publication.getValue());</span>
+<span class="nc" id="L256">        data.setImage(image.getValue());</span>
+<span class="nc" id="L257">        data.setDescription(description.getValue());</span>
+<span class="nc" id="L258">        data.setPayment(payment.getValue());</span>
+<span class="nc" id="L259">        data.setXp(xp.getValue());</span>
+<span class="nc" id="L260">        data.setObjectivesSuccess(objectivesSuccess.getValue());</span>
+<span class="nc" id="L261">        data.setObjectivesGood(objectivesGood.getValue());</span>
+<span class="nc" id="L262">        data.setObjectivesOutstanding(objectivesOutstanding.getValue());</span>
+<span class="nc" id="L263">        data.preUpdate();</span>
+<span class="nc" id="L264">    }</span>
+
+
+    public Optional&lt;Mission&gt; getData() {
+<span class="nc" id="L268">        return Optional.ofNullable(data);</span>
+    }
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L273">        LOG.trace(&quot;Change locale event. locale={}&quot;, event.getLocale());</span>
+
+<span class="nc" id="L275">        setLocale(event.getLocale());</span>
+<span class="nc" id="L276">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L280" title="All 6 branches missed.">        if (user == null || data == null || locale == null) {</span>
+<span class="nc" id="L281">            LOG.warn(</span>
+                    &quot;Can't build mission form. user={}, mission={}, locale={}&quot;,
+                    user, data, locale
+            );
+
+<span class="nc" id="L286">            return;</span>
+        }
+
+<span class="nc" id="L289">        LOG.debug(&quot;Building mission edit form. locale={}, mission={}&quot;, locale, data);</span>
+
+<span class="nc" id="L291">        LOG.trace(&quot;Removing all form elements.&quot;);</span>
+<span class="nc" id="L292">        form.removeAll();</span>
+
+
+        // Form fields
+<span class="nc" id="L296">        LOG.trace(&quot;Translating form elements.&quot;);</span>
+<span class="nc" id="L297">        id.setLabel(getTranslation(&quot;input.id.caption&quot;));</span>
+<span class="nc" id="L298">        id.setHelperText(getTranslation(&quot;input.id.help&quot;));</span>
+
+<span class="nc" id="L300">        code.setLabel(getTranslation(&quot;mission.code.caption&quot;));</span>
+<span class="nc" id="L301">        code.setHelperText(getTranslation(&quot;mission.code.help&quot;));</span>
+
+<span class="nc" id="L303">        title.setLabel(getTranslation(&quot;mission.title.caption&quot;));</span>
+<span class="nc" id="L304">        title.setHelperText(getTranslation(&quot;mission.title.help&quot;));</span>
+
+<span class="nc" id="L306">        clearance.setLabel(getTranslation(&quot;torg.clearance.caption&quot;));</span>
+<span class="nc" id="L307">        clearance.setHelperText(getTranslation(&quot;torg.clearance.help&quot;));</span>
+<span class="nc" id="L308">        clearance.setItemLabelGenerator((ItemLabelGenerator&lt;Clearance&gt;) item -&gt; getTranslation(&quot;torg.clearance.&quot; + item.name()));</span>
+
+<span class="nc" id="L310">        publication.setLabel(getTranslation(&quot;mission.publication.caption&quot;));</span>
+<span class="nc" id="L311">        publication.setHelperText(getTranslation(&quot;mission.publication.help&quot;));</span>
+
+<span class="nc" id="L313">        image.setLabel(getTranslation(&quot;mission.image.caption&quot;));</span>
+<span class="nc" id="L314">        image.setHelperText(getTranslation(&quot;mission.image.help&quot;));</span>
+
+<span class="nc" id="L316">        description.setLabel(getTranslation(&quot;mission.description.caption&quot;));</span>
+<span class="nc" id="L317">        description.setHelperText(getTranslation(&quot;mission.description.help&quot;));</span>
+
+<span class="nc" id="L319">        payment.setLabel(getTranslation(&quot;mission.payment.caption&quot;));</span>
+<span class="nc" id="L320">        payment.setHelperText(getTranslation(&quot;mission.description.help&quot;));</span>
+
+<span class="nc" id="L322">        xp.setLabel(getTranslation(&quot;mission.xp.caption&quot;));</span>
+<span class="nc" id="L323">        xp.setHeight(getTranslation(&quot;mission.xp.help&quot;));</span>
+
+<span class="nc" id="L325">        objectivesSuccess.setLabel(getTranslation(&quot;mission.objectives.success.caption&quot;));</span>
+<span class="nc" id="L326">        objectivesSuccess.setHelperText(getTranslation(&quot;mission.objectives.success.help&quot;));</span>
+
+<span class="nc" id="L328">        objectivesGood.setLabel(getTranslation(&quot;mission.objectives.good.caption&quot;));</span>
+<span class="nc" id="L329">        objectivesGood.setHelperText(getTranslation(&quot;mission.objectives.good.help&quot;));</span>
+
+<span class="nc" id="L331">        objectivesOutstanding.setLabel(getTranslation(&quot;mission.objectives.outstanding.caption&quot;));</span>
+<span class="nc" id="L332">        objectivesOutstanding.setHelperText(getTranslation(&quot;mission.objectives.outstanding.help&quot;));</span>
+
+
+<span class="nc" id="L335">        LOG.trace(&quot;adding all form elements.&quot;);</span>
+<span class="nc" id="L336">        form.add(code, clearance, title, publication, payment, xp, image, description,</span>
+                objectivesSuccess, objectivesGood, objectivesOutstanding);
+
+<span class="nc" id="L339">        form.add(actions);</span>
+<span class="nc" id="L340">        form.setColspan(actions, 3);</span>
+
+
+<span class="nc" id="L343">        form.setColspan(title, 3);</span>
+<span class="nc" id="L344">        form.setColspan(publication, 3);</span>
+<span class="nc" id="L345">        form.setColspan(description, 3);</span>
+<span class="nc" id="L346">        form.setColspan(objectivesSuccess, 3);</span>
+<span class="nc" id="L347">        form.setColspan(objectivesGood, 3);</span>
+<span class="nc" id="L348">        form.setColspan(objectivesOutstanding, 3);</span>
+<span class="nc" id="L349">    }</span>
+
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L354" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L355">            LOG.debug(&quot;Locale has not changed. Ignoring event. locale={}&quot;, locale);</span>
+<span class="nc" id="L356">            return;</span>
+        }
+
+<span class="nc" id="L359">        this.locale = locale;</span>
+<span class="nc" id="L360">        translate();</span>
+<span class="nc" id="L361">    }</span>
+
+    private String getTranslation(@NotNull final String key) {
+        try {
+<span class="nc" id="L365">            return super.getTranslation(key);</span>
+<span class="nc" id="L366">        } catch (NullPointerException e) {</span>
+<span class="nc" id="L367">            LOG.warn(&quot;Can't call translator from vaadin: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L368">            return &quot;!&quot; + key;</span>
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L374">        LOG.debug(&quot;Closing form.&quot;);</span>
+<span class="nc" id="L375">        getContent().removeAll();</span>
+<span class="nc" id="L376">        form.removeAll();</span>
+<span class="nc" id="L377">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

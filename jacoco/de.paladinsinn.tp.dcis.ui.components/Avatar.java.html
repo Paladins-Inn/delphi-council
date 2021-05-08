@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Avatar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">Avatar.java</span></div><h1>Avatar.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.upload.*;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.shared.Registration;
+import de.paladinsinn.tp.dcis.data.HasAvatar;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import static com.vaadin.flow.component.Unit.PIXELS;
+
+/**
+ * Avatar -- A component for editing an avatar.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-07
+ */
+@SuppressWarnings(&quot;unused&quot;)
+public class Avatar extends Span implements HasSize, LocaleChangeObserver, TranslatableComponent {
+<span class="nc" id="L52">    private static final Logger LOG = LoggerFactory.getLogger(Avatar.class);</span>
+
+    private Locale locale;
+    private final String i18nPrefix;
+
+<span class="nc" id="L57">    private final Image avatar = new Image();</span>
+<span class="nc" id="L58">    private final MemoryBuffer avatarBuffer = new MemoryBuffer();</span>
+<span class="nc" id="L59">    private final Upload avatarUpload = new Upload(avatarBuffer);</span>
+
+
+    public Avatar(
+            @NotNull final String i18nPrefix,
+
+            @NotNull final HasAvatar data,
+            @NotNull final int minWidth,
+            @NotNull final int maxWidth,
+
+            @NotNull final int minHeight,
+            @NotNull final int maxHeight,
+
+            @NotNull final int maxFileSize
+<span class="nc" id="L73">    ) {</span>
+<span class="nc" id="L74">        this.i18nPrefix = i18nPrefix;</span>
+
+<span class="nc" id="L76">        avatar.setMinWidth(minWidth, PIXELS);</span>
+<span class="nc" id="L77">        avatar.setMaxWidth(maxWidth, PIXELS);</span>
+
+<span class="nc" id="L79">        avatar.setMinHeight(minHeight, PIXELS);</span>
+<span class="nc" id="L80">        avatar.setMaxHeight(maxHeight, PIXELS);</span>
+
+<span class="nc" id="L82">        avatarUpload.setMaxFiles(1);</span>
+<span class="nc" id="L83">        avatarUpload.setMaxFileSize(maxFileSize);</span>
+<span class="nc" id="L84">        avatarUpload.setDropAllowed(true);</span>
+<span class="nc" id="L85">        avatarUpload.setAcceptedFileTypes(&quot;image/png&quot;, &quot;image/jpg&quot;, &quot;image/jpeg&quot;, &quot;image/gif&quot;);</span>
+<span class="nc" id="L86">        avatarUpload.addFinishedListener(e -&gt; {</span>
+            try {
+<span class="nc" id="L88">                data.setAvatar(avatarBuffer.getInputStream());</span>
+
+<span class="nc" id="L90">                Notification.show(</span>
+<span class="nc" id="L91">                        getTranslation(&quot;input.upload.success&quot;, avatarBuffer.getFileName()),</span>
+                        1000,
+                        Notification.Position.BOTTOM_STRETCH
+                );
+<span class="nc" id="L95">            } catch (IOException ioException) {</span>
+<span class="nc" id="L96">                LOG.error(</span>
+                        &quot;Upload of the avatar failed. file='{}', type='{}'&quot;,
+<span class="nc" id="L98">                        avatarBuffer.getFileData(), avatarBuffer.getFileData().getMimeType()</span>
+                );
+<span class="nc" id="L100">                Notification.show(</span>
+<span class="nc" id="L101">                        getTranslation(&quot;input.upload.failed&quot;, ioException.getLocalizedMessage()),</span>
+                        2000,
+                        Notification.Position.BOTTOM_STRETCH
+                );
+<span class="nc" id="L105">            }</span>
+<span class="nc" id="L106">        });</span>
+
+<span class="nc" id="L108">        locale = VaadinSession.getCurrent().getLocale();</span>
+<span class="nc" id="L109">    }</span>
+
+
+    public void setValue(@NotNull final HasAvatar data) {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (data.getAvatar() != null)</span>
+<span class="nc" id="L114">            avatar.setSrc(data.getAvatar());</span>
+<span class="nc" id="L115">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L119">        removeAll();</span>
+
+<span class="nc" id="L121">        avatar.setTitle(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;caption&quot;)));</span>
+<span class="nc" id="L122">        avatarUpload.setDropLabelIcon(avatar);</span>
+
+<span class="nc" id="L124">        add(avatarUpload);</span>
+<span class="nc" id="L125">    }</span>
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L129">        setLocale(event.getLocale());</span>
+<span class="nc" id="L130">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L134" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L135">            LOG.debug(&quot;locale did not change - ignoring event. old={}, new={}&quot;, this.locale, locale);</span>
+<span class="nc" id="L136">            return;</span>
+        }
+
+<span class="nc" id="L139">        this.locale = locale;</span>
+
+<span class="nc" id="L141">        translate();</span>
+<span class="nc" id="L142">    }</span>
+
+    public Registration addAllFinishedListener(ComponentEventListener&lt;AllFinishedEvent&gt; listener) {
+<span class="nc" id="L145">        return avatarUpload.addAllFinishedListener(listener);</span>
+    }
+
+    public void setMaxFiles(int maxFiles) {
+<span class="nc" id="L149">        avatarUpload.setMaxFiles(maxFiles);</span>
+<span class="nc" id="L150">    }</span>
+
+    public int getMaxFiles() {
+<span class="nc" id="L153">        return avatarUpload.getMaxFiles();</span>
+    }
+
+    public void setMaxFileSize(int maxFileSize) {
+<span class="nc" id="L157">        avatarUpload.setMaxFileSize(maxFileSize);</span>
+<span class="nc" id="L158">    }</span>
+
+    public int getMaxFileSize() {
+<span class="nc" id="L161">        return avatarUpload.getMaxFileSize();</span>
+    }
+
+    public void setAutoUpload(boolean autoUpload) {
+<span class="nc" id="L165">        avatarUpload.setAutoUpload(autoUpload);</span>
+<span class="nc" id="L166">    }</span>
+
+    public boolean isAutoUpload() {
+<span class="nc" id="L169">        return avatarUpload.isAutoUpload();</span>
+    }
+
+    public void setDropAllowed(boolean dropAllowed) {
+<span class="nc" id="L173">        avatarUpload.setDropAllowed(dropAllowed);</span>
+<span class="nc" id="L174">    }</span>
+
+    public boolean isDropAllowed() {
+<span class="nc" id="L177">        return avatarUpload.isDropAllowed();</span>
+    }
+
+    public void setAcceptedFileTypes(String... acceptedFileTypes) {
+<span class="nc" id="L181">        avatarUpload.setAcceptedFileTypes(acceptedFileTypes);</span>
+<span class="nc" id="L182">    }</span>
+
+    public List&lt;String&gt; getAcceptedFileTypes() {
+<span class="nc" id="L185">        return avatarUpload.getAcceptedFileTypes();</span>
+    }
+
+    public void setUploadButton(Component uploadButton) {
+<span class="nc" id="L189">        avatarUpload.setUploadButton(uploadButton);</span>
+<span class="nc" id="L190">    }</span>
+
+    public Component getUploadButton() {
+<span class="nc" id="L193">        return avatarUpload.getUploadButton();</span>
+    }
+
+    public void setDropLabel(Component dropLabel) {
+<span class="nc" id="L197">        avatarUpload.setDropLabel(dropLabel);</span>
+<span class="nc" id="L198">    }</span>
+
+    public Component getDropLabel() {
+<span class="nc" id="L201">        return avatarUpload.getDropLabel();</span>
+    }
+
+    public void setDropLabelIcon(Component dropLabelIcon) {
+<span class="nc" id="L205">        avatarUpload.setDropLabelIcon(dropLabelIcon);</span>
+<span class="nc" id="L206">    }</span>
+
+    public Component getDropLabelIcon() {
+<span class="nc" id="L209">        return avatarUpload.getDropLabelIcon();</span>
+    }
+
+    public void interruptUpload() {
+<span class="nc" id="L213">        avatarUpload.interruptUpload();</span>
+<span class="nc" id="L214">    }</span>
+
+    public boolean isUploading() {
+<span class="nc" id="L217">        return avatarUpload.isUploading();</span>
+    }
+
+    public Registration addProgressListener(ComponentEventListener&lt;ProgressUpdateEvent&gt; listener) {
+<span class="nc" id="L221">        return avatarUpload.addProgressListener(listener);</span>
+    }
+
+    public Registration addFailedListener(ComponentEventListener&lt;FailedEvent&gt; listener) {
+<span class="nc" id="L225">        return avatarUpload.addFailedListener(listener);</span>
+    }
+
+    public Registration addFinishedListener(ComponentEventListener&lt;FinishedEvent&gt; listener) {
+<span class="nc" id="L229">        return avatarUpload.addFinishedListener(listener);</span>
+    }
+
+    public Registration addStartedListener(ComponentEventListener&lt;StartedEvent&gt; listener) {
+<span class="nc" id="L233">        return avatarUpload.addStartedListener(listener);</span>
+    }
+
+    public Registration addSucceededListener(ComponentEventListener&lt;SucceededEvent&gt; listener) {
+<span class="nc" id="L237">        return avatarUpload.addSucceededListener(listener);</span>
+    }
+
+    public Registration addFileRejectedListener(ComponentEventListener&lt;FileRejectedEvent&gt; listener) {
+<span class="nc" id="L241">        return avatarUpload.addFileRejectedListener(listener);</span>
+    }
+
+    public Receiver getReceiver() {
+<span class="nc" id="L245">        return avatarUpload.getReceiver();</span>
+    }
+
+    public void setReceiver(Receiver receiver) {
+<span class="nc" id="L249">        avatarUpload.setReceiver(receiver);</span>
+<span class="nc" id="L250">    }</span>
+
+    public void setI18n(UploadI18N i18n) {
+<span class="nc" id="L253">        avatarUpload.setI18n(i18n);</span>
+<span class="nc" id="L254">    }</span>
+
+    public UploadI18N getI18n() {
+<span class="nc" id="L257">        return avatarUpload.getI18n();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>              Person saved = repository.saveAndFlush(data);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>              LOG.info(<span class="jxr_string">"Saved {}. data={}"</span>, getClass().getSimpleName(), data);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              LOG.info(<span class="jxr_string">"Saved {}. data={}, saved={}"</span>, getClass().getSimpleName(), data, saved);
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>              event.getSource().setData(saved);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpecialMissionEditorView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.specialmissions</a> &gt; <span class="el_source">SpecialMissionEditorView.java</span></div><h1>SpecialMissionEditorView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.specialmissions;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMissionRepository;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * SpecialMissionEditorView -- Editor for adding new {@link SpecialMission} or editing existing ones.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-06
+ */
+@Route(value = &quot;specialmission/:id?/:gm?&quot;, layout = MainView.class)
+@I18nPageTitle(&quot;specialmission.editor.caption&quot;)
+@CssImport(&quot;./views/edit-view.css&quot;)
+@Secured({&quot;JUDGE&quot;, &quot;ORGA&quot;, &quot;ADMIN&quot;, &quot;GM&quot;})
+<span class="nc" id="L60">public class SpecialMissionEditorView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {</span>
+<span class="nc" id="L61">    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionEditorView.class);</span>
+
+    @Autowired
+    private SpecialMissionForm form;
+
+    @Autowired
+    private SpecialMissionRepository missionRepository;
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    @Autowired
+    private LoggedInUser user;
+
+
+    private Locale locale;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L80">        setLocale(VaadinSession.getCurrent().getLocale());</span>
+<span class="nc" id="L81">        LOG.debug(&quot;Loading form. locale={}&quot;, locale);</span>
+
+<span class="nc" id="L83">        addClassName(&quot;edit-view&quot;);</span>
+
+<span class="nc" id="L85">        add(form);</span>
+<span class="nc" id="L86">        translate();</span>
+<span class="nc" id="L87">    }</span>
+
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+<span class="nc" id="L92">        Optional&lt;String&gt; id = event.getRouteParameters().get(&quot;id&quot;);</span>
+<span class="nc" id="L93">        Optional&lt;String&gt; gm = event.getRouteParameters().get(&quot;gm&quot;);</span>
+<span class="nc" id="L94">        LOG.trace(&quot;Entering form. id={}&quot;, id);</span>
+
+<span class="nc" id="L96">        id.ifPresentOrElse(</span>
+<span class="nc" id="L97">                e -&gt; missionRepository.findById(UUID.fromString(e)).ifPresentOrElse(</span>
+                        this::setData,
+<span class="nc" id="L99">                        () -&gt; generateNewSpecialMission(UUID.fromString(e), gm)</span>
+                ),
+<span class="nc" id="L101">                () -&gt; generateNewSpecialMission(UUID.randomUUID(), gm)</span>
+        );
+<span class="nc" id="L103">    }</span>
+
+    private void generateNewSpecialMission(
+            UUID missionId,
+            @SuppressWarnings(&quot;OptionalUsedAsFieldOrParameterType&quot;) Optional&lt;String&gt; gameMasterId
+    ) {
+<span class="nc" id="L109">        gameMasterId.ifPresentOrElse(</span>
+                gmid -&gt; {
+<span class="nc" id="L111">                    Optional&lt;Person&gt; person = personRepository.findById(UUID.fromString(gmid));</span>
+<span class="nc" id="L112">                    person.ifPresentOrElse(</span>
+                            p -&gt; {
+<span class="nc" id="L114">                                SpecialMission newMission = new SpecialMission();</span>
+<span class="nc" id="L115">                                newMission.setGameMaster(p);</span>
+<span class="nc" id="L116">                                newMission.setCode(missionId);</span>
+<span class="nc" id="L117">                                setData(newMission);</span>
+<span class="nc" id="L118">                            },</span>
+                            this::returnWithErrorMessage
+                    );
+<span class="nc" id="L121">                },</span>
+                () -&gt; {
+<span class="nc" id="L123">                    SpecialMission newMission = new SpecialMission();</span>
+<span class="nc" id="L124">                    newMission.setGameMaster(user.getPerson());</span>
+<span class="nc" id="L125">                    newMission.setCode(missionId);</span>
+<span class="nc" id="L126">                    setData(newMission);</span>
+<span class="nc" id="L127">                }</span>
+
+        );
+<span class="nc" id="L130">    }</span>
+
+    private void returnWithErrorMessage() {
+<span class="nc" id="L133">        new TorgNotification(</span>
+                &quot;specialmission.missing-param.gm&quot;,
+                null,
+                new ArrayList&lt;&gt;(),
+                new ArrayList&lt;&gt;()
+<span class="nc" id="L138">        ).open();</span>
+<span class="nc" id="L139">        getUI().ifPresent(ui -&gt; ui.getPage().getHistory().back());</span>
+<span class="nc" id="L140">    }</span>
+
+
+    private void setData(@NotNull SpecialMission data) {
+<span class="nc bnc" id="L144" title="All 4 branches missed.">        if (data == null || data.equals(form.getData().orElse(null))) {</span>
+<span class="nc" id="L145">            LOG.info(&quot;Data is null or data didn't change - will do nothing. data={}&quot;, data);</span>
+<span class="nc" id="L146">            return;</span>
+        }
+<span class="nc" id="L148">        LOG.trace(&quot;Loaded mission. mission={}&quot;, data);</span>
+
+<span class="nc" id="L150">        form.setData(data);</span>
+<span class="nc" id="L151">        translate();</span>
+<span class="nc" id="L152">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L157">        LOG.trace(&quot;Locale change event. locale={}&quot;, event.getLocale());</span>
+
+<span class="nc" id="L159">        setLocale(event.getLocale());</span>
+<span class="nc" id="L160">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L164" title="All 4 branches missed.">        if (locale == null || form.getData().isEmpty()) {</span>
+<span class="nc" id="L165">            LOG.debug(&quot;No locale or no data - will do nothing. locale={}, data={}&quot;, locale, form.getData());</span>
+<span class="nc" id="L166">            return;</span>
+        }
+
+<span class="nc" id="L169">        form.translate();</span>
+<span class="nc" id="L170">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L174" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L175">            LOG.debug(&quot;Locale didn't change - will do nothing. locale={}&quot;, locale);</span>
+<span class="nc" id="L176">            return;</span>
+        }
+
+<span class="nc" id="L179">        this.locale = locale;</span>
+
+<span class="nc" id="L181">        form.setLocale(locale);</span>
+<span class="nc" id="L182">        translate();</span>
+<span class="nc" id="L183">    }</span>
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L187">        LOG.trace(&quot;Closing form.&quot;);</span>
+
+<span class="nc" id="L189">        form.close();</span>
+
+<span class="nc" id="L191">        removeAll();</span>
+
+<span class="nc" id="L193">        LOG.debug(&quot;Closed form.&quot;);</span>
+<span class="nc" id="L194">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

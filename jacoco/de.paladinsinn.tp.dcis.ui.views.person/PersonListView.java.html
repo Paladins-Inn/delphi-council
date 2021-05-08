@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonListView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.person</a> &gt; <span class="el_source">PersonListView.java</span></div><h1>PersonListView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.person;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.*;
+import de.codecamp.vaadin.serviceref.ServiceRef;
+import de.paladinsinn.tp.dcis.data.missions.MissionReport;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.data.person.RoleName;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.components.DataCard;
+import de.paladinsinn.tp.dcis.ui.components.TorgButton;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
+import de.paladinsinn.tp.dcis.ui.views.operative.OperativeEditView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionEditorView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
+
+import javax.annotation.PostConstruct;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+import static com.vaadin.flow.component.Unit.PERCENTAGE;
+
+@Route(value = &quot;persons&quot;, layout = MainView.class)
+@I18nPageTitle(&quot;person.list.title&quot;)
+@CssImport(&quot;./views/lists-view.css&quot;)
+@Secured({&quot;ADMIN&quot;, &quot;ORGA&quot;, &quot;JUDGE&quot;})
+<span class="nc" id="L66">public class PersonListView extends Div implements AfterNavigationObserver, LocaleChangeObserver {</span>
+<span class="nc" id="L67">    private static final Logger LOG = LoggerFactory.getLogger(PersonListView.class);</span>
+
+    @Autowired
+    private ServiceRef&lt;PersonRepository&gt; repository;
+
+    @Autowired
+    private LoggedInUser user;
+
+    private Grid&lt;Person&gt; grid;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L79">        addClassName(&quot;list-view&quot;);</span>
+<span class="nc" id="L80">        setSizeFull();</span>
+
+<span class="nc" id="L82">        grid = new Grid&lt;&gt;();</span>
+<span class="nc" id="L83">        grid.setHeight(&quot;100%&quot;);</span>
+<span class="nc" id="L84">        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);</span>
+<span class="nc" id="L85">        grid.addComponentColumn(this::createCard);</span>
+<span class="nc" id="L86">        add(grid);</span>
+<span class="nc" id="L87">    }</span>
+
+    private HorizontalLayout createCard(@NotNull final Person person) {
+<span class="nc" id="L90">        DataCard card = new DataCard();</span>
+<span class="nc" id="L91">        card.init();</span>
+
+<span class="nc" id="L93">        Image image = person.getAvatarImage();</span>
+<span class="nc" id="L94">        card.setLogo(image);</span>
+
+
+<span class="nc" id="L97">        Span name = new Span(getTranslation(&quot;person.title.card&quot;, person.getName()));</span>
+<span class="nc" id="L98">        name.addClassName(&quot;name&quot;);</span>
+<span class="nc" id="L99">        name.setMinWidth(40, PERCENTAGE);</span>
+
+<span class="nc" id="L101">        Span date = new Span(getTranslation(&quot;db.entry.created.title&quot;, person.getCreated()));</span>
+<span class="nc" id="L102">        date.addClassName(&quot;date&quot;);</span>
+<span class="nc" id="L103">        date.setMinWidth(15, PERCENTAGE);</span>
+
+<span class="nc" id="L105">        card.addHeader(name, date);</span>
+<span class="nc" id="L106">        card.getHeader().setFlexGrow(100, name);</span>
+
+<span class="nc" id="L108">        Span username = new Span(getTranslation(&quot;person.username.card&quot;, person.getUsername()));</span>
+<span class="nc" id="L109">        username.addClassName(&quot;name&quot;);</span>
+<span class="nc" id="L110">        username.setMinWidth(40, PERCENTAGE);</span>
+
+<span class="nc" id="L112">        Span modified = new Span(getTranslation(&quot;db.entry.modified.title&quot;, person.getModified()));</span>
+<span class="nc" id="L113">        modified.addClassName(&quot;date&quot;);</span>
+<span class="nc" id="L114">        modified.setMinWidth(15, PERCENTAGE);</span>
+
+<span class="nc" id="L116">        card.addFooter(username, modified);</span>
+<span class="nc" id="L117">        card.getFooter().setFlexGrow(100, username);</span>
+
+<span class="nc" id="L119">        TorgButton editButton = new TorgButton(</span>
+                &quot;buttons.edit&quot;,
+                PersonEditView.class,
+<span class="nc" id="L122">                person.getId(),</span>
+<span class="nc" id="L123">                person.getName()</span>
+        );
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (person.matchRole(RoleName.GM)) {</span>
+<span class="nc" id="L127">            TorgButton registerExecution = new TorgButton(</span>
+                    &quot;specialmission.add&quot;,
+                    SpecialMissionEditorView.class,
+                    new RouteParameters(
+<span class="nc" id="L131">                            new RouteParam(&quot;id&quot;, UUID.randomUUID().toString()),</span>
+<span class="nc" id="L132">                            new RouteParam(&quot;gm&quot;, user.getPerson().getId().toString())</span>
+                    )
+            );
+
+<span class="nc" id="L136">            card.addMargin(registerExecution);</span>
+        }
+
+
+<span class="nc" id="L140">        TorgButton addOperative = new TorgButton(&quot;operative.add&quot;, OperativeEditView.class);</span>
+<span class="nc" id="L141">        addOperative.addClickListener(e -&gt; e.getSource().getUI().ifPresent(</span>
+<span class="nc" id="L142">                ui -&gt; ui.navigate(</span>
+                        OperativeEditView.class,
+                        new RouteParameters(
+<span class="nc" id="L145">                                new RouteParam(&quot;person&quot;, person.getId().toString()),</span>
+<span class="nc" id="L146">                                new RouteParam(&quot;id&quot;, UUID.randomUUID().toString())</span>
+                        )
+                )
+        ));
+
+<span class="nc" id="L151">        card.addMargin(editButton, addOperative);</span>
+
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        for (MissionReport r : person.getReports()) {</span>
+<span class="nc" id="L154">            Span spacer = new Span(&quot; &quot;);</span>
+<span class="nc" id="L155">            TorgButton link = new TorgButton(</span>
+                    &quot;person.missionreport-link&quot;,
+                    MissionReportView.class,
+<span class="nc" id="L158">                    r.getId(),</span>
+<span class="nc" id="L159">                    r.getMission().getCode(), r.getMission().getName(), r.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE)</span>
+            );
+
+
+<span class="nc" id="L163">            card.addDescription(link, spacer);</span>
+<span class="nc" id="L164">        }</span>
+
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        for (SpecialMission r : person.getSpecialMissions()) {</span>
+<span class="nc" id="L167">            Span spacer = new Span(&quot; &quot;);</span>
+<span class="nc" id="L168">            TorgButton link = new TorgButton(</span>
+                    &quot;person.missionreport-link&quot;,
+                    SpecialMissionView.class,
+<span class="nc" id="L171">                    r.getId(),</span>
+<span class="nc" id="L172">                    r.getTitle(), r.getTitle(), r.getMissionDate().format(DateTimeFormatter.ISO_LOCAL_DATE)</span>
+            );
+
+
+<span class="nc" id="L176">            card.addDescription(link, spacer);</span>
+<span class="nc" id="L177">        }</span>
+
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        for (Operative o : person.getOperatives()) {</span>
+<span class="nc" id="L180">            card.addDescription(</span>
+                    new TorgButton(
+                            &quot;person.operative-link&quot;,
+                            OperativeEditView.class,
+<span class="nc" id="L184">                            o.getId(),</span>
+<span class="nc" id="L185">                            o.getName()</span>
+                    )
+            );
+<span class="nc" id="L188">        }</span>
+
+<span class="nc" id="L190">        return card;</span>
+    }
+
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+<span class="nc" id="L196">        grid.setDataProvider(</span>
+<span class="nc" id="L197">            DataProvider.fromCallbacks(</span>
+                query -&gt; {
+<span class="nc" id="L199">                    int offset = query.getOffset();</span>
+<span class="nc" id="L200">                    int limit = query.getLimit();</span>
+
+<span class="nc" id="L202">                    Pageable page = PageRequest.of(offset/limit, limit);</span>
+<span class="nc" id="L203">                    Page&lt;Person&gt; players = repository.get().findAll(page);</span>
+
+<span class="nc" id="L205">                    return players.stream();</span>
+                },
+<span class="nc" id="L207">                query -&gt; ((int)repository.get().count())</span>
+            )
+        );
+<span class="nc" id="L210">    }</span>
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L214">        LOG.trace(&quot;New locale. locale={}&quot;, event.getLocale());</span>
+<span class="nc" id="L215">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

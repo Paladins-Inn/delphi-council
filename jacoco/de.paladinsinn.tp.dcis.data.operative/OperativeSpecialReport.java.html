@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OperativeSpecialReport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.operative</a> &gt; <span class="el_source">OperativeSpecialReport.java</span></div><h1>OperativeSpecialReport.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.operative;
+
+import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.data.HasName;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
+import java.util.StringJoiner;
+
+/**
+ * OperativeSpecialReport -- The special report for a local table game.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.3.0  2021-04-18
+ */
+@Entity
+@Audited
+@Table(
+        name = &quot;SPECIALREPORTS_OPERATIVES&quot;,
+        uniqueConstraints = {
+                @UniqueConstraint(name = &quot;SPECIALREPORTS_OPERATIVES_UK&quot;, columnNames = {&quot;SPECIALMISSION_ID&quot;, &quot;OPERATIVE_ID&quot;}),
+        }
+)
+@Getter
+@Setter
+<span class="fc" id="L47">public class OperativeSpecialReport extends AbstractRevisionedEntity implements Comparable&lt;OperativeSpecialReport&gt;, HasName, HasOperative {</span>
+    @Column(name = &quot;NOTES&quot;, length = 4000)
+    private String notes;
+
+    @ManyToOne(
+            targetEntity = SpecialMission.class,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            optional = false
+    )
+    @JoinColumn(name = &quot;SPECIALMISSION_ID&quot;, nullable = false)
+    private SpecialMission specialMission;
+
+    @ManyToOne(
+            targetEntity = Operative.class,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            optional = false
+    )
+    @JoinColumn(name = &quot;OPERATIVE_ID&quot;, nullable = false)
+    private Operative operative;
+
+
+    /**
+     * @param specialMission special mission report for this operative.
+     */
+    @Transient
+    public void setSpecialMission(SpecialMission specialMission) {
+<span class="nc" id="L75">        SpecialMission old = this.specialMission;</span>
+<span class="nc" id="L76">        this.specialMission = specialMission;</span>
+
+<span class="nc bnc" id="L78" title="All 4 branches missed.">        if (specialMission != null &amp;&amp; !specialMission.equals(old)) {</span>
+<span class="nc" id="L79">            specialMission.addOperativeReport(this);</span>
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (old != null) {</span>
+<span class="nc" id="L82">                old.removeOperativeReport(this);</span>
+            }
+        }
+<span class="nc" id="L85">    }</span>
+
+    @Override
+    @Transient
+    public void setOperative(Operative operative) {
+<span class="nc" id="L90">        Operative old = this.operative;</span>
+<span class="nc" id="L91">        this.operative = operative;</span>
+
+<span class="nc bnc" id="L93" title="All 4 branches missed.">        if (operative != null &amp;&amp; !operative.equals(old)) {</span>
+<span class="nc" id="L94">            operative.addSpecialReport(this);</span>
+
+<span class="nc bnc" id="L96" title="All 2 branches missed.">            if (old != null) {</span>
+<span class="nc" id="L97">                old.removeSpecialReport(this);</span>
+            }
+        }
+<span class="nc" id="L100">    }</span>
+
+    @Override
+    @Transient
+    public String getName() {
+<span class="nc" id="L105">        return operative.getName();</span>
+    }
+
+    @Override
+    @Transient
+    public void setName(final String name) {
+<span class="nc" id="L111">    }</span>
+
+
+    @Override
+    public int compareTo(OperativeSpecialReport o) {
+<span class="nc" id="L116">        return new CompareToBuilder()</span>
+<span class="nc" id="L117">                .append(getSpecialMission(), o.getSpecialMission())</span>
+<span class="nc" id="L118">                .append(getOperative(), o.getOperative())</span>
+<span class="nc" id="L119">                .toComparison();</span>
+    }
+
+
+    @Override
+    public OperativeSpecialReport clone() throws CloneNotSupportedException {
+<span class="nc" id="L125">        OperativeSpecialReport result = (OperativeSpecialReport) super.clone();</span>
+
+<span class="nc" id="L127">        result.operative = operative.clone();</span>
+<span class="nc" id="L128">        result.specialMission = specialMission.clone();</span>
+
+<span class="nc" id="L130">        result.notes = notes;</span>
+
+<span class="nc" id="L132">        return result;</span>
+    }
+
+
+    @Override
+    public String toString() {
+<span class="nc" id="L138">        return new StringJoiner(&quot;, &quot;, OperativeSpecialReport.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L139">                .merge(super.getToStringJoiner())</span>
+
+<span class="nc" id="L141">                .add(&quot;report=&quot; + specialMission.getId())</span>
+<span class="nc" id="L142">                .add(&quot;operative='&quot; + operative.getName() + &quot;'&quot;)</span>
+
+<span class="nc" id="L144">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

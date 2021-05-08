@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonEditView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.person</a> &gt; <span class="el_source">PersonEditView.java</span></div><h1>PersonEditView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.person;
+
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.util.*;
+
+/**
+ * PersonEditView -- An in-game view of the missions inside the database.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-28
+ */
+@Route(value = &quot;person/:id?&quot;, layout = MainView.class)
+@I18nPageTitle(&quot;person.editor.caption&quot;)
+@Secured({&quot;ORGA&quot;, &quot;ADMIN&quot;, &quot;JUDGE&quot;})
+@CssImport(&quot;./views/edit-view.css&quot;)
+<span class="nc" id="L52">public class PersonEditView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {</span>
+<span class="nc" id="L53">    private static final Logger LOG = LoggerFactory.getLogger(PersonEditView.class);</span>
+
+    private Locale locale;
+
+    @Autowired
+    private PersonSaveService personSaveService;
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    @Autowired
+    private LoggedInUser user;
+
+    private PersonForm form;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L70">        addClassName(&quot;edit-view&quot;);</span>
+<span class="nc" id="L71">        setSizeFull();</span>
+
+<span class="nc" id="L73">        form = new PersonForm(personSaveService, user);</span>
+
+<span class="nc" id="L75">        add(form);</span>
+<span class="nc" id="L76">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L81">        setLocale(event.getLocale());</span>
+<span class="nc" id="L82">        translate();</span>
+<span class="nc" id="L83">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L87">        LOG.trace(&quot;Translate View. locale={}&quot;, locale);</span>
+
+<span class="nc" id="L89">        form.setLocale(locale);</span>
+<span class="nc" id="L90">        form.translate();</span>
+<span class="nc" id="L91">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if (!(this.locale == null) &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L96">            LOG.debug(&quot;Language not changed. locale={}&quot;, locale);</span>
+<span class="nc" id="L97">            return;</span>
+        }
+
+<span class="nc" id="L100">        this.locale = locale;</span>
+
+<span class="nc" id="L102">        translate();</span>
+<span class="nc" id="L103">    }</span>
+
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+<span class="nc" id="L108">        Optional&lt;String&gt; personId = event.getRouteParameters().get(&quot;id&quot;);</span>
+<span class="nc" id="L109">        LOG.trace(&quot;Entering form. person={}&quot;, personId);</span>
+
+<span class="nc" id="L111">        Optional&lt;Person&gt; person = Optional.empty();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (personId.isPresent()) {</span>
+<span class="nc" id="L113">            person = personRepository.findById(UUID.fromString(personId.get()));</span>
+        } else {
+<span class="nc" id="L115">            LOG.warn(&quot;Person ID is missing. person={}&quot;, personId);</span>
+        }
+
+<span class="nc" id="L118">        person.ifPresent(form::setData);</span>
+<span class="nc" id="L119">    }</span>
+
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L124">        LOG.debug(&quot;Closing view.&quot;);</span>
+
+<span class="nc" id="L126">        form.close();</span>
+<span class="nc" id="L127">        removeAll();</span>
+<span class="nc" id="L128">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (!(o instanceof PersonEditView)) return false;</span>
+<span class="nc" id="L134">        PersonEditView that = (PersonEditView) o;</span>
+<span class="nc" id="L135">        return getLocale().equals(that.getLocale());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L140">        return Objects.hash(getLocale());</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L145">        return new StringJoiner(&quot;, &quot;, PersonEditView.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L146">                .add(&quot;locale=&quot; + locale)</span>
+<span class="nc" id="L147">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

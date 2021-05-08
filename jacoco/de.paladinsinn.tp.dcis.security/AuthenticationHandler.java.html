@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthenticationHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.security</a> &gt; <span class="el_source">AuthenticationHandler.java</span></div><h1>AuthenticationHandler.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.security;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.stereotype.Service;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
+import java.io.IOException;
+import java.time.OffsetDateTime;
+
+import static java.time.ZoneOffset.UTC;
+
+/**
+ * AuthenticationHandler --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-05
+ */
+@Service
+public class AuthenticationHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+<span class="fc" id="L51">    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationHandler.class);</span>
+
+    private final PersonRepository repository;
+    private final String defaultLocale;
+
+    /**
+     * @param repository    the repository to request person data from.
+     * @param defaultLocale the default locale if no other is selected.
+     */
+    @Autowired
+    public AuthenticationHandler(
+            @NotNull final PersonRepository repository,
+            @NotNull @Value(&quot;${spring.web.locale:de}&quot;) final String defaultLocale
+<span class="fc" id="L64">    ) {</span>
+<span class="fc" id="L65">        this.repository = repository;</span>
+<span class="fc" id="L66">        this.defaultLocale = defaultLocale;</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * @return the logged in user.
+     */
+    @Bean
+    @Scope(&quot;prototype&quot;)
+    public LoggedInUser createUser() {
+<span class="nc" id="L75">        return new LoggedInUser(repository, defaultLocale);</span>
+    }
+
+    @Override
+    @Transactional
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+    ) throws IOException, ServletException {
+
+<span class="nc" id="L86">        Person user = repository.findByUsername(authentication.getName());</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (user == null) {</span>
+<span class="nc" id="L88">            LOG.error(&quot;Authentication problem. User not found. authenticationName='{}'&quot;, authentication.getName());</span>
+<span class="nc" id="L89">            return;</span>
+        }
+
+<span class="nc" id="L92">        user.getStatus().setLastLogin(OffsetDateTime.now(UTC));</span>
+
+<span class="nc" id="L94">        repository.save(user);</span>
+
+<span class="nc" id="L96">        LOG.debug(&quot;Saved login. user='{}', lastLogin={}&quot;, authentication.getName(), user.getStatus().getLastLogin());</span>
+
+<span class="nc" id="L98">        VaadinSession.getCurrent().setLocale(user.getLocale());</span>
+<span class="nc" id="L99">        LOG.debug(&quot;Set locale. locale={}&quot;, user.getLocale());</span>
+
+<span class="nc" id="L101">        super.onAuthenticationSuccess(request, response, authentication);</span>
+<span class="nc" id="L102">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

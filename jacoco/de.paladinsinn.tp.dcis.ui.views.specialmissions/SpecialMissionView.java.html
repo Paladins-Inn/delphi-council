@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpecialMissionView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.specialmissions</a> &gt; <span class="el_source">SpecialMissionView.java</span></div><h1>SpecialMissionView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.specialmissions;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import de.codecamp.vaadin.serviceref.ServiceRef;
+import de.paladinsinn.tp.dcis.data.missions.MissionReport;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
+import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMissionRepository;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.OperativeSpecialReportForm;
+import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.OperativeSpecialReportService;
+import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.RemoveOperativeFromSpecialMissionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * SpecialMissionView -- Display and Editor for {@link MissionReport}.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-28
+ */
+@Route(value = &quot;specialmissionreports/:id?&quot;, layout = MainView.class)
+@I18nPageTitle(&quot;missionreport.editor.caption&quot;)
+@CssImport(&quot;./views/edit-view.css&quot;)
+@Secured({&quot;GM&quot;, &quot;JUDGE&quot;, &quot;ORGA&quot;, &quot;ADMIN&quot;})
+<span class="nc" id="L66">public class SpecialMissionView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {</span>
+<span class="nc" id="L67">    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionView.class);</span>
+
+    @Autowired
+    private LoggedInUser user;
+
+    @Autowired
+    private SpecialMissionForm missionReportForm;
+
+    @Autowired
+    private ServiceRef&lt;SpecialMissionRepository&gt; missionReportRepository;
+
+    @Autowired
+    private RemoveOperativeFromSpecialMissionListener removeOperativeFromSpecialMissionListener;
+
+    @Autowired
+    private OperativeSpecialReportService operativeReportService;
+
+    /**
+     * The mission report to be edited.
+     */
+    private SpecialMission report;
+
+<span class="nc" id="L89">    private final Map&lt;Tab, OperativeSpecialReportForm&gt; operatives = new ConcurrentHashMap&lt;&gt;();</span>
+
+    private Locale locale;
+
+<span class="nc" id="L93">    private boolean initialized = false;</span>
+
+
+    private Tabs tabs;
+    private Tab reportTab;
+
+
+    @PostConstruct
+    public void init() {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (initialized) {</span>
+<span class="nc" id="L103">            return;</span>
+        }
+
+<span class="nc" id="L106">        addClassName(&quot;missionreport-view&quot;);</span>
+
+<span class="nc" id="L108">        reportTab = new Tab(getTranslation(&quot;specialmission.editor.caption&quot;));</span>
+<span class="nc" id="L109">        missionReportForm.setVisible(true);</span>
+
+<span class="nc" id="L111">        tabs = new Tabs();</span>
+<span class="nc" id="L112">        tabs.add(reportTab);</span>
+<span class="nc" id="L113">        tabs.setSelectedTab(reportTab);</span>
+<span class="nc" id="L114">        tabs.addSelectedChangeListener(event -&gt; {</span>
+<span class="nc" id="L115">            LOG.trace(&quot;Change selected tabs. old='{}', new='{}'&quot;,</span>
+<span class="nc" id="L116">                    event.getPreviousTab(), event.getSelectedTab());</span>
+<span class="nc bnc" id="L117" title="All 4 branches missed.">            if (event.getSelectedTab() == null || event.getSelectedTab().equals(event.getPreviousTab())) {</span>
+<span class="nc" id="L118">                LOG.debug(&quot;Tab not changed or new tab is 'null'. old='{}', new='{}'&quot;,</span>
+<span class="nc" id="L119">                        event.getPreviousTab(), event.getSelectedTab());</span>
+<span class="nc" id="L120">                return;</span>
+            }
+
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            if (event.getSelectedTab() == reportTab) {</span>
+<span class="nc" id="L124">                operatives.values().forEach(this::remove);</span>
+<span class="nc" id="L125">                add(missionReportForm);</span>
+            } else {
+<span class="nc" id="L127">                operatives.values().forEach(this::remove);</span>
+<span class="nc" id="L128">                remove(missionReportForm);</span>
+<span class="nc" id="L129">                add(operatives.get(event.getSelectedTab()));</span>
+            }
+<span class="nc" id="L131">        });</span>
+
+
+<span class="nc" id="L134">        add(tabs);</span>
+<span class="nc" id="L135">        add(missionReportForm);</span>
+
+<span class="nc" id="L137">        initialized = true;</span>
+
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (report != null) {</span>
+<span class="nc" id="L140">            populate();</span>
+        }
+<span class="nc" id="L142">    }</span>
+
+    protected void populate() {
+<span class="nc" id="L145">        tabs.removeAll();</span>
+<span class="nc" id="L146">        tabs.add(reportTab);</span>
+
+<span class="nc" id="L148">        missionReportForm.setData(report);</span>
+
+<span class="nc" id="L150">        getInvolvedOperatives(report);</span>
+<span class="nc" id="L151">    }</span>
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+<span class="nc" id="L155">        init();</span>
+
+<span class="nc" id="L157">        Optional&lt;String&gt; reportId = event.getRouteParameters().get(&quot;id&quot;);</span>
+<span class="nc" id="L158">        LOG.trace(&quot;Entering form. reportId={}&quot;, reportId);</span>
+
+<span class="nc" id="L160">        Optional&lt;SpecialMission&gt; report = Optional.empty();</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (reportId.isPresent()) {</span>
+<span class="nc" id="L162">            report = missionReportRepository.get().findById(UUID.fromString(reportId.get()));</span>
+        } else {
+<span class="nc" id="L164">            LOG.warn(&quot;ReportId is missing. reportId={}&quot;, reportId);</span>
+        }
+
+<span class="nc" id="L167">        report.ifPresent(r -&gt; {</span>
+<span class="nc" id="L168">            setData(r);</span>
+
+<span class="nc" id="L170">            populate();</span>
+<span class="nc" id="L171">            translate();</span>
+<span class="nc" id="L172">        });</span>
+<span class="nc" id="L173">    }</span>
+
+    private void setData(@NotNull SpecialMission report) {
+<span class="nc" id="L176">        LOG.trace(&quot;Loaded MissionReport. report={}&quot;, report);</span>
+
+<span class="nc" id="L178">        this.report = report;</span>
+<span class="nc" id="L179">    }</span>
+
+    private void getInvolvedOperatives(SpecialMission report) {
+<span class="nc" id="L182">        operatives.clear();</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        for (OperativeSpecialReport o : report.getOperatives()) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">            if (!canViewOperative(o.getOperative())) {</span>
+<span class="nc" id="L185">                LOG.debug(</span>
+                        &quot;Person is not allowed to display operative. user='{}', operative='{}'&quot;,
+<span class="nc" id="L187">                        user.getPerson().getName(),</span>
+<span class="nc" id="L188">                        o.getOperative().getName()</span>
+                );
+            } else {
+<span class="nc" id="L191">                LOG.debug(&quot;Adding operative. operative='{}'&quot;, o.getOperative().getName());</span>
+
+<span class="nc" id="L193">                Tab tab = new Tab(o.getOperative().getName());</span>
+
+<span class="nc" id="L195">                OperativeSpecialReportForm operatorReportForm = new OperativeSpecialReportForm(operativeReportService, removeOperativeFromSpecialMissionListener, user);</span>
+<span class="nc" id="L196">                operatorReportForm.setData(o);</span>
+
+<span class="nc" id="L198">                operatives.put(tab, operatorReportForm);</span>
+
+<span class="nc" id="L200">                operatives.forEach((key, value) -&gt; tabs.add(key));</span>
+            }
+<span class="nc" id="L202">        }</span>
+<span class="nc" id="L203">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L208">        LOG.trace(&quot;Locale change event. locale={}&quot;, event.getLocale());</span>
+
+<span class="nc" id="L210">        setLocale(event.getLocale());</span>
+<span class="nc" id="L211">    }</span>
+
+    @Override
+    public void setLocale(@NotNull final Locale locale) {
+<span class="nc bnc" id="L215" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L216">            LOG.debug(&quot;Locale did not change - ignore event. locale={}&quot;, this.locale);</span>
+<span class="nc" id="L217">            return;</span>
+        }
+
+<span class="nc" id="L220">        this.locale = locale;</span>
+
+<span class="nc" id="L222">        missionReportForm.setLocale(locale);</span>
+<span class="nc" id="L223">        operatives.values().forEach(o -&gt; o.setLocale(locale));</span>
+
+<span class="nc" id="L225">        translate();</span>
+<span class="nc" id="L226">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L230">        init();</span>
+
+<span class="nc" id="L232">        reportTab.setLabel(getTranslation(&quot;specialmission.editor.caption&quot;));</span>
+<span class="nc" id="L233">        missionReportForm.translate();</span>
+<span class="nc" id="L234">        operatives.values().forEach(OperativeSpecialReportForm::translate);</span>
+<span class="nc" id="L235">    }</span>
+
+
+    private boolean canViewOperative(Operative operative) {
+<span class="nc bnc" id="L239" title="All 6 branches missed.">        return user.isJudge() || user.isAdmin() || user.isOrga()</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">                || operative.getPlayer().equals(user.getPerson())</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">                || report.getGameMaster().equals(user.getPerson());</span>
+    }
+
+
+    private String getTranslation(@NotNull final String key) {
+        try {
+<span class="nc" id="L247">            return super.getTranslation(key);</span>
+<span class="nc" id="L248">        } catch (NullPointerException e) {</span>
+<span class="nc" id="L249">            LOG.warn(&quot;Can't call translator from vaadin: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L250">            return &quot;!&quot; + key;</span>
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L256">        LOG.trace(&quot;Closing form.&quot;);</span>
+
+<span class="nc" id="L258">        missionReportForm.close();</span>
+
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        for (OperativeSpecialReportForm operativeSpecialReportForm : operatives.values()) {</span>
+<span class="nc" id="L261">            operativeSpecialReportForm.close();</span>
+<span class="nc" id="L262">        }</span>
+
+<span class="nc" id="L264">        removeAll();</span>
+<span class="nc" id="L265">        LOG.debug(&quot;Closed form.&quot;);</span>
+<span class="nc" id="L266">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

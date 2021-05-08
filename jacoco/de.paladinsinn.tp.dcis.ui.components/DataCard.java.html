@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataCard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">DataCard.java</span></div><h1>DataCard.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.StringJoiner;
+
+import static com.vaadin.flow.component.Unit.PERCENTAGE;
+import static com.vaadin.flow.component.Unit.PIXELS;
+
+/**
+ * DataCard -- A generalized card layout.
+ *
+ * &lt;PRE&gt;
+ *     +--------+---------------------------------------------+----------+
+ *     |        | {@literal &lt;Header&gt;}                                    |          |
+ *     +        +---------------------------------------------+          |
+ *     | {@literal &lt;Logo&gt;} | {@literal &lt;Description&gt;}                               | {@literal &lt;Margin&gt;} |
+ *     +        +---------------------------------------------+          |
+ *     |        | {@literal Footer&gt;}                                    |          |
+ *     +--------+---------------------------------------------+
+ * &lt;/PRE&gt;
+ *
+ *
+ *
+ * &lt;p&gt;You can set the components into the containers:&lt;/p&gt;
+ *
+ * &lt;ul&gt;
+ *     &lt;li&gt;{@literal &lt;Logo&gt;} - {@link Image}&lt;/li&gt;
+ *     &lt;li&gt;{@literal &lt;Header&gt;} - {@link HorizontalLayout}&lt;/li&gt;
+ *     &lt;li&gt;{@literal &lt;Description&gt;} - {@link HorizontalLayout}&lt;/li&gt;
+ *     &lt;li&gt;{@literal &lt;Footer&gt;} - {@link HorizontalLayout}&lt;/li&gt;
+ *     &lt;li&gt;{@literal &lt;Margin&gt;} - {@link VerticalLayout}&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;You can use the following methods to manage the containers:&lt;/p&gt;
+ *
+ * &lt;ul&gt;
+ *     &lt;li&gt;add{@literal &lt;container name&gt;}(Components ...)&lt;/li&gt;
+ *     &lt;li&gt;add{@literal &lt;container name&gt;}AsFirst(Component)&lt;/li&gt;
+ *     &lt;li&gt;add{@literal &lt;container name&gt;}AtIndex(int, Component)&lt;/li&gt;
+ *     &lt;li&gt;remove{@literal &lt;container name&gt;}(Components ...)&lt;/li&gt;
+ *     &lt;li&gt;remove{@literal &lt;container name&gt;}All()&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;For special treatment you can request the containers itself via get{@literal &lt;container name&gt;}() to get access to
+ * the low level layout functions. Or you can repalce the container itself via
+ * set{@literal &lt;container name&gt;}(HorizontalLayout)&lt;/p&gt;
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-28
+ */
+@SuppressWarnings(&quot;unused&quot;)
+<span class="nc" id="L85">public class DataCard extends HorizontalLayout implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent {</span>
+<span class="nc" id="L86">    private static final Logger LOG = LoggerFactory.getLogger(DataCard.class);</span>
+
+    private Locale locale;
+<span class="nc" id="L89">    private final HashSet&lt;TranslatableComponent&gt; translatables = new HashSet&lt;&gt;();</span>
+
+    private Component logo;
+    private VerticalLayout data;
+    private HorizontalLayout dataHeader;
+    private HorizontalLayout dataDescription;
+    private HorizontalLayout dataFooter;
+    private VerticalLayout margin;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L100">        setLocale(VaadinSession.getCurrent().getLocale());</span>
+
+<span class="nc" id="L102">        addClassName(&quot;card&quot;);</span>
+<span class="nc" id="L103">        setSpacing(false);</span>
+<span class="nc" id="L104">        getThemeList().add(&quot;spacing-s&quot;);</span>
+
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (logo == null)</span>
+<span class="nc" id="L107">            logo = new Image();</span>
+
+<span class="nc" id="L109">        data = new VerticalLayout();</span>
+<span class="nc" id="L110">        data.addClassName(&quot;description&quot;);</span>
+<span class="nc" id="L111">        data.getThemeList().add(&quot;spacing-s&quot;);</span>
+<span class="nc" id="L112">        data.setSpacing(false);</span>
+<span class="nc" id="L113">        data.setPadding(false);</span>
+
+<span class="nc" id="L115">        margin = new VerticalLayout();</span>
+<span class="nc" id="L116">        margin.addClassName(&quot;description&quot;);</span>
+<span class="nc" id="L117">        margin.getThemeList().add(&quot;spacing-s&quot;);</span>
+<span class="nc" id="L118">        margin.setMinWidth(150, PIXELS);</span>
+<span class="nc" id="L119">        margin.setMaxWidth(20, PERCENTAGE);</span>
+<span class="nc" id="L120">        margin.setSpacing(false);</span>
+<span class="nc" id="L121">        margin.setPadding(false);</span>
+
+<span class="nc" id="L123">        add(logo, data, margin);</span>
+<span class="nc" id="L124">        setFlexGrow(100, data);</span>
+<span class="nc" id="L125">        setFlexGrow(10, margin);</span>
+
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (dataHeader == null)</span>
+<span class="nc" id="L128">            setHeader(new HorizontalLayout());</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (dataDescription == null)</span>
+<span class="nc" id="L130">            setDescription(new HorizontalLayout());</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (dataFooter == null)</span>
+<span class="nc" id="L132">            setFooter(new HorizontalLayout());</span>
+
+<span class="nc" id="L134">        translate();</span>
+<span class="nc" id="L135">    }</span>
+
+    public void setLogo(@NotNull final Image logo) {
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (this.logo != null)</span>
+<span class="nc" id="L139">            remove(this.logo);</span>
+<span class="nc" id="L140">        this.logo = logo;</span>
+
+<span class="nc" id="L142">        logo.setMinHeight(120, PIXELS);</span>
+<span class="nc" id="L143">        logo.setMaxHeight(400, PIXELS);</span>
+<span class="nc" id="L144">        logo.setMinWidth(120, PIXELS);</span>
+<span class="nc" id="L145">        logo.setMaxWidth(300, PIXELS);</span>
+
+<span class="nc" id="L147">        addComponentAsFirst(logo);</span>
+<span class="nc" id="L148">    }</span>
+
+
+    public void addHeader(Component... components) {
+<span class="nc" id="L152">        addComponents(components);</span>
+<span class="nc" id="L153">        dataHeader.add(components);</span>
+<span class="nc" id="L154">    }</span>
+
+    public void addHeaderAsFirst(Component component) {
+<span class="nc" id="L157">        addComponents(component);</span>
+<span class="nc" id="L158">        dataHeader.addComponentAsFirst(component);</span>
+<span class="nc" id="L159">    }</span>
+    public void addHeaderAtIndex(int index, Component component) {
+<span class="nc" id="L161">        addComponents(component);</span>
+<span class="nc" id="L162">        dataHeader.addComponentAtIndex(index, component);</span>
+<span class="nc" id="L163">    }</span>
+    public void removeHeader(Component... components) {
+<span class="nc" id="L165">        removeComponents(components);</span>
+<span class="nc" id="L166">        dataHeader.remove(components);</span>
+<span class="nc" id="L167">    }</span>
+    public void removeAllHeader() {
+<span class="nc" id="L169">        removeComponents(dataHeader.getChildren().toArray(Component[]::new));</span>
+<span class="nc" id="L170">        dataHeader.removeAll();</span>
+<span class="nc" id="L171">    }</span>
+
+    public HorizontalLayout getHeader() {
+<span class="nc" id="L174">        return dataHeader;</span>
+    }
+
+    public void setHeader(HorizontalLayout layout) {
+<span class="nc" id="L178">        layout.addClassName(&quot;description&quot;);</span>
+<span class="nc" id="L179">        layout.getThemeList().add(&quot;spacing-s&quot;);</span>
+<span class="nc" id="L180">        layout.setSpacing(false);</span>
+<span class="nc" id="L181">        layout.setPadding(false);</span>
+<span class="nc" id="L182">        layout.setWidth(100, PERCENTAGE);</span>
+
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        if (dataHeader != null)</span>
+<span class="nc" id="L185">            data.remove(dataHeader);</span>
+<span class="nc" id="L186">        dataHeader = layout;</span>
+<span class="nc" id="L187">        data.addComponentAsFirst(dataHeader);</span>
+<span class="nc" id="L188">    }</span>
+
+    public void addDescription(Component... components) {
+<span class="nc" id="L191">        addComponents(components);</span>
+<span class="nc" id="L192">        dataDescription.add(components);</span>
+<span class="nc" id="L193">    }</span>
+    public void addDescriptionAsFirst(Component component) {
+<span class="nc" id="L195">        addComponents(component);</span>
+<span class="nc" id="L196">        dataDescription.addComponentAsFirst(component);</span>
+<span class="nc" id="L197">    }</span>
+    public void addDescriptionAtIndex(int index, Component component) {
+<span class="nc" id="L199">        addComponents(component);</span>
+<span class="nc" id="L200">        dataDescription.addComponentAtIndex(index, component);</span>
+<span class="nc" id="L201">    }</span>
+    public void removeDescription(Component... components) {
+<span class="nc" id="L203">        removeComponents(components);</span>
+<span class="nc" id="L204">        dataDescription.remove(components);</span>
+<span class="nc" id="L205">    }</span>
+    public void removeAllDescription() {
+<span class="nc" id="L207">        removeComponents(dataDescription.getChildren().toArray(Component[]::new));</span>
+<span class="nc" id="L208">        dataDescription.removeAll();</span>
+<span class="nc" id="L209">    }</span>
+    public HorizontalLayout getDescription() {
+<span class="nc" id="L211">        return dataDescription;</span>
+    }
+    public void setDescription(HorizontalLayout layout) {
+<span class="nc" id="L214">        layout.addClassName(&quot;description&quot;);</span>
+<span class="nc" id="L215">        layout.getThemeList().add(&quot;spacing-s&quot;);</span>
+<span class="nc" id="L216">        layout.setSpacing(false);</span>
+<span class="nc" id="L217">        layout.setPadding(false);</span>
+<span class="nc" id="L218">        layout.setWidth(100, PERCENTAGE);</span>
+<span class="nc" id="L219">        layout.setMinHeight(5, PERCENTAGE);</span>
+<span class="nc" id="L220">        layout.setMaxHeight(100, PERCENTAGE);</span>
+
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (dataDescription != null)</span>
+<span class="nc" id="L223">            data.remove(dataDescription);</span>
+<span class="nc" id="L224">        dataDescription = layout;</span>
+<span class="nc" id="L225">        data.addComponentAtIndex(1, dataDescription);</span>
+<span class="nc" id="L226">        data.setFlexGrow(100, dataDescription);</span>
+<span class="nc" id="L227">    }</span>
+
+    public void addFooter(Component... components) {
+<span class="nc" id="L230">        addComponents(components);</span>
+<span class="nc" id="L231">        dataFooter.add(components);</span>
+<span class="nc" id="L232">    }</span>
+    public void addFooterAsFirst(Component component) {
+<span class="nc" id="L234">        addComponents(component);</span>
+<span class="nc" id="L235">        dataFooter.addComponentAsFirst(component);</span>
+<span class="nc" id="L236">    }</span>
+    public void addFooterAtIndex(int index, Component component) {
+<span class="nc" id="L238">        addComponents(component);</span>
+<span class="nc" id="L239">        dataFooter.addComponentAtIndex(index, component);</span>
+<span class="nc" id="L240">    }</span>
+    public void removeFooter(Component... components) {
+<span class="nc" id="L242">        removeComponents(components);</span>
+<span class="nc" id="L243">        dataFooter.remove(components);</span>
+<span class="nc" id="L244">    }</span>
+    public void removeAllFooter() {
+<span class="nc" id="L246">        removeComponents(dataFooter.getChildren().toArray(Component[]::new));</span>
+<span class="nc" id="L247">        dataFooter.removeAll();</span>
+<span class="nc" id="L248">    }</span>
+    public HorizontalLayout getFooter() {
+<span class="nc" id="L250">        return dataFooter;</span>
+    }
+    public void setFooter(HorizontalLayout layout) {
+<span class="nc" id="L253">        layout.addClassName(&quot;actions&quot;);</span>
+<span class="nc" id="L254">        layout.getThemeList().add(&quot;spacing-s&quot;);</span>
+<span class="nc" id="L255">        layout.setSpacing(false);</span>
+<span class="nc" id="L256">        layout.setPadding(false);</span>
+<span class="nc" id="L257">        layout.setWidth(100, PERCENTAGE);</span>
+
+<span class="nc bnc" id="L259" title="All 2 branches missed.">        if (dataFooter != null)</span>
+<span class="nc" id="L260">            data.remove(dataFooter);</span>
+<span class="nc" id="L261">        dataFooter = layout;</span>
+<span class="nc" id="L262">        data.add(dataFooter);</span>
+<span class="nc" id="L263">    }</span>
+
+
+
+    public void addMargin(Component... components) {
+<span class="nc" id="L268">        addComponents(components);</span>
+<span class="nc" id="L269">        margin.add(components);</span>
+<span class="nc" id="L270">    }</span>
+    public void addMarginAsFirst(Component component) {
+<span class="nc" id="L272">        addComponents(component);</span>
+<span class="nc" id="L273">        margin.addComponentAsFirst(component);</span>
+<span class="nc" id="L274">    }</span>
+    public void addMarginAtIndex(int index, Component component) {
+<span class="nc" id="L276">        addComponents(component);</span>
+<span class="nc" id="L277">        margin.addComponentAtIndex(index, component);</span>
+<span class="nc" id="L278">    }</span>
+    public void removeMargin(Component... components) {
+<span class="nc" id="L280">        removeComponents(components);</span>
+<span class="nc" id="L281">        margin.remove(components);</span>
+<span class="nc" id="L282">    }</span>
+    public void removeAllMargin() {
+<span class="nc" id="L284">        removeComponents(margin.getChildren().toArray(Component[]::new));</span>
+<span class="nc" id="L285">        margin.removeAll();</span>
+<span class="nc" id="L286">    }</span>
+    public VerticalLayout getMargin() {
+<span class="nc" id="L288">        return margin;</span>
+    }
+    public void setMargin(VerticalLayout layout) {
+<span class="nc" id="L291">        layout.addClassName(&quot;actions&quot;);</span>
+<span class="nc" id="L292">        layout.getThemeList().add(&quot;spacing-s&quot;);</span>
+<span class="nc" id="L293">        layout.setSpacing(false);</span>
+<span class="nc" id="L294">        layout.setPadding(false);</span>
+
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        if (margin != null)</span>
+<span class="nc" id="L297">            remove(margin);</span>
+<span class="nc" id="L298">        margin = layout;</span>
+<span class="nc" id="L299">        add(margin);</span>
+<span class="nc" id="L300">    }</span>
+    
+
+    private void addComponents(Component... components) {
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        for (Component c : components) {</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">            if (c instanceof TranslatableComponent) {</span>
+<span class="nc" id="L306">                translatables.add((TranslatableComponent) c);</span>
+            }
+        }
+<span class="nc" id="L309">    }</span>
+
+    /**
+     * Removes and &lt;em&gt;closes&lt;/em&gt; all components.
+     *
+     * @param components Components to be removed.
+     */
+    private void removeComponents(Component... components) {
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        for (Component c : components) {</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">            if (c instanceof  TranslatableComponent) {</span>
+<span class="nc" id="L319">                translatables.remove(c);</span>
+            }
+
+<span class="nc bnc" id="L322" title="All 2 branches missed.">            if (c instanceof AutoCloseable) {</span>
+                try {
+<span class="nc" id="L324">                    ((AutoCloseable) c).close();</span>
+<span class="nc" id="L325">                } catch (Exception e) {</span>
+<span class="nc" id="L326">                    LOG.error(&quot;Problem while closing the component.&quot;, e);</span>
+<span class="nc" id="L327">                }</span>
+            }
+        }
+<span class="nc" id="L330">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L335">        LOG.trace(&quot;Locale change event. component={}, locale={}&quot;, this, event.getLocale());</span>
+
+<span class="nc" id="L337">        setLocale(event.getLocale());</span>
+<span class="nc" id="L338">        translate();</span>
+<span class="nc" id="L339">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L343">        LOG.trace(&quot;Translate DataCard. card={}, locale={}&quot;, this, locale);</span>
+
+<span class="nc bnc" id="L345" title="All 2 branches missed.">        for (TranslatableComponent t : translatables) {</span>
+<span class="nc" id="L346">            t.translate();</span>
+<span class="nc" id="L347">        }</span>
+
+<span class="nc" id="L349">        data.removeAll();</span>
+<span class="nc" id="L350">        data.add(dataHeader, dataDescription, dataFooter);</span>
+<span class="nc" id="L351">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc" id="L355">        this.locale = locale;</span>
+
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        for (TranslatableComponent t : translatables) {</span>
+<span class="nc" id="L358">            t.setLocale(locale);</span>
+<span class="nc" id="L359">        }</span>
+<span class="nc" id="L360">    }</span>
+
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L365">        LOG.debug(&quot;Closing card. card={}&quot;, this);</span>
+
+<span class="nc" id="L367">        dataHeader.removeAll();</span>
+<span class="nc" id="L368">        dataDescription.removeAll();</span>
+<span class="nc" id="L369">        dataFooter.removeAll();</span>
+<span class="nc" id="L370">        data.remove();</span>
+<span class="nc" id="L371">        logo = null;</span>
+
+<span class="nc" id="L373">        removeAll();</span>
+<span class="nc" id="L374">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L378" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">        if (!(o instanceof DataCard)) return false;</span>
+<span class="nc" id="L380">        DataCard dataCard = (DataCard) o;</span>
+<span class="nc bnc" id="L381" title="All 8 branches missed.">        return logo.equals(dataCard.logo) &amp;&amp; dataHeader.equals(dataCard.dataHeader) &amp;&amp; dataDescription.equals(dataCard.dataDescription) &amp;&amp; dataFooter.equals(dataCard.dataFooter);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L386">        return Objects.hash(logo, dataHeader, dataDescription, dataFooter);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L391">        return new StringJoiner(&quot;, &quot;, DataCard.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L392">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

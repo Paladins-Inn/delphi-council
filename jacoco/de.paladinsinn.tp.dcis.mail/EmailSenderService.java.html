@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmailSenderService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.mail</a> &gt; <span class="el_source">EmailSenderService.java</span></div><h1>EmailSenderService.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.mail;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * EmailSenderService -- Sends emails via {@link JavaMailSender} injected into this service.
+ *
+ * @author Kamer Elciar (&lt;a href=&quot;https://kamer-dev.medium.com/spring-boot-user-registration-and-login-43a33ea19745&quot;&gt;https://kamer-dev.medium.com/spring-boot-user-registration-and-login-43a33ea19745&lt;/a&gt;)
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-10
+ */
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L51">@Slf4j</span>
+public class EmailSenderService {
+    private final JavaMailSender sender;
+    private final SpringTemplateEngine templates;
+    private final MessageSource messages;
+
+    @Value(&quot;${mail.from.user:Quin Sebastian}&quot;)
+    private String senderName;
+    @Value(&quot;${mail.from.address:quin.sebastian@delphi-council.org}&quot;)
+    private String senderAddress;
+
+    /**
+     * @param message message to be sent.
+     */
+    @Async
+    public void send(@NotNull SimpleMailMessage message) {
+<span class="nc" id="L67">        sender.send(message);</span>
+
+<span class="nc" id="L69">        log.info(&quot;Send email. from='{}', to='{}', subject='{}'&quot;,</span>
+<span class="nc" id="L70">                message.getFrom(), message.getTo(), message.getSubject());</span>
+<span class="nc" id="L71">    }</span>
+
+    @Async
+    public void send(
+            @NotNull String to,
+            @NotNull String subjectKey,
+            @NotNull List&lt;Object&gt; subjectParams,
+            @NotNull String templateName,
+            @NotNull Map&lt;String, Object&gt; params,
+            @NotNull Locale locale
+    ) throws MessagingException {
+<span class="fc" id="L82">        final MimeMessage mimeMessage = sender.createMimeMessage();</span>
+<span class="fc" id="L83">        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, MailConfig.TEMPLATE_ENCODING);</span>
+
+<span class="fc" id="L85">        Context context = new Context(locale, params);</span>
+        String subject;
+        try {
+<span class="fc" id="L88">            subject = messages.getMessage(subjectKey, subjectParams.toArray(new Object[0]), locale);</span>
+<span class="nc" id="L89">        } catch (NoSuchMessageException e) {</span>
+<span class="nc" id="L90">            log.warn(&quot;subject key could not be found: key={}, params={}&quot;, subjectKey, subjectParams);</span>
+
+<span class="nc" id="L92">            subject = &quot;!&quot; + subjectKey;</span>
+<span class="fc" id="L93">        }</span>
+
+<span class="fc" id="L95">        InternetAddress from = new InternetAddress();</span>
+<span class="fc" id="L96">        from.setAddress(senderAddress);</span>
+        try {
+<span class="fc" id="L98">            from.setPersonal(senderName, MailConfig.TEMPLATE_ENCODING);</span>
+<span class="nc" id="L99">        } catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L100">            log.warn(&quot;Can't set correct personal name!&quot;, e);</span>
+<span class="fc" id="L101">        }</span>
+
+<span class="fc" id="L103">        log.debug(&quot;Message sender. from={}, to={}, subject={}&quot;, from, to, subject);</span>
+
+<span class="fc" id="L105">        mimeMessage.setSender(from);</span>
+<span class="fc" id="L106">        message.setTo(to);</span>
+<span class="fc" id="L107">        message.setSubject(subject);</span>
+
+<span class="fc" id="L109">        message.setText(</span>
+<span class="fc" id="L110">                templates.process(templateName + &quot;.txt&quot;, context),</span>
+<span class="fc" id="L111">                templates.process(templateName + &quot;.html&quot;, context)</span>
+        );
+
+
+<span class="fc" id="L115">        sender.send(mimeMessage);</span>
+
+<span class="fc" id="L117">        log.info(&quot;Message sent. from='{}', to='{}', subject='{}'&quot;,</span>
+<span class="fc" id="L118">                mimeMessage.getSender(), mimeMessage.getAllRecipients(), mimeMessage.getSubject());</span>
+<span class="fc" id="L119">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

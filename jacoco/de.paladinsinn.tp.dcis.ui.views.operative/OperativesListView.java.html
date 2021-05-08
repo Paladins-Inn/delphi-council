@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OperativesListView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.operative</a> &gt; <span class="el_source">OperativesListView.java</span></div><h1>OperativesListView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.operative;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.*;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
+import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
+import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.components.DataCard;
+import de.paladinsinn.tp.dcis.ui.components.TorgButton;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import de.paladinsinn.tp.dcis.ui.views.missionreports.MissionReportView;
+import de.paladinsinn.tp.dcis.ui.views.specialmissions.SpecialMissionView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.StringJoiner;
+
+import static com.vaadin.flow.component.Unit.PERCENTAGE;
+import static com.vaadin.flow.component.Unit.PIXELS;
+
+/**
+ * MissionCatalogueView -- An in-game view of the missions inside the database.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-28
+ */
+@Route(value = &quot;operatives&quot;, layout = MainView.class)
+@I18nPageTitle(&quot;operative.list.title&quot;)
+@CssImport(&quot;./views/lists-view.css&quot;)
+<span class="nc" id="L71">public class OperativesListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {</span>
+<span class="nc" id="L72">    public static final Long serial = 1L;</span>
+
+<span class="nc" id="L74">    private static final Logger LOG = LoggerFactory.getLogger(OperativesListView.class);</span>
+
+<span class="nc" id="L76">    private final HashSet&lt;TranslatableComponent&gt; translatables = new HashSet&lt;&gt;();</span>
+    private Locale locale;
+
+    @Autowired
+    private OperativeRepository repository;
+
+    @Autowired
+    private LoggedInUser user;
+
+<span class="nc" id="L85">    private final Grid&lt;Operative&gt; grid = new Grid&lt;&gt;();</span>
+    private TorgButton addOperative;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L90">        addClassName(&quot;list-view&quot;);</span>
+<span class="nc" id="L91">        setSizeFull();</span>
+
+<span class="nc" id="L93">        grid.setMinHeight(80, PERCENTAGE);</span>
+<span class="nc" id="L94">        grid.setMaxHeight(100, PERCENTAGE);</span>
+<span class="nc" id="L95">        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);</span>
+<span class="nc" id="L96">        grid.addComponentColumn(this::createCard);</span>
+
+<span class="nc" id="L98">        addOperative = new TorgButton(</span>
+                &quot;operative.add&quot;,
+                OperativeEditView.class,
+<span class="nc" id="L101">                new RouteParameters(new RouteParam(&quot;person&quot;, user.getPerson().getId().toString()))</span>
+        );
+
+<span class="nc" id="L104">        add(addOperative, grid);</span>
+<span class="nc" id="L105">    }</span>
+
+    private DataCard createCard(@NotNull final Operative data) {
+<span class="nc" id="L108">        DataCard card = new DataCard();</span>
+<span class="nc" id="L109">        card.init();</span>
+
+        // Logo
+<span class="nc" id="L112">        Image logo = new Image();</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (data.getAvatar() != null) {</span>
+<span class="nc" id="L114">            logo.setSrc(data.getAvatar());</span>
+<span class="nc" id="L115">            card.setLogo(logo);</span>
+        }
+
+        // Header
+<span class="nc" id="L119">        Span title = new Span(getTranslation(&quot;operative.title.card&quot;, getLocale(), data.getName()));</span>
+<span class="nc" id="L120">        title.setClassName(&quot;name&quot;);</span>
+<span class="nc" id="L121">        title.setMinWidth(300, PIXELS);</span>
+<span class="nc" id="L122">        title.setWidth(40, PERCENTAGE);</span>
+
+<span class="nc" id="L124">        Span clearance = new Span(getTranslation(&quot;torg.clearance.card&quot;, getLocale(), getTranslation(&quot;torg.clearance.&quot; + data.getClearance().name(), getLocale())));</span>
+<span class="nc" id="L125">        clearance.setClassName(&quot;date&quot;);</span>
+<span class="nc" id="L126">        clearance.setMinWidth(150, PIXELS);</span>
+<span class="nc" id="L127">        clearance.setWidth(20, PERCENTAGE);</span>
+
+<span class="nc" id="L129">        Span publication = new Span();</span>
+<span class="nc" id="L130">        publication.setClassName(&quot;name&quot;);</span>
+<span class="nc" id="L131">        publication.setMinWidth(150, PIXELS);</span>
+<span class="nc" id="L132">        publication.setWidth(20, PERCENTAGE);</span>
+
+
+<span class="nc" id="L135">        card.addHeader(title, publication, clearance);</span>
+<span class="nc" id="L136">        card.getHeader().setFlexGrow(100, title);</span>
+<span class="nc" id="L137">        card.getHeader().setFlexGrow(1, publication);</span>
+<span class="nc" id="L138">        card.getHeader().setFlexGrow(1, clearance);</span>
+
+        // Main text
+<span class="nc" id="L141">        FlexLayout description = new FlexLayout();</span>
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        for (OperativeReport r : data.getReports()) {</span>
+<span class="nc" id="L144">            LOG.debug(&quot;Adding Link to mission reports. mission={}, report={}&quot;, data.getId(), r.getId());</span>
+
+<span class="nc" id="L146">            TorgButton reportButton = new TorgButton(</span>
+                    &quot;operative.report-link&quot;,
+                    MissionReportView.class,
+<span class="nc" id="L149">                    r.getReport().getId(),</span>
+<span class="nc" id="L150">                    r.getReport().getMission().getCode(),</span>
+<span class="nc" id="L151">                    r.getReport().getMission().getName(),</span>
+<span class="nc" id="L152">                    r.getReport().getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),</span>
+<span class="nc" id="L153">                    r.getReport().getGameMaster().getUsername()</span>
+            );
+
+<span class="nc" id="L156">            card.addDescription(reportButton);</span>
+<span class="nc" id="L157">        }</span>
+
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        for (OperativeSpecialReport r : data.getSpecialReports()) {</span>
+<span class="nc" id="L160">            LOG.debug(&quot;Adding Link to mission reports. mission={}, report={}&quot;, data.getId(), r.getId());</span>
+
+<span class="nc" id="L162">            TorgButton reportButton = new TorgButton(</span>
+                    &quot;operative.report-link&quot;,
+                    SpecialMissionView.class,
+<span class="nc" id="L165">                    r.getSpecialMission().getId(),</span>
+<span class="nc" id="L166">                    r.getSpecialMission().getGameMaster().getUsername(),</span>
+<span class="nc" id="L167">                    r.getSpecialMission().getTitle(),</span>
+<span class="nc" id="L168">                    r.getSpecialMission().getMissionDate().format(DateTimeFormatter.ISO_LOCAL_DATE),</span>
+<span class="nc" id="L169">                    r.getSpecialMission().getGameMaster().getUsername()</span>
+            );
+
+<span class="nc" id="L172">            card.addDescription(reportButton);</span>
+<span class="nc" id="L173">        }</span>
+
+
+<span class="nc" id="L176">        description.getStyle().set(&quot;white-space&quot;, &quot;normal&quot;);</span>
+<span class="nc" id="L177">        description.getStyle().set(&quot;test-align&quot;, &quot;right&quot;);</span>
+<span class="nc" id="L178">        description.addClassName(&quot;description&quot;);</span>
+<span class="nc" id="L179">        description.setMaxWidth(100, PERCENTAGE);</span>
+<span class="nc" id="L180">        description.setMaxHeight(500, PIXELS);</span>
+
+<span class="nc" id="L182">        card.addDescription(description);</span>
+<span class="nc" id="L183">        card.getDescription().setFlexGrow(100, description);</span>
+
+        // Footer line
+<span class="nc" id="L186">        Span code = new Span(getTranslation(&quot;operative.code.card&quot;, getLocale(), data.getId()));</span>
+<span class="nc" id="L187">        code.setClassName(&quot;date&quot;);</span>
+<span class="nc" id="L188">        code.setMinWidth(300, PIXELS);</span>
+<span class="nc" id="L189">        code.setWidth(40, PERCENTAGE);</span>
+
+
+<span class="nc" id="L192">        Span created = new Span(getTranslation(&quot;db.entry.created.title&quot;, getLocale(), data.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE)));</span>
+<span class="nc" id="L193">        created.addClassName(&quot;date&quot;);</span>
+<span class="nc" id="L194">        created.setMinWidth(150, PIXELS);</span>
+<span class="nc" id="L195">        created.setWidth(20, PERCENTAGE);</span>
+
+<span class="nc" id="L197">        Span modified = new Span(getTranslation(&quot;db.entry.modified.title&quot;, getLocale(), data.getModified().format(DateTimeFormatter.ISO_LOCAL_DATE)));</span>
+<span class="nc" id="L198">        modified.addClassName(&quot;date&quot;);</span>
+<span class="nc" id="L199">        modified.setMinWidth(150, PIXELS);</span>
+<span class="nc" id="L200">        modified.setWidth(20, PERCENTAGE);</span>
+
+<span class="nc" id="L202">        card.addFooter(code, created, modified);</span>
+<span class="nc" id="L203">        card.getFooter().setFlexGrow(100, publication);</span>
+<span class="nc" id="L204">        card.getFooter().setFlexGrow(1, created);</span>
+<span class="nc" id="L205">        card.getFooter().setFlexGrow(1, modified);</span>
+
+        TorgButton edit;
+<span class="nc" id="L208">        if (</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">                user.getPerson().equals(data.getPlayer())</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                        || user.isOrga()</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                        || user.isAdmin()</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                        || user.isJudge()</span>
+        ) {
+<span class="nc" id="L214">            edit = new TorgButton(</span>
+                    &quot;buttons.edit&quot;,
+                    OperativeEditView.class,
+<span class="nc" id="L217">                    data.getId()</span>
+            );
+        } else {
+<span class="nc" id="L220">            edit = new TorgButton(</span>
+                    &quot;buttons.view&quot;,
+                    OperativeEditView.class,
+<span class="nc" id="L223">                    data.getId()</span>
+            );
+        }
+<span class="nc" id="L226">        card.addMargin(edit);</span>
+
+<span class="nc" id="L228">        translatables.add(card);</span>
+<span class="nc" id="L229">        return card;</span>
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+<span class="nc" id="L234">        grid.setDataProvider(</span>
+<span class="nc" id="L235">                DataProvider.fromCallbacks(</span>
+                        query -&gt; {
+<span class="nc" id="L237">                            int offset = query.getOffset();</span>
+<span class="nc" id="L238">                            int limit = query.getLimit();</span>
+
+<span class="nc" id="L240">                            Pageable page = PageRequest.of(offset / limit, limit);</span>
+<span class="nc" id="L241">                            Page&lt;Operative&gt; missions = repository.findAll(page);</span>
+
+<span class="nc" id="L243">                            return missions.stream();</span>
+                        },
+<span class="nc" id="L245">                        query -&gt; (int) repository.count()</span>
+                )
+        );
+<span class="nc" id="L248">    }</span>
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L252">        LOG.trace(&quot;Locale change event. locale={}&quot;, event.getLocale());</span>
+
+<span class="nc" id="L254">        setLocale(event.getLocale());</span>
+<span class="nc" id="L255">        translate();</span>
+<span class="nc" id="L256">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L260">        LOG.trace(&quot;Translate View. locale={}&quot;, locale);</span>
+
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        for (TranslatableComponent t : translatables) {</span>
+<span class="nc" id="L263">            t.translate();</span>
+<span class="nc" id="L264">        }</span>
+
+<span class="nc" id="L266">        addOperative.translate();</span>
+<span class="nc" id="L267">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc" id="L271">        this.locale = locale;</span>
+
+<span class="nc bnc" id="L273" title="All 2 branches missed.">        for (TranslatableComponent t : translatables) {</span>
+<span class="nc" id="L274">            t.setLocale(locale);</span>
+<span class="nc" id="L275">        }</span>
+<span class="nc" id="L276">    }</span>
+
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L281">        LOG.debug(&quot;Closing view.&quot;);</span>
+
+<span class="nc" id="L283">        removeAll();</span>
+<span class="nc" id="L284">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        if (!(o instanceof OperativesListView)) return false;</span>
+<span class="nc" id="L290">        OperativesListView that = (OperativesListView) o;</span>
+<span class="nc" id="L291">        return getLocale().equals(that.getLocale());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L296">        return Objects.hash(getLocale());</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L301">        return new StringJoiner(&quot;, &quot;, OperativesListView.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L302">                .add(&quot;locale=&quot; + locale)</span>
+<span class="nc" id="L303">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

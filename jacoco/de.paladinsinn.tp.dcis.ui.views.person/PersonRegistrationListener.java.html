@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonRegistrationListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.person</a> &gt; <span class="el_source">PersonRegistrationListener.java</span></div><h1>PersonRegistrationListener.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.person;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.ComponentEventListener;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonService;
+import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
+import de.paladinsinn.tp.dcis.ui.views.login.LoginView;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+
+/**
+ * PersonRegistrationListener --
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-10
+ */
+@Service
+@AllArgsConstructor
+<span class="fc" id="L40">@Slf4j</span>
+public class PersonRegistrationListener implements ComponentEventListener&lt;PersonRegistrationEvent&gt; {
+    private final PersonService personService;
+
+    @Override
+    public void onComponentEvent(@NotNull final PersonRegistrationEvent event) {
+<span class="nc" id="L46">        log.info(&quot;User want's to register. person={}&quot;, event.getPerson());</span>
+
+<span class="nc" id="L48">        Person person = event.getPerson();</span>
+
+        try {
+<span class="nc" id="L51">            personService.signUp(event.getPerson());</span>
+
+
+<span class="nc" id="L54">            new TorgNotification(</span>
+                    &quot;registration.send-registration&quot;,
+                    null,
+                    null,
+<span class="nc" id="L58">                    Arrays.asList(person.getName(), person.getUsername(), person.getEmail())</span>
+<span class="nc" id="L59">            ).open();</span>
+<span class="nc" id="L60">        } catch (Exception e) {</span>
+<span class="nc" id="L61">            log.warn(&quot;Person could not sign up. user='&quot; + event.getPerson().getUsername() + &quot;'&quot;, e);</span>
+
+<span class="nc" id="L63">            new TorgNotification(</span>
+                    &quot;registration.signup-failed&quot;,
+                    null,
+                    null,
+<span class="nc" id="L67">                    Arrays.asList(person.getName(), person.getUsername(), person.getEmail())</span>
+<span class="nc" id="L68">            ).open();</span>
+<span class="nc" id="L69">        }</span>
+
+<span class="nc" id="L71">        event.getSource().getUI().ifPresent(ui -&gt; ui.navigate(LoginView.ROUTE));</span>
+<span class="nc" id="L72">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

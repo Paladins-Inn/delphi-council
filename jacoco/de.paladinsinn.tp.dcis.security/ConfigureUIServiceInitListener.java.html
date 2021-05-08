@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfigureUIServiceInitListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.security</a> &gt; <span class="el_source">ConfigureUIServiceInitListener.java</span></div><h1>ConfigureUIServiceInitListener.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.security;
+
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinServiceInitListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * ConfigureUIServiceInitListener --
+ *
+ * @author paulroemer (github.com/vaadin-lerning-center/spring-secured-vaadin)
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-26
+ */
+@Component
+<span class="fc" id="L42">public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {</span>
+<span class="fc" id="L43">    private static final Logger LOG = LoggerFactory.getLogger(ConfigureUIServiceInitListener.class);</span>
+
+<span class="fc" id="L45">    private static final List&lt;String&gt; ALLOWED_PATHS = Arrays.asList(&quot;register&quot;, &quot;password-reset&quot;, &quot;images&quot;, &quot;img&quot;, &quot;icons&quot;, &quot;api&quot;, &quot;actuator&quot;, &quot;static&quot;);</span>
+
+
+    @Override
+    public void serviceInit(ServiceInitEvent event) {
+<span class="nc" id="L50">        LOG.trace(&quot;Service initialization. service={}&quot;, event.getSource().getServiceName());</span>
+
+<span class="nc" id="L52">        event.getSource().addUIInitListener(uiEvent -&gt; {</span>
+<span class="nc" id="L53">            final UI ui = uiEvent.getUI();</span>
+<span class="nc" id="L54">            ui.addBeforeEnterListener(this::beforeEnter);</span>
+<span class="nc" id="L55">        });</span>
+<span class="nc" id="L56">    }</span>
+
+    /**
+     * Reroutes the user if (s)he is not authorized to access the view.
+     *
+     * @param event before navigation event with event details
+     */
+    private void beforeEnter(BeforeEnterEvent event) {
+<span class="nc" id="L64">        LOG.trace(&quot;Check security. ui={}, location={}&quot;, event.getUI().getId(), event.getLocation().getPath());</span>
+
+<span class="nc" id="L66">        String path = event.getLocation().getPath();</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        path = path.startsWith(&quot;/&quot;) ? path.substring(1) : path;</span>
+<span class="nc" id="L68">        String[] firstUrlPath = path.split(&quot;/&quot;);</span>
+<span class="nc" id="L69">        LOG.debug(&quot;Checking Request. resource={}, pathElements={}, allowedPaths={}&quot;, event.getLocation().getPath(), firstUrlPath, ALLOWED_PATHS);</span>
+
+<span class="nc bnc" id="L71" title="All 4 branches missed.">        if (firstUrlPath.length &gt;= 1 &amp;&amp; ALLOWED_PATHS.contains(firstUrlPath[0])) {</span>
+<span class="nc" id="L72">            LOG.debug(&quot;Request ok. resource={}&quot;, event.getLocation().getPath());</span>
+<span class="nc" id="L73">            return;</span>
+        }
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (!SecurityUtils.isUserLoggedIn()) {</span>
+<span class="nc" id="L77">            LOG.debug(&quot;User tries to login. Everything is fine with not being logged in.&quot;);</span>
+
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (!event.getLocation().getPath().equals(SecurityConfiguration.LOGIN_URL.substring(1))) {</span>
+<span class="nc" id="L80">                LOG.info(&quot;User is not logged in. Redirecting to login page. loginPage={}&quot;, SecurityConfiguration.LOGIN_URL);</span>
+
+<span class="nc" id="L82">                UI.getCurrent().getPage().setLocation(SecurityConfiguration.LOGIN_URL);</span>
+            }
+        }
+<span class="nc" id="L85">    }</span>
+
+    /**
+     * @return the authencation from the security context.
+     */
+    @Bean
+    public Authentication getPrincipal() {
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (SecurityUtils.isUserLoggedIn()) {</span>
+<span class="nc" id="L93">            return SecurityContextHolder.getContext().getAuthentication();</span>
+        }
+
+<span class="fc" id="L96">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

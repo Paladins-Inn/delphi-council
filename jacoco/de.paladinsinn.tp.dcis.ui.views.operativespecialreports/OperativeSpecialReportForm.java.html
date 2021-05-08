@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OperativeSpecialReportForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.operativespecialreports</a> &gt; <span class="el_source">OperativeSpecialReportForm.java</span></div><h1>OperativeSpecialReportForm.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.operativespecialreports;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
+import de.paladinsinn.tp.dcis.ui.components.TorgForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.time.LocalDate;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+/**
+ * MissionOperativeReportEditForm -- Edits/displays the data for a mission report on group level.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-04
+ */
+@Service
+@Scope(SCOPE_PROTOTYPE)
+public class OperativeSpecialReportForm extends TorgForm&lt;OperativeSpecialReport&gt; {
+<span class="nc" id="L48">    private static final Logger LOG = LoggerFactory.getLogger(OperativeSpecialReportForm.class);</span>
+
+    private final OperativeSpecialReportService reportService;
+    private final RemoveOperativeFromSpecialMissionListener removeOperativeFromMissionListener;
+
+
+    // The form components.
+<span class="nc" id="L55">    private final FormLayout form = new FormLayout();</span>
+<span class="nc" id="L56">    private final TextField id = new TextField();</span>
+<span class="nc" id="L57">    private final TextArea notes = new TextArea();</span>
+
+
+    @Autowired
+    public OperativeSpecialReportForm(
+            @NotNull final OperativeSpecialReportService reportService,
+            @NotNull final RemoveOperativeFromSpecialMissionListener removeOperativeFromMissionListener,
+
+            LoggedInUser user) {
+<span class="nc" id="L66">        super(user);</span>
+
+<span class="nc" id="L68">        this.reportService = reportService;</span>
+<span class="nc" id="L69">        this.removeOperativeFromMissionListener = removeOperativeFromMissionListener;</span>
+<span class="nc" id="L70">    }</span>
+
+
+    @PostConstruct
+    public void init() {
+<span class="nc bnc" id="L75" title="All 6 branches missed.">        if (initialized || data == null || user == null) {</span>
+<span class="nc" id="L76">            LOG.debug(</span>
+                    &quot;Already initialized or unable to initialize. initialized={}, data={}, user={}&quot;,
+<span class="nc" id="L78">                    initialized,</span>
+                    data,
+                    user
+            );
+<span class="nc" id="L82">            return;</span>
+        }
+
+<span class="nc" id="L85">        super.init();</span>
+
+<span class="nc" id="L87">        addListener(OperativeSpecialReportSaveEvent.class, reportService);</span>
+<span class="nc" id="L88">        addListener(RemoveOperativeFromSpecialMissionEvent.class, removeOperativeFromMissionListener);</span>
+
+<span class="nc" id="L90">        id.setReadOnly(true);</span>
+
+<span class="nc" id="L92">        notes.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L93">        notes.setClearButtonVisible(true);</span>
+<span class="nc" id="L94">        notes.setMaxLength(4000);</span>
+<span class="nc bnc" id="L95" title="All 6 branches missed.">        notes.setReadOnly(user.isReadonly() &amp;&amp; !(data != null &amp;&amp; user.getPerson().equals(data.getSpecialMission().getGameMaster())));</span>
+
+<span class="nc" id="L97">        actions = new TorgActionBar(</span>
+                &quot;buttons&quot;,
+                event -&gt; { // save
+<span class="nc" id="L100">                    scrape();</span>
+<span class="nc" id="L101">                    getEventBus().fireEvent(new OperativeSpecialReportSaveEvent(this, data));</span>
+<span class="nc" id="L102">                },</span>
+                event -&gt; { // reset
+<span class="nc" id="L104">                    LOG.info(&quot;Resetting data from: displayed={}, new={}&quot;, data, oldData);</span>
+<span class="nc" id="L105">                    resetData();</span>
+<span class="nc" id="L106">                },</span>
+                ev -&gt; { // cancel
+<span class="nc" id="L108">                },</span>
+                ev -&gt; { // delete
+<span class="nc bnc" id="L110" title="All 6 branches missed.">                    if (user.isOrga() || user.isJudge() || data.getSpecialMission().getMissionDate().isAfter(LocalDate.now())) {</span>
+<span class="nc" id="L111">                        LOG.info(&quot;Removing this operative from mission&quot;);</span>
+<span class="nc" id="L112">                        scrape();</span>
+
+<span class="nc" id="L114">                        fireEvent(new RemoveOperativeFromSpecialMissionEvent(this, data));</span>
+
+<span class="nc" id="L116">                        getUI().ifPresent(ui -&gt; ui.getPage().getHistory().back());</span>
+                    }
+<span class="nc" id="L118">                }</span>
+        );
+<span class="nc" id="L120">        actions.setReadOnly(</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                user.isReadonly()</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                        &amp;&amp; !user.getPerson().equals(data.getSpecialMission().getGameMaster())</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                        &amp;&amp; !user.isOrga()</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                        &amp;&amp; !user.isAdmin()</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                        &amp;&amp; !user.isJudge()</span>
+        );
+
+<span class="nc" id="L128">        getContent().add(form);</span>
+
+        // mark as initialized.
+<span class="nc" id="L131">        initialized = true;</span>
+<span class="nc" id="L132">    }</span>
+
+    protected void populate() {
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (data == null) {</span>
+<span class="nc" id="L136">            LOG.warn(&quot;Tried to polulate form data without a mission report defined.&quot;);</span>
+<span class="nc" id="L137">            return;</span>
+        }
+
+<span class="nc" id="L140">        bindData(data.getId().toString(), id);</span>
+<span class="nc" id="L141">        bindData(data.getNotes(), notes);</span>
+<span class="nc" id="L142">    }</span>
+
+    protected void scrape() {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (data == null) data = new OperativeSpecialReport();</span>
+
+<span class="nc" id="L147">        data.setNotes(notes.getValue());</span>
+<span class="nc" id="L148">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L152" title="All 6 branches missed.">        if (user == null || data == null || locale == null) {</span>
+<span class="nc" id="L153">            LOG.warn(</span>
+                    &quot;Can't build mission report group report editor due to mission data. user={}, report={}, locale={}&quot;,
+                    user, data, locale
+            );
+
+<span class="nc" id="L158">            return;</span>
+        }
+
+<span class="nc" id="L161">        LOG.debug(&quot;Building mission report group edit form. report={}, locale={}&quot;, data, locale);</span>
+
+<span class="nc" id="L163">        LOG.trace(&quot;Remove all form elements.&quot;);</span>
+<span class="nc" id="L164">        form.removeAll();</span>
+
+        // Form fields
+<span class="nc" id="L167">        id.setLabel(getTranslation(&quot;input.id.caption&quot;));</span>
+<span class="nc" id="L168">        id.setHelperText(getTranslation(&quot;input.id.help&quot;));</span>
+
+<span class="nc" id="L170">        notes.setLabel(getTranslation(&quot;missionreport.notes.caption&quot;));</span>
+<span class="nc" id="L171">        notes.setHelperText(getTranslation(&quot;missionreport.notes.help&quot;));</span>
+
+
+<span class="nc" id="L174">        LOG.trace(&quot;Adding all form elements.&quot;);</span>
+<span class="nc" id="L175">        form.add(notes, actions);</span>
+
+<span class="nc" id="L177">        form.setColspan(notes, 3);</span>
+<span class="nc" id="L178">        form.setColspan(actions, 3);</span>
+<span class="nc" id="L179">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

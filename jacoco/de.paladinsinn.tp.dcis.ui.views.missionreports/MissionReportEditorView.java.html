@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MissionReportEditorView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.missionreports</a> &gt; <span class="el_source">MissionReportEditorView.java</span></div><h1>MissionReportEditorView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.missionreports;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.missions.MissionReport;
+import de.paladinsinn.tp.dcis.data.missions.MissionReportRepository;
+import de.paladinsinn.tp.dcis.data.missions.MissionRepository;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.ui.MainView;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * MissionReportEditorView -- Editor for adding new {@link MissionReport}.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-06
+ */
+@Route(value = &quot;missionreport/:mission?/:id?/:gm?&quot;, layout = MainView.class)
+@I18nPageTitle(&quot;missionreport.editor.caption&quot;)
+@CssImport(&quot;./views/edit-view.css&quot;)
+@Secured({&quot;JUDGE&quot;, &quot;ORGA&quot;, &quot;ADMIN&quot;})
+<span class="nc" id="L57">public class MissionReportEditorView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {</span>
+<span class="nc" id="L58">    private static final Logger LOG = LoggerFactory.getLogger(MissionReportEditorView.class);</span>
+
+    @Autowired
+    private MissionReportForm form;
+
+    @Autowired
+    private MissionReportRepository missionReportRepository;
+
+    @Autowired
+    private MissionRepository missionRepository;
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    private Locale locale;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L76">        setLocale(VaadinSession.getCurrent().getLocale());</span>
+<span class="nc" id="L77">        LOG.debug(&quot;Loading form. locale={}&quot;, locale);</span>
+
+<span class="nc" id="L79">        addClassName(&quot;edit-view&quot;);</span>
+
+<span class="nc" id="L81">        add(form);</span>
+<span class="nc" id="L82">        translate();</span>
+<span class="nc" id="L83">    }</span>
+
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+<span class="nc" id="L88">        Optional&lt;String&gt; id = event.getRouteParameters().get(&quot;id&quot;);</span>
+<span class="nc" id="L89">        Optional&lt;String&gt; missionId = event.getRouteParameters().get(&quot;mission&quot;);</span>
+<span class="nc" id="L90">        Optional&lt;String&gt; personId = event.getRouteParameters().get(&quot;gm&quot;);</span>
+<span class="nc" id="L91">        LOG.trace(&quot;Entering form. report={}, mission={}, gm={}&quot;, id, missionId, personId);</span>
+
+<span class="nc" id="L93">        id.ifPresentOrElse(</span>
+<span class="nc" id="L94">                e -&gt; missionReportRepository.findById(UUID.fromString(e)).ifPresentOrElse(</span>
+                        this::setData,
+<span class="nc" id="L96">                        () -&gt; setData(generateNewMission(missionId, personId))</span>
+                ),
+<span class="nc" id="L98">                () -&gt; setData(generateNewMission(missionId, personId))</span>
+        );
+<span class="nc" id="L100">    }</span>
+
+    private MissionReport generateNewMission(
+            @SuppressWarnings(&quot;OptionalUsedAsFieldOrParameterType&quot;) Optional&lt;String&gt; missionId,
+            @SuppressWarnings(&quot;OptionalUsedAsFieldOrParameterType&quot;) Optional&lt;String&gt; personId
+    ) {
+<span class="nc" id="L106">        MissionReport result = new MissionReport();</span>
+
+<span class="nc" id="L108">        missionId.flatMap(e -&gt; missionRepository.findById(UUID.fromString(e))).ifPresent(result::setMission);</span>
+<span class="nc" id="L109">        personId.flatMap(e -&gt; personRepository.findById(UUID.fromString(e))).ifPresent(result::setGameMaster);</span>
+
+<span class="nc" id="L111">        return result;</span>
+    }
+
+    private void setData(@NotNull MissionReport data) {
+<span class="nc bnc" id="L115" title="All 4 branches missed.">        if (data == null || data.equals(form.getData().orElse(null))) {</span>
+<span class="nc" id="L116">            LOG.info(&quot;Data is null or data didn't change - will do nothing. data={}&quot;, data);</span>
+<span class="nc" id="L117">            return;</span>
+        }
+<span class="nc" id="L119">        LOG.trace(&quot;Loaded mission report. mission={}, report={}&quot;, data.getMission().getId(), data.getId());</span>
+
+<span class="nc" id="L121">        form.setData(data);</span>
+<span class="nc" id="L122">        translate();</span>
+<span class="nc" id="L123">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L128">        LOG.trace(&quot;Locale change event. locale={}, event={}&quot;, event.getLocale(), event);</span>
+
+<span class="nc" id="L130">        setLocale(event.getLocale());</span>
+<span class="nc" id="L131">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L135" title="All 4 branches missed.">        if (locale == null || form.getData().isEmpty()) {</span>
+<span class="nc" id="L136">            LOG.debug(&quot;No locale or no data - will do nothing. locale={}, data={}&quot;, locale, form.getData());</span>
+<span class="nc" id="L137">            return;</span>
+        }
+
+<span class="nc" id="L140">        form.translate();</span>
+<span class="nc" id="L141">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L145" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L146">            LOG.debug(&quot;Locale didn't change - will do nothing. locale={}&quot;, locale);</span>
+<span class="nc" id="L147">            return;</span>
+        }
+
+<span class="nc" id="L150">        this.locale = locale;</span>
+
+<span class="nc" id="L152">        form.setLocale(locale);</span>
+<span class="nc" id="L153">        translate();</span>
+<span class="nc" id="L154">    }</span>
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L158">        LOG.trace(&quot;Closing form.&quot;);</span>
+
+<span class="nc" id="L160">        form.close();</span>
+
+<span class="nc" id="L162">        removeAll();</span>
+
+<span class="nc" id="L164">        LOG.debug(&quot;Closed form.&quot;);</span>
+<span class="nc" id="L165">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

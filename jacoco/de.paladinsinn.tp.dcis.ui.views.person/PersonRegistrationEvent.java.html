@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonRegistrationEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.person</a> &gt; <span class="el_source">PersonRegistrationEvent.java</span></div><h1>PersonRegistrationEvent.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.person;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.ComponentEvent;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.ui.views.login.RegistrationView;
+import lombok.Getter;
+
+import java.util.Locale;
+import java.util.Objects;
+import java.util.StringJoiner;
+
+/**
+ * PersonRegistrationEvent -- The user submitted the registration form.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-04
+ */
+@Getter
+public class PersonRegistrationEvent extends ComponentEvent&lt;RegistrationView&gt; {
+
+    private final String name, lastname, firstname,
+            email, username, password;
+    private final Locale locale;
+
+    /**
+     * Creates a new event using the given source and indicator whether the
+     * event originated from the client side or the server side.
+     *
+     * @param source the source component
+     */
+    public PersonRegistrationEvent(
+            @NotNull final RegistrationView source,
+            @NotNull final String name,
+            @NotNull final String lastname,
+            @NotNull final String firstname,
+            @NotNull final String email,
+            @NotNull final String username,
+            @NotNull final String password,
+            @NotNull final Locale locale
+    ) {
+<span class="nc" id="L59">        super(source, false);</span>
+
+<span class="nc" id="L61">        this.name = name;</span>
+<span class="nc" id="L62">        this.lastname = lastname;</span>
+<span class="nc" id="L63">        this.firstname = firstname;</span>
+<span class="nc" id="L64">        this.email = email;</span>
+<span class="nc" id="L65">        this.username = username;</span>
+<span class="nc" id="L66">        this.password = password;</span>
+<span class="nc" id="L67">        this.locale = locale;</span>
+<span class="nc" id="L68">    }</span>
+
+    public Person getPerson() {
+<span class="nc" id="L71">        Person result = new Person();</span>
+
+<span class="nc" id="L73">        result.setName(name);</span>
+<span class="nc" id="L74">        result.setLastname(lastname);</span>
+<span class="nc" id="L75">        result.setFirstname(firstname);</span>
+<span class="nc" id="L76">        result.setEmail(email);</span>
+<span class="nc" id="L77">        result.setUsername(username);</span>
+<span class="nc" id="L78">        result.setPassword(password);</span>
+<span class="nc" id="L79">        result.setLocale(locale);</span>
+<span class="nc" id="L80">        result.prePersist();</span>
+<span class="nc" id="L81">        result.disable();</span>
+<span class="nc" id="L82">        result.unlock();</span>
+
+<span class="nc" id="L84">        return result;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (!(o instanceof PersonRegistrationEvent)) return false;</span>
+<span class="nc" id="L91">        PersonRegistrationEvent that = (PersonRegistrationEvent) o;</span>
+<span class="nc bnc" id="L92" title="All 14 branches missed.">        return getName().equals(that.getName()) &amp;&amp; getLastname().equals(that.getLastname()) &amp;&amp; getFirstname().equals(that.getFirstname()) &amp;&amp; getEmail().equals(that.getEmail()) &amp;&amp; getUsername().equals(that.getUsername()) &amp;&amp; getPassword().equals(that.getPassword()) &amp;&amp; getLocale().equals(that.getLocale());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L97">        return Objects.hash(getName(), getLastname(), getFirstname(), getEmail(), getUsername(), getPassword(), getLocale());</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L102">        return new StringJoiner(&quot;, &quot;, PersonRegistrationEvent.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L103">                .add(&quot;name='&quot; + name + &quot;'&quot;)</span>
+<span class="nc" id="L104">                .add(&quot;lastname='&quot; + lastname + &quot;'&quot;)</span>
+<span class="nc" id="L105">                .add(&quot;firstname='&quot; + firstname + &quot;'&quot;)</span>
+<span class="nc" id="L106">                .add(&quot;email='&quot; + email + &quot;'&quot;)</span>
+<span class="nc" id="L107">                .add(&quot;username='&quot; + username + &quot;'&quot;)</span>
+<span class="nc" id="L108">                .add(&quot;locale=&quot; + locale)</span>
+<span class="nc" id="L109">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MissionReport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.missions</a> &gt; <span class="el_source">MissionReport.java</span></div><h1>MissionReport.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.missions;
+
+import com.sun.istack.NotNull;
+import de.paladinsinn.tp.dcis.data.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.data.operative.OperativeReport;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
+
+/**
+ * MissionReport -- A report of the gaming results.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-26
+ */
+@Entity
+@Audited
+@Table(
+        name = &quot;MISSIONREPORTS&quot;,
+        uniqueConstraints = {
+                @UniqueConstraint(name = &quot;MISSIONREPORTS_ID_UK&quot;, columnNames = &quot;ID&quot;)
+        }
+)
+@Getter
+@Setter
+<span class="fc" id="L51">public class MissionReport extends AbstractRevisionedEntity implements Comparable&lt;MissionReport&gt;, Cloneable {</span>
+    @ManyToOne(
+            cascade = {CascadeType.REFRESH},
+            fetch = FetchType.EAGER,
+            optional = false,
+            targetEntity = Mission.class
+    )
+    @JoinColumn(
+            name = &quot;MISSION_ID&quot;,
+            referencedColumnName = &quot;ID&quot;,
+            nullable = false,
+            foreignKey = @ForeignKey(name = &quot;REPORTS_MISSIONS_FK&quot;)
+    )
+    private Mission mission;
+
+    @ManyToOne(
+            cascade = {CascadeType.REFRESH},
+            fetch = FetchType.EAGER,
+            optional = false,
+            targetEntity = Person.class
+    )
+    @JoinColumn(
+            name = &quot;GM_ID&quot;,
+            referencedColumnName = &quot;ID&quot;,
+            nullable = false,
+            foreignKey = @ForeignKey(name = &quot;REPORTS_PERSONS_FK&quot;)
+    )
+    @Audited
+    private Person gameMaster;
+
+<span class="fc" id="L81">    @OneToMany(</span>
+            targetEntity = OperativeReport.class,
+            mappedBy = &quot;report&quot;,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            orphanRemoval = true
+    )
+    private Set&lt;OperativeReport&gt; operatives = new HashSet&lt;&gt;();
+
+    @Column(name = &quot;MISSION_DATE&quot;, nullable = false)
+    @Audited
+    private LocalDate date;
+
+    @Enumerated(EnumType.STRING)
+    @Audited
+    @Column(name = &quot;OBJECTIVES_MET&quot;, length=20, nullable = false)
+    private SuccessState objectivesMet;
+
+    @Column(name = &quot;ACHIEVEMENTS&quot;, length = 4000)
+    @Audited
+    private String achievements;
+
+    @Column(name = &quot;NOTES&quot;, length = 4000)
+    @Audited
+    private String notes;
+
+    public void setGameMaster(@NotNull final Person gameMaster) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (this.gameMaster != null) {</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            if (this.gameMaster.equals(gameMaster))</span>
+<span class="nc" id="L110">                return;</span>
+
+<span class="nc" id="L112">            Person oldGameMaster = this.gameMaster;</span>
+<span class="nc" id="L113">            this.gameMaster = gameMaster;</span>
+<span class="nc" id="L114">            oldGameMaster.removeGameMasterReport(this);</span>
+<span class="nc" id="L115">        } else {</span>
+<span class="nc" id="L116">            this.gameMaster = gameMaster;</span>
+<span class="nc" id="L117">            gameMaster.addGameMasterReport(this);</span>
+        }
+<span class="nc" id="L119">    }</span>
+
+    public void addOperativeReport(OperativeReport operative) {
+<span class="nc bnc" id="L122" title="All 4 branches missed.">        if (operative != null &amp;&amp; !operatives.contains(operative)) {</span>
+<span class="nc" id="L123">            operatives.add(operative);</span>
+
+<span class="nc" id="L125">            operative.setMissionReport(this);</span>
+        }
+<span class="nc" id="L127">    }</span>
+
+    public void removeOperativeReport(OperativeReport operative) {
+<span class="nc bnc" id="L130" title="All 4 branches missed.">        if (operative != null &amp;&amp; operatives.contains(operative)) {</span>
+<span class="nc" id="L131">            operatives.remove(operative);</span>
+
+<span class="nc" id="L133">            operative.setMissionReport(null);</span>
+        }
+<span class="nc" id="L135">    }</span>
+
+    @Override
+    public int compareTo(MissionReport o) {
+<span class="nc" id="L139">        return new CompareToBuilder()</span>
+<span class="nc" id="L140">                .append(0, mission.compareTo(o.getMission()))</span>
+<span class="nc" id="L141">                .append(getDate(), o.getDate())</span>
+<span class="nc" id="L142">                .append(getGameMaster(), o.getGameMaster())</span>
+<span class="nc" id="L143">                .toComparison();</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L148">        return new StringJoiner(&quot;, &quot;, MissionReport.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L149">                .merge(super.getToStringJoiner())</span>
+<span class="nc" id="L150">                .add(&quot;mission=&quot; + mission.getCode())</span>
+<span class="nc" id="L151">                .add(&quot;gameMaster='&quot; + gameMaster.getName() + &quot;'&quot;)</span>
+<span class="nc" id="L152">                .add(&quot;date=&quot; + date)</span>
+<span class="nc" id="L153">                .toString();</span>
+    }
+
+    @Override
+    public MissionReport clone() throws CloneNotSupportedException {
+<span class="nc" id="L158">        MissionReport result = (MissionReport) super.clone();</span>
+
+<span class="nc" id="L160">        result.achievements = achievements;</span>
+<span class="nc" id="L161">        result.notes = notes;</span>
+
+<span class="nc" id="L163">        result.gameMaster = gameMaster.clone();</span>
+<span class="nc" id="L164">        result.mission = mission.clone();</span>
+<span class="nc" id="L165">        result.objectivesMet = objectivesMet;</span>
+
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (date != null) {</span>
+<span class="nc" id="L168">            result.date = LocalDate.from(date);</span>
+        }
+
+<span class="nc" id="L171">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

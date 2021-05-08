@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OperativeSelector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">OperativeSelector.java</span></div><h1>OperativeSelector.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.selection.MultiSelectionListener;
+import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.shared.Registration;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
+/**
+ * PersonSelector -- A ComboBox for Person with database query for data.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-07
+ */
+public class OperativeSelector extends VerticalLayout implements LocaleChangeObserver, TranslatableComponent, AutoCloseable, Serializable {
+<span class="nc" id="L59">    private static final Logger LOG = LoggerFactory.getLogger(OperativeSelector.class);</span>
+
+    private final OperativeRepository dataService;
+    private final String i18nPrefix;
+    private Locale locale;
+
+    private final Label label;
+    private final MultiSelectListBox&lt;Operative&gt; selector;
+    private final Span help;
+
+    public OperativeSelector(
+            @NotNull final String i18nPrefix,
+            @NotNull final OperativeRepository dataService
+<span class="nc" id="L72">    ) {</span>
+<span class="nc" id="L73">        this.i18nPrefix = i18nPrefix;</span>
+<span class="nc" id="L74">        this.dataService = dataService;</span>
+
+<span class="nc" id="L76">        label = new Label(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;caption&quot;)));</span>
+<span class="nc" id="L77">        help = new Span(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;help&quot;)));</span>
+
+<span class="nc" id="L79">        selector = new MultiSelectListBox&lt;&gt;();</span>
+<span class="nc" id="L80">        selector.setDataProvider(DataProvider.fromFilteringCallbacks(</span>
+                query -&gt; {
+<span class="nc" id="L82">                    Object filter = query.getFilter().orElse(null);</span>
+<span class="nc" id="L83">                    LOG.trace(&quot;item query. filter='{}'&quot;, filter);</span>
+
+<span class="nc" id="L85">                    int offset = query.getOffset();</span>
+<span class="nc" id="L86">                    int limit = query.getLimit();</span>
+
+<span class="nc" id="L88">                    Pageable page = PageRequest.of(offset / limit, limit);</span>
+<span class="nc" id="L89">                    Page&lt;Operative&gt; operatives = dataService.findAll(page);</span>
+
+<span class="nc" id="L91">                    return operatives.stream();</span>
+                },
+                query -&gt; {
+<span class="nc" id="L94">                    Object filter = query.getFilter().orElse(null);</span>
+<span class="nc" id="L95">                    LOG.trace(&quot;count query. filter='{}'&quot;, filter);</span>
+
+<span class="nc" id="L97">                    return (int) dataService.count();</span>
+                }
+        ));
+<span class="nc" id="L100">        selector.setRenderer(new ComponentRenderer&lt;&gt;(item -&gt; {</span>
+<span class="nc" id="L101">            Div result = new Div();</span>
+<span class="nc" id="L102">            result.setText(item.getName());</span>
+<span class="nc" id="L103">            return result;</span>
+        }));
+
+<span class="nc" id="L106">        add(label, selector, help);</span>
+<span class="nc" id="L107">    }</span>
+
+    public void setReadonly(boolean readOnly) {
+<span class="nc" id="L110">        selector.setReadOnly(readOnly);</span>
+<span class="nc" id="L111">    }</span>
+
+    public void translate() {
+<span class="nc" id="L114">        label.setText(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;caption&quot;)));</span>
+<span class="nc" id="L115">        help.setText(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;help&quot;)));</span>
+<span class="nc" id="L116">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+
+<span class="nc" id="L121">    }</span>
+
+    public void setValue(Set&lt;Operative&gt; value) {
+<span class="nc" id="L124">        selector.setValue(value);</span>
+<span class="nc" id="L125">    }</span>
+
+    public void updateSelection(Set&lt;Operative&gt; addedItems, Set&lt;Operative&gt; removedItems) {
+<span class="nc" id="L128">        selector.updateSelection(addedItems, removedItems);</span>
+<span class="nc" id="L129">    }</span>
+
+    public Set&lt;Operative&gt; getSelectedItems() {
+<span class="nc" id="L132">        return selector.getSelectedItems();</span>
+    }
+
+    public Registration addSelectionListener(MultiSelectionListener&lt;MultiSelectListBox&lt;Operative&gt;, Operative&gt; listener) {
+<span class="nc" id="L136">        return selector.addSelectionListener(listener);</span>
+    }
+
+    public void setDataProvider(DataProvider&lt;Operative, ?&gt; dataProvider) {
+<span class="nc" id="L140">        selector.setDataProvider(dataProvider);</span>
+<span class="nc" id="L141">    }</span>
+
+    public DataProvider&lt;Operative, ?&gt; getDataProvider() {
+<span class="nc" id="L144">        return selector.getDataProvider();</span>
+    }
+
+    public ComponentRenderer&lt;? extends Component, Operative&gt; getItemRenderer() {
+<span class="nc" id="L148">        return selector.getItemRenderer();</span>
+    }
+
+    public void setRenderer(ComponentRenderer&lt;? extends Component, Operative&gt; itemRenderer) {
+<span class="nc" id="L152">        selector.setRenderer(itemRenderer);</span>
+<span class="nc" id="L153">    }</span>
+
+    public void setItemEnabledProvider(SerializablePredicate&lt;Operative&gt; itemEnabledProvider) {
+<span class="nc" id="L156">        selector.setItemEnabledProvider(itemEnabledProvider);</span>
+<span class="nc" id="L157">    }</span>
+
+    public SerializablePredicate&lt;Operative&gt; getItemEnabledProvider() {
+<span class="nc" id="L160">        return selector.getItemEnabledProvider();</span>
+    }
+
+    public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
+<span class="nc" id="L164">        selector.setRequiredIndicatorVisible(requiredIndicatorVisible);</span>
+<span class="nc" id="L165">    }</span>
+
+    public Registration addValueChangeListener(HasValue.ValueChangeListener&lt;? super AbstractField.ComponentValueChangeEvent&lt;MultiSelectListBox&lt;Operative&gt;, Set&lt;Operative&gt;&gt;&gt; listener) {
+<span class="nc" id="L168">        return selector.addValueChangeListener(listener);</span>
+    }
+
+    public boolean isEmpty() {
+<span class="nc" id="L172">        return selector.isEmpty();</span>
+    }
+
+    public Set&lt;Operative&gt; getValue() {
+<span class="nc" id="L176">        return selector.getValue();</span>
+    }
+
+    public Set&lt;Operative&gt; getEmptyValue() {
+<span class="nc" id="L180">        return selector.getEmptyValue();</span>
+    }
+
+    public boolean isRequiredIndicatorVisible() {
+<span class="nc" id="L184">        return selector.isRequiredIndicatorVisible();</span>
+    }
+
+    public void setReadOnly(boolean readOnly) {
+<span class="nc" id="L188">        setReadonly(readOnly);</span>
+<span class="nc" id="L189">    }</span>
+
+    public boolean isReadOnly() {
+<span class="nc" id="L192">        return selector.isReadOnly();</span>
+    }
+
+    public Optional&lt;Set&lt;Operative&gt;&gt; getOptionalValue() {
+<span class="nc" id="L196">        return selector.getOptionalValue();</span>
+    }
+
+    public void clear() {
+<span class="nc" id="L200">        selector.clear();</span>
+<span class="nc" id="L201">    }</span>
+
+    public void addComponents(Operative afterItem, Component... components) {
+<span class="nc" id="L204">        selector.addComponents(afterItem, components);</span>
+<span class="nc" id="L205">    }</span>
+
+    public void prependComponents(Operative beforeItem, Component... components) {
+<span class="nc" id="L208">        selector.prependComponents(beforeItem, components);</span>
+<span class="nc" id="L209">    }</span>
+
+    public int getItemPosition(Operative item) {
+<span class="nc" id="L212">        return selector.getItemPosition(item);</span>
+    }
+
+    public void setItems(Collection&lt;Operative&gt; items) {
+<span class="nc" id="L216">        selector.setItems(items);</span>
+<span class="nc" id="L217">    }</span>
+
+    public void setItems(Operative... items) {
+<span class="nc" id="L220">        selector.setItems(items);</span>
+<span class="nc" id="L221">    }</span>
+
+    public void setItems(Stream&lt;Operative&gt; streamOfItems) {
+<span class="nc" id="L224">        selector.setItems(streamOfItems);</span>
+<span class="nc" id="L225">    }</span>
+
+    public void select(Operative... items) {
+<span class="nc" id="L228">        selector.select(items);</span>
+<span class="nc" id="L229">    }</span>
+
+    public void deselect(Operative... items) {
+<span class="nc" id="L232">        selector.deselect(items);</span>
+<span class="nc" id="L233">    }</span>
+
+    public void select(Iterable&lt;Operative&gt; items) {
+<span class="nc" id="L236">        selector.select(items);</span>
+<span class="nc" id="L237">    }</span>
+
+    public void deselect(Iterable&lt;Operative&gt; items) {
+<span class="nc" id="L240">        selector.deselect(items);</span>
+<span class="nc" id="L241">    }</span>
+
+    public void deselectAll() {
+<span class="nc" id="L244">        selector.deselectAll();</span>
+<span class="nc" id="L245">    }</span>
+
+    public boolean isSelected(Operative item) {
+<span class="nc" id="L248">        return selector.isSelected(item);</span>
+    }
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L253">        setLocale(event.getLocale());</span>
+<span class="nc" id="L254">    }</span>
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L258">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

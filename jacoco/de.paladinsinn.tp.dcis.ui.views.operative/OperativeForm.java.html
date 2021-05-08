@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OperativeForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.operative</a> &gt; <span class="el_source">OperativeForm.java</span></div><h1>OperativeForm.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.operative;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.RouteParam;
+import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.Clearance;
+import de.paladinsinn.tp.dcis.data.Cosm;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.components.Avatar;
+import de.paladinsinn.tp.dcis.ui.components.PersonSelector;
+import de.paladinsinn.tp.dcis.ui.components.Token;
+import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import de.paladinsinn.tp.dcis.ui.views.person.PersonEditView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Optional;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+/**
+ * PersonForm -- Edits/displays the data for a person.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-05
+ */
+@Service
+@Scope(SCOPE_PROTOTYPE)
+public class OperativeForm extends Composite&lt;Div&gt; implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
+<span class="nc" id="L67">    private static final Logger LOG = LoggerFactory.getLogger(OperativeForm.class);</span>
+
+    /**
+     * The service for writing data to.
+     */
+    private final OperativeService operativeService;
+
+    private final PersonRepository personRepository;
+
+    private final LoggedInUser user;
+
+    /**
+     * The locale of this form.
+     */
+    private Locale locale;
+
+    /**
+     * The mission report to edit.
+     */
+    private Operative data;
+
+    /**
+     * If this form is alread initialized.
+     */
+<span class="nc" id="L91">    private boolean initialized = false;</span>
+
+    // The form components.
+<span class="nc" id="L94">    private final FormLayout form = new FormLayout();</span>
+
+<span class="nc" id="L96">    private final TextField id = new TextField();</span>
+
+<span class="nc" id="L98">    private final TextField name = new TextField();</span>
+<span class="nc" id="L99">    private final TextField lastName = new TextField();</span>
+<span class="nc" id="L100">    private final TextField firstName = new TextField();</span>
+
+    private Avatar avatar;
+    private Token token;
+
+    private ComboBox&lt;Person&gt; player;
+<span class="nc" id="L106">    private final ComboBox&lt;Clearance&gt; clearance = new ComboBox&lt;&gt;();</span>
+<span class="nc" id="L107">    private final IntegerField xp = new IntegerField();</span>
+<span class="nc" id="L108">    private final ComboBox&lt;Cosm&gt; cosm = new ComboBox&lt;&gt;();</span>
+
+    private TorgActionBar actions;
+
+
+    @Autowired
+    public OperativeForm(
+            @NotNull final OperativeService operativeService,
+            @NotNull final PersonRepository personRepository,
+<span class="nc" id="L117">            @NotNull final LoggedInUser user) {</span>
+<span class="nc" id="L118">        this.operativeService = operativeService;</span>
+<span class="nc" id="L119">        this.personRepository = personRepository;</span>
+<span class="nc" id="L120">        this.user = user;</span>
+
+<span class="nc" id="L122">        init();</span>
+<span class="nc" id="L123">    }</span>
+
+
+    private void init() {
+<span class="nc bnc" id="L127" title="All 6 branches missed.">        if (initialized || data == null || user == null) {</span>
+<span class="nc" id="L128">            LOG.debug(</span>
+                    &quot;Already initialized or data missing. initialized={}, data={}, user={}&quot;,
+<span class="nc" id="L130">                    initialized, data, user</span>
+            );
+
+<span class="nc" id="L133">            return;</span>
+        }
+
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (locale == null) {</span>
+<span class="nc" id="L137">            setLocale(VaadinSession.getCurrent().getLocale());</span>
+        }
+
+<span class="nc" id="L140">        player = new PersonSelector(&quot;operative.player&quot;, personRepository, user);</span>
+<span class="nc bnc" id="L141" title="All 6 branches missed.">        player.setReadOnly(!user.isAdmin() || !user.isOrga() || !user.isJudge());</span>
+
+<span class="nc" id="L143">        user.allow(data.getPlayer().equals(user.getPerson()));</span>
+
+<span class="nc" id="L145">        addListener(OperativeSaveEvent.class, operativeService);</span>
+
+<span class="nc" id="L147">        form.setResponsiveSteps(</span>
+                new FormLayout.ResponsiveStep(&quot;1px&quot;, 1),
+                new FormLayout.ResponsiveStep(&quot;400px&quot;, 2),
+                new FormLayout.ResponsiveStep(&quot;800px&quot;, 3)
+        );
+
+<span class="nc" id="L153">        id.setReadOnly(true);</span>
+<span class="nc" id="L154">        id.setRequiredIndicatorVisible(true);</span>
+
+<span class="nc" id="L156">        name.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L157">        name.setRequired(true);</span>
+<span class="nc" id="L158">        name.setRequiredIndicatorVisible(true);</span>
+<span class="nc" id="L159">        lastName.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L160">        lastName.setRequired(true);</span>
+<span class="nc" id="L161">        lastName.setRequiredIndicatorVisible(true);</span>
+<span class="nc" id="L162">        firstName.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L163">        firstName.setRequired(true);</span>
+<span class="nc" id="L164">        firstName.setRequiredIndicatorVisible(true);</span>
+
+<span class="nc" id="L166">        cosm.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L167">        cosm.setDataProvider(Cosm.CORE_EARTH.dataProvider());</span>
+<span class="nc" id="L168">        cosm.setItemLabelGenerator((ItemLabelGenerator&lt;Cosm&gt;) item -&gt; getTranslation(&quot;torg.cosm.&quot; + item.name()));</span>
+<span class="nc" id="L169">        cosm.setAllowCustomValue(false);</span>
+<span class="nc" id="L170">        cosm.setRequired(true);</span>
+<span class="nc" id="L171">        cosm.setRequiredIndicatorVisible(true);</span>
+
+<span class="nc bnc" id="L173" title="All 6 branches missed.">        xp.setReadOnly(!user.isAdmin() &amp;&amp; !user.isOrga() &amp;&amp; !user.isJudge());</span>
+<span class="nc" id="L174">        xp.setRequiredIndicatorVisible(true);</span>
+
+<span class="nc bnc" id="L176" title="All 6 branches missed.">        clearance.setReadOnly(!user.isAdmin() &amp;&amp; !user.isOrga() &amp;&amp; !user.isJudge());</span>
+<span class="nc" id="L177">        clearance.setDataProvider(Clearance.ANY.dataProvider());</span>
+<span class="nc" id="L178">        clearance.setItemLabelGenerator((ItemLabelGenerator&lt;Clearance&gt;) item -&gt; getTranslation(&quot;torg.clearance.&quot; + item.name()));</span>
+<span class="nc" id="L179">        clearance.setAllowCustomValue(false);</span>
+<span class="nc" id="L180">        clearance.setRequired(true);</span>
+<span class="nc" id="L181">        clearance.setRequiredIndicatorVisible(true);</span>
+
+
+<span class="nc" id="L184">        avatar = new Avatar(</span>
+                &quot;operative.avatar&quot;,
+                data,
+                50, 500,
+                50, 500,
+                16777215
+        );
+
+<span class="nc" id="L192">        token = new Token(</span>
+                &quot;operative.token&quot;,
+                data,
+                70, 210,
+                70, 210,
+                16777215
+        );
+
+<span class="nc" id="L200">        actions = new TorgActionBar(</span>
+                &quot;buttons&quot;,
+                event -&gt; {
+<span class="nc" id="L203">                    scrape();</span>
+<span class="nc" id="L204">                    getEventBus().fireEvent(new OperativeSaveEvent(this, false));</span>
+<span class="nc" id="L205">                    getUI().ifPresent(ui -&gt; ui.getPage().getHistory().back());</span>
+<span class="nc" id="L206">                },</span>
+                null,
+                null,
+                null
+        );
+<span class="nc" id="L211">        actions.addAction(</span>
+                &quot;person.editor&quot;,
+                event -&gt; {
+<span class="nc" id="L214">                    getUI().ifPresent(ui -&gt; ui.navigate(</span>
+                            PersonEditView.class,
+                            new RouteParameters(
+<span class="nc" id="L217">                                    new RouteParam(&quot;id&quot;, data.getPlayer().getId().toString())</span>
+                            )
+                    ));
+<span class="nc" id="L220">                }</span>
+        );
+<span class="nc" id="L222">        actions.setReadOnly(</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">                user.isReadonly()</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">                        &amp;&amp; !user.getPerson().equals(data.getPlayer())</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">                        &amp;&amp; !user.isAdmin()</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">                        &amp;&amp; !user.isOrga()</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">                        &amp;&amp; !user.isJudge()</span>
+        );
+
+<span class="nc" id="L230">        getContent().add(form);</span>
+
+        // mark as initialized.
+<span class="nc" id="L233">        initialized = true;</span>
+<span class="nc" id="L234">    }</span>
+
+    private void scrape() {
+<span class="nc" id="L237">        init();</span>
+
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        if (data == null) data = new Operative();</span>
+
+<span class="nc" id="L241">        data.setPlayer(player.getValue());</span>
+<span class="nc" id="L242">        data.setXp(xp.getValue());</span>
+<span class="nc" id="L243">        data.setClearance(clearance.getValue());</span>
+<span class="nc" id="L244">        data.setCosm(cosm.getValue());</span>
+<span class="nc" id="L245">        data.setName(name.getValue());</span>
+<span class="nc" id="L246">        data.setFirstName(firstName.getValue());</span>
+<span class="nc" id="L247">        data.setLastName(lastName.getValue());</span>
+<span class="nc" id="L248">    }</span>
+
+    public void setData(@NotNull Operative data) {
+<span class="nc bnc" id="L251" title="All 4 branches missed.">        if (this.data != null &amp;&amp; this.data.equals(data)) {</span>
+<span class="nc" id="L252">            LOG.info(&quot;Data didn't change. Ignoring event. id={}, name={}&quot;,</span>
+<span class="nc" id="L253">                    this.data.getId(), this.data.getName());</span>
+
+<span class="nc" id="L255">            return;</span>
+        }
+
+<span class="nc" id="L258">        this.data = data;</span>
+
+<span class="nc" id="L260">        LOG.debug(&quot;Set data. id={}, name={}&quot;, this.data.getId(), this.data.getName());</span>
+
+<span class="nc" id="L262">        init();</span>
+<span class="nc" id="L263">        populate();</span>
+<span class="nc" id="L264">        translate();</span>
+<span class="nc" id="L265">    }</span>
+
+    private void populate() {
+<span class="nc" id="L268">        init();</span>
+
+<span class="nc bnc" id="L270" title="All 4 branches missed.">        if (data == null || !initialized) {</span>
+<span class="nc" id="L271">            LOG.warn(&quot;Tried to polulate form data without a person defined.&quot;);</span>
+<span class="nc" id="L272">            return;</span>
+        }
+
+<span class="nc bnc" id="L275" title="All 2 branches missed.">        if (data.getId() != null) {</span>
+<span class="nc" id="L276">            id.setValue(data.getId().toString());</span>
+        }
+
+<span class="nc" id="L279">        bindData(data.getPlayer(), player);</span>
+<span class="nc" id="L280">        bindData(data.getXp(), xp);</span>
+<span class="nc" id="L281">        bindData(data.getClearance(), clearance);</span>
+<span class="nc" id="L282">        bindData(data.getCosm(), cosm);</span>
+
+<span class="nc" id="L284">        bindData(data.getName(), name);</span>
+<span class="nc" id="L285">        bindData(data.getLastName(), lastName);</span>
+<span class="nc" id="L286">        bindData(data.getFirstName(), firstName);</span>
+
+<span class="nc" id="L288">        avatar.setValue(data);</span>
+<span class="nc" id="L289">        token.setValue(data);</span>
+<span class="nc" id="L290">    }</span>
+
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    private void bindData(final Object data, @NotNull HasValue component) {
+<span class="nc bnc" id="L294" title="All 2 branches missed.">        if (data != null) {</span>
+<span class="nc" id="L295">            component.setValue(data);</span>
+        }
+<span class="nc" id="L297">    }</span>
+
+    public Optional&lt;Operative&gt; getData() {
+<span class="nc" id="L300">        return Optional.ofNullable(data);</span>
+    }
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L306">        LOG.trace(&quot;Change locale event. locale={}&quot;, event.getLocale());</span>
+
+<span class="nc" id="L308">        setLocale(event.getLocale());</span>
+<span class="nc" id="L309">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L313">        init();</span>
+
+<span class="nc bnc" id="L315" title="All 4 branches missed.">        if (!initialized || locale == null) {</span>
+<span class="nc" id="L316">            return;</span>
+        }
+
+<span class="nc" id="L319">        LOG.debug(&quot;Operative edit form. operative={}, player={}, user={}, locale={}&quot;, data, data.getPlayer(), user.getPerson(), locale);</span>
+
+<span class="nc" id="L321">        LOG.trace(&quot;Remove and add all form elements.&quot;);</span>
+<span class="nc" id="L322">        form.removeAll();</span>
+
+        // Form fields
+<span class="nc" id="L325">        id.setLabel(getTranslation(&quot;input.id.caption&quot;));</span>
+<span class="nc" id="L326">        id.setHelperText(getTranslation(&quot;input.id.help&quot;));</span>
+
+
+<span class="nc" id="L329">        LOG.trace(&quot;Adding all form elements.&quot;);</span>
+
+<span class="nc" id="L331">        name.setLabel(getTranslation(&quot;operative.name.caption&quot;));</span>
+<span class="nc" id="L332">        name.setHelperText(getTranslation(&quot;operative.name.help&quot;));</span>
+
+
+<span class="nc" id="L335">        clearance.setLabel(getTranslation(&quot;torg.clearance.caption&quot;));</span>
+<span class="nc" id="L336">        clearance.setHelperText(getTranslation(&quot;torg.clearance.help&quot;));</span>
+
+<span class="nc" id="L338">        xp.setLabel(getTranslation(&quot;operative.xp.caption&quot;));</span>
+<span class="nc" id="L339">        xp.setHelperText(getTranslation(&quot;operative.xp.help&quot;));</span>
+
+<span class="nc" id="L341">        cosm.setLabel(getTranslation(&quot;torg.cosm.caption&quot;));</span>
+<span class="nc" id="L342">        cosm.setHelperText(getTranslation(&quot;torg.cosm.help&quot;));</span>
+
+<span class="nc" id="L344">        lastName.setLabel(getTranslation(&quot;operative.last-name.caption&quot;));</span>
+<span class="nc" id="L345">        lastName.setHelperText(getTranslation(&quot;operative.last-name.help&quot;));</span>
+<span class="nc" id="L346">        firstName.setLabel(getTranslation(&quot;operative.first-name.caption&quot;));</span>
+<span class="nc" id="L347">        firstName.setHelperText(getTranslation(&quot;operative.first-name.help&quot;));</span>
+
+<span class="nc" id="L349">        player.setLabel(getTranslation(&quot;operative.player.caption&quot;));</span>
+<span class="nc" id="L350">        player.setHelperText(getTranslation(&quot;operative.player.help&quot;));</span>
+
+<span class="nc" id="L352">        avatar.setLocale(locale);</span>
+<span class="nc" id="L353">        token.setLocale(locale);</span>
+
+<span class="nc" id="L355">        actions.setLocale(locale);</span>
+
+
+<span class="nc" id="L358">        form.add(name, cosm);</span>
+<span class="nc" id="L359">        form.setColspan(name, 2);</span>
+
+<span class="nc" id="L361">        form.add(xp, clearance);</span>
+<span class="nc" id="L362">        form.addFormItem(avatar, getTranslation(&quot;operative.avatar.caption&quot;));</span>
+
+<span class="nc" id="L364">        form.add(lastName, firstName);</span>
+<span class="nc" id="L365">        form.addFormItem(token, getTranslation(&quot;operative.token.caption&quot;));</span>
+
+<span class="nc" id="L367">        form.add(actions);</span>
+<span class="nc" id="L368">        form.setColspan(actions, 3);</span>
+
+<span class="nc" id="L370">        getContent().removeAll();</span>
+<span class="nc" id="L371">        getContent().add(form);</span>
+<span class="nc" id="L372">    }</span>
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L376" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L377">            LOG.debug(&quot;Locale has not changed. Ignoring event. locale={}&quot;, locale);</span>
+<span class="nc" id="L378">            return;</span>
+        }
+
+<span class="nc" id="L381">        this.locale = locale;</span>
+<span class="nc" id="L382">        translate();</span>
+<span class="nc" id="L383">    }</span>
+
+    private String getTranslation(@NotNull final String key) {
+        try {
+<span class="nc" id="L387">            return super.getTranslation(key);</span>
+<span class="nc" id="L388">        } catch (NullPointerException e) {</span>
+<span class="nc" id="L389">            LOG.warn(&quot;Can't call translator from vaadin: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L390">            return &quot;!&quot; + key;</span>
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+<span class="nc" id="L396">        LOG.debug(&quot;Closing form.&quot;);</span>
+<span class="nc" id="L397">        getContent().removeAll();</span>
+<span class="nc" id="L398">        form.removeAll();</span>
+<span class="nc" id="L399">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

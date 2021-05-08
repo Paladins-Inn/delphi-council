@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TorgButton.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">TorgButton.java</span></div><h1>TorgButton.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.RouteParameters;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
+import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.UUID;
+
+/**
+ * TorgButton -- A l10n button with torg background.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-06
+ */
+@CssImport(&quot;./views/delphi-council-is.css&quot;)
+public class TorgButton extends NativeButton implements TranslatableComponent, LocaleChangeObserver {
+<span class="nc" id="L46">    private static final Logger LOG = LoggerFactory.getLogger(TorgButton.class);</span>
+
+    private final String i18nBase;
+    private final Object[] i18nParameters;
+
+    public TorgButton(@NotNull final String i18nBase, @NotNull Class&lt;? extends Component&gt; target) {
+<span class="nc" id="L52">        this(i18nBase, target, (RouteParameters) null);</span>
+<span class="nc" id="L53">    }</span>
+
+    public TorgButton(
+            @NotNull final String i18nBase,
+            @NotNull Class&lt;? extends Component&gt; target,
+            @NotNull final UUID id,
+            final Object... i18nParameters
+    ) {
+<span class="nc" id="L61">        this(i18nBase, target, new RouteParameters(&quot;id&quot;, id.toString()), i18nParameters);</span>
+<span class="nc" id="L62">    }</span>
+
+    public TorgButton(
+            @NotNull final String i18nBase,
+            @NotNull Class&lt;? extends Component&gt; target,
+            @NotNull final RouteParameters routeParameters,
+            final Object... i18nParameters
+    ) {
+<span class="nc" id="L70">        this(</span>
+                i18nBase,
+<span class="nc" id="L72">                e -&gt; e.getSource().getUI().ifPresent(ui -&gt; {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">                    if (routeParameters != null) {</span>
+<span class="nc" id="L74">                        LOG.debug(&quot;TorgButton pressed. target={}, parameters={}&quot;, target, routeParameters);</span>
+<span class="nc" id="L75">                        ui.navigate(target, routeParameters);</span>
+                    } else {
+<span class="nc" id="L77">                        LOG.debug(&quot;TorgButton pressed. target={}&quot;, target);</span>
+<span class="nc" id="L78">                        ui.navigate(target);</span>
+                    }
+<span class="nc" id="L80">                }),</span>
+                i18nParameters);
+<span class="nc" id="L82">    }</span>
+
+    public TorgButton(
+            @NotNull final String i18nBase,
+            @NotNull final ComponentEventListener&lt;ClickEvent&lt;NativeButton&gt;&gt; listener,
+            final Object... i18nParameters
+<span class="nc" id="L88">    ) {</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        this.i18nBase = i18nBase.endsWith(&quot;.caption&quot;) ? i18nBase.substring(0, i18nBase.length() - 8) : i18nBase;</span>
+<span class="nc" id="L90">        addClassName(&quot;v-nativebutton-torg&quot;);</span>
+
+<span class="nc" id="L92">        this.i18nParameters = i18nParameters;</span>
+
+<span class="nc" id="L94">        addClickListener(listener);</span>
+
+<span class="nc" id="L96">        translate();</span>
+<span class="nc" id="L97">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (i18nParameters != null) {</span>
+<span class="nc" id="L102">            setText(getTranslation(i18nBase + &quot;.caption&quot;, i18nParameters));</span>
+<span class="nc" id="L103">            setTitle(getTranslation(i18nBase + &quot;.help&quot;, i18nParameters));</span>
+        } else {
+<span class="nc" id="L105">            setText(getTranslation(i18nBase + &quot;.caption&quot;));</span>
+<span class="nc" id="L106">            setTitle(getTranslation(i18nBase + &quot;.help&quot;));</span>
+        }
+<span class="nc" id="L108">    }</span>
+
+    @Override
+    public void localeChange(@NotNull final LocaleChangeEvent event) {
+<span class="nc" id="L112">        setLocale(event.getLocale());</span>
+<span class="nc" id="L113">    }</span>
+
+    @Override
+    public void setLocale(@NotNull final Locale locale) {
+<span class="nc" id="L117">        translate();</span>
+<span class="nc" id="L118">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (!(o instanceof TorgButton)) return false;</span>
+<span class="nc" id="L124">        TorgButton that = (TorgButton) o;</span>
+<span class="nc" id="L125">        return i18nBase.equals(that.i18nBase);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L130">        return Objects.hash(i18nBase);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L135">        return new StringJoiner(&quot;, &quot;, TorgButton.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L136">                .add(&quot;i18n='&quot; + i18nBase + &quot;'&quot;)</span>
+<span class="nc" id="L137">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

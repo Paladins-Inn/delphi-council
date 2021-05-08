@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Mission.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.missions</a> &gt; <span class="el_source">Mission.java</span></div><h1>Mission.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.missions;
+
+import com.sun.istack.NotNull;
+import de.paladinsinn.tp.dcis.data.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
+
+@Entity
+@Audited
+@Table(
+        name = &quot;MISSIONS&quot;,
+        uniqueConstraints = {
+                @UniqueConstraint(name = &quot;MISSIONS_ID_UK&quot;, columnNames = &quot;ID&quot;),
+                @UniqueConstraint(name = &quot;MISSIONS_CODE_UK&quot;, columnNames = &quot;CODE&quot;),
+                @UniqueConstraint(name = &quot;MISSIONS_TITLE_UK&quot;, columnNames = &quot;TITLE&quot;)
+        }
+)
+@Getter
+@Setter
+<span class="fc" id="L45">public class Mission extends AbstractRevisionedEntity implements Comparable&lt;Mission&gt;, HasId, HasName, HasClearance, Cloneable {</span>
+    @Column(name = &quot;CODE&quot;, length = 20, nullable = false)
+    @Audited
+    private String code;
+
+    @Column(name = &quot;IMAGE&quot;, length = 100)
+    @Audited
+    private String image;
+
+    @Column(name = &quot;TITLE&quot;, length = 100, nullable = false)
+    @Audited
+    private String name;
+
+    @Column(name = &quot;DESCRIPTION&quot;, length = 4000, nullable = false)
+    @Audited
+    private String description;
+
+    @Column(name = &quot;PAYMENT&quot;, nullable = false)
+    @Audited
+    private int payment;
+
+    @Column(name = &quot;XP&quot;, nullable = false)
+    @Audited
+    private int xp;
+
+    @Column(name = &quot;OBJECTIVES_SUCCESS&quot;, length = 4000)
+    @Audited
+    private String objectivesSuccess;
+
+    @Column(name = &quot;OBJECTIVES_GOOD&quot;, length = 4000)
+    @Audited
+    private String objectivesGood;
+
+    @Column(name = &quot;OBJECTIVES_OUTSTANDING&quot;, length = 4000)
+    @Audited
+    private String objectivesOutstanding;
+
+    @Column(name = &quot;CLEARANCE&quot;, length=20, nullable = false)
+    @Audited
+    @Enumerated(EnumType.STRING)
+    private Clearance clearance;
+
+    @Column(name = &quot;PUBLICATION&quot;, length = 100)
+    @Audited
+    private String publication;
+
+<span class="fc" id="L91">    @OneToMany(</span>
+            targetEntity = MissionReport.class,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            mappedBy = &quot;mission&quot;,
+            orphanRemoval = true
+    )
+    private Set&lt;MissionReport&gt; reports = new HashSet&lt;&gt;();
+
+    public void addReport(@NotNull MissionReport report) {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (reports.contains(report))</span>
+<span class="nc" id="L102">            return;</span>
+
+<span class="nc" id="L104">        reports.add(report);</span>
+<span class="nc" id="L105">        report.setMission(this);</span>
+<span class="nc" id="L106">    }</span>
+
+    public void removeReport(@NotNull MissionReport report) {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (! reports.contains(report))</span>
+<span class="nc" id="L110">            return;</span>
+
+<span class="nc" id="L112">        reports.remove(report);</span>
+<span class="nc" id="L113">        report.setMission(null);</span>
+<span class="nc" id="L114">    }</span>
+
+    @Override
+    public int compareTo(final Mission o) {
+<span class="nc" id="L118">        return new CompareToBuilder()</span>
+<span class="nc" id="L119">                .append(getCode(), o.getCode())</span>
+<span class="nc" id="L120">                .toComparison();</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L125">        return new StringJoiner(&quot;, &quot;, Mission.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L126">                .add(&quot;code='&quot; + code + &quot;'&quot;)</span>
+<span class="nc" id="L127">                .add(&quot;title='&quot; + name + &quot;'&quot;)</span>
+<span class="nc" id="L128">                .add(&quot;payment=&quot; + payment)</span>
+<span class="nc" id="L129">                .add(&quot;xp=&quot; + xp)</span>
+<span class="nc" id="L130">                .toString();</span>
+    }
+
+<span class="nc" id="L133">    @SneakyThrows</span>
+    @Override
+    public Mission clone() {
+<span class="nc" id="L136">        Mission result = (Mission) super.clone();</span>
+
+<span class="nc" id="L138">        result.code = code;</span>
+<span class="nc" id="L139">        result.name = name;</span>
+
+<span class="nc" id="L141">        result.description = description;</span>
+<span class="nc" id="L142">        result.clearance = clearance;</span>
+<span class="nc" id="L143">        result.payment = payment;</span>
+<span class="nc" id="L144">        result.xp = xp;</span>
+
+<span class="nc" id="L146">        result.publication = publication;</span>
+<span class="nc" id="L147">        result.image = image;</span>
+
+<span class="nc" id="L149">        result.objectivesSuccess = objectivesSuccess;</span>
+<span class="nc" id="L150">        result.objectivesGood = objectivesGood;</span>
+<span class="nc" id="L151">        result.objectivesOutstanding = objectivesOutstanding;</span>
+
+<span class="nc" id="L153">        result.reports = Set.copyOf(reports);</span>
+
+<span class="nc" id="L155">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

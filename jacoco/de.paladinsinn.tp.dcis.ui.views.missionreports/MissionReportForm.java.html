@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MissionReportForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.missionreports</a> &gt; <span class="el_source">MissionReportForm.java</span></div><h1>MissionReportForm.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.missionreports;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.missions.MissionReport;
+import de.paladinsinn.tp.dcis.data.missions.SuccessState;
+import de.paladinsinn.tp.dcis.data.operative.Operative;
+import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.components.OperativeSelector;
+import de.paladinsinn.tp.dcis.ui.components.PersonSelector;
+import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
+import de.paladinsinn.tp.dcis.ui.components.TorgForm;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nDatePicker;
+import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionEvent;
+import de.paladinsinn.tp.dcis.ui.views.operativereports.AddOperativeToMissionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+/**
+ * MissionReportForm -- Edits/displays the data for a mission report on group level.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-29
+ */
+@Service
+@Scope(SCOPE_PROTOTYPE)
+public class MissionReportForm extends TorgForm&lt;MissionReport&gt; {
+<span class="nc" id="L57">    private static final Logger LOG = LoggerFactory.getLogger(MissionReportForm.class);</span>
+
+    /**
+     * The service for writing data to.
+     */
+    private final MissionReportService reportService;
+    private final AddOperativeToMissionListener addOperativeToMissionListener;
+
+    private final PersonRepository personRepository;
+    private final OperativeRepository operativeRepository;
+
+
+<span class="nc" id="L69">    private final TextField id = new TextField();</span>
+<span class="nc" id="L70">    private final DatePicker missionDate = new I18nDatePicker();</span>
+<span class="nc" id="L71">    private final ComboBox&lt;SuccessState&gt; successState = new ComboBox&lt;&gt;();</span>
+<span class="nc" id="L72">    private final TextArea achievements = new TextArea();</span>
+<span class="nc" id="L73">    private final TextArea notes = new TextArea();</span>
+
+    private PersonSelector gm;
+    private OperativeSelector operatives;
+
+    @Autowired
+    public MissionReportForm(
+            @NotNull final MissionReportService reportService,
+            @NotNull final AddOperativeToMissionListener addOperativeToMissionListener,
+            @NotNull final PersonRepository personRepository,
+            @NotNull final OperativeRepository operativeRepository,
+
+            @NotNull final LoggedInUser user
+    ) {
+<span class="nc" id="L87">        super(user);</span>
+
+<span class="nc" id="L89">        this.reportService = reportService;</span>
+<span class="nc" id="L90">        this.addOperativeToMissionListener = addOperativeToMissionListener;</span>
+<span class="nc" id="L91">        this.personRepository = personRepository;</span>
+<span class="nc" id="L92">        this.operativeRepository = operativeRepository;</span>
+<span class="nc" id="L93">    }</span>
+
+
+    protected void init() {
+<span class="nc bnc" id="L97" title="All 6 branches missed.">        if (initialized || data == null || user == null) {</span>
+<span class="nc" id="L98">            LOG.debug(</span>
+                    &quot;Already initialized or unable to initialize. initialized={}, data={}, user={}&quot;,
+<span class="nc" id="L100">                    initialized, data, user</span>
+            );
+<span class="nc" id="L102">            return;</span>
+        }
+
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (locale == null) {</span>
+<span class="nc" id="L106">            locale = VaadinSession.getCurrent().getLocale();</span>
+        }
+
+<span class="nc" id="L109">        addListener(MissionReportSaveEvent.class, reportService);</span>
+<span class="nc" id="L110">        addListener(AddOperativeToMissionEvent.class, addOperativeToMissionListener);</span>
+
+<span class="nc" id="L112">        form.setResponsiveSteps(</span>
+                new FormLayout.ResponsiveStep(&quot;1px&quot;, 1),
+                new FormLayout.ResponsiveStep(&quot;400px&quot;, 2),
+                new FormLayout.ResponsiveStep(&quot;800px&quot;, 3)
+        );
+
+<span class="nc" id="L118">        user.allow(user.getPerson().equals(data.getGameMaster()));</span>
+
+<span class="nc" id="L120">        actions = new TorgActionBar(</span>
+                &quot;buttons&quot;,
+                event -&gt; { // save
+<span class="nc" id="L123">                    scrape();</span>
+<span class="nc" id="L124">                    getEventBus().fireEvent(new MissionReportSaveEvent(this, false));</span>
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">                    for (Operative o : operatives.getValue()) {</span>
+<span class="nc" id="L127">                        fireEvent(new AddOperativeToMissionEvent(this, data, o));</span>
+<span class="nc" id="L128">                    }</span>
+<span class="nc" id="L129">                },</span>
+                event -&gt; { // reset
+<span class="nc" id="L131">                    LOG.info(&quot;Resetting data from: displayed={}, new={}&quot;, data, oldData);</span>
+<span class="nc" id="L132">                    resetData();</span>
+<span class="nc" id="L133">                },</span>
+                event -&gt; { // cancel
+<span class="nc" id="L135">                    getUI().ifPresent(ui -&gt; ui.getPage().getHistory().back());</span>
+<span class="nc" id="L136">                },</span>
+                null
+        );
+<span class="nc" id="L139">        actions.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L141">        id.setReadOnly(true);</span>
+
+<span class="nc" id="L143">        missionDate.setRequired(true);</span>
+<span class="nc" id="L144">        missionDate.setRequiredIndicatorVisible(true);</span>
+<span class="nc" id="L145">        missionDate.setClearButtonVisible(true);</span>
+<span class="nc" id="L146">        missionDate.setReadOnly(user.isReadonly());</span>
+        // TODO 2021-04-04 rlichti Add the min date with rule: either current date or current mission report saved date (whichever is an earlier date)
+
+<span class="nc" id="L149">        successState.setAllowCustomValue(false);</span>
+<span class="nc" id="L150">        successState.setRequired(true);</span>
+<span class="nc" id="L151">        successState.setRequiredIndicatorVisible(true);</span>
+<span class="nc" id="L152">        successState.setReadOnly(user.isReadonly());</span>
+<span class="nc" id="L153">        successState.setDataProvider(SuccessState.FAILED.dataProvider());</span>
+
+<span class="nc" id="L155">        achievements.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L156">        achievements.setClearButtonVisible(true);</span>
+<span class="nc" id="L157">        achievements.setMaxLength(4000);</span>
+<span class="nc" id="L158">        achievements.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L160">        notes.addClassName(&quot;long-text&quot;);</span>
+<span class="nc" id="L161">        notes.setClearButtonVisible(true);</span>
+<span class="nc" id="L162">        notes.setMaxLength(4000);</span>
+<span class="nc" id="L163">        notes.setReadOnly(user.isReadonly());</span>
+
+<span class="nc" id="L165">        gm = new PersonSelector(&quot;missionreport.gm&quot;, personRepository, user);</span>
+<span class="nc bnc" id="L166" title="All 6 branches missed.">        gm.setReadOnly(!user.isAdmin() &amp;&amp; !user.isOrga() &amp;&amp; !user.isJudge());</span>
+
+<span class="nc" id="L168">        operatives = new OperativeSelector(&quot;missionreport.add-operatives&quot;, operativeRepository);</span>
+<span class="nc" id="L169">        operatives.setReadonly(user.isReadonly());</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        operatives.setVisible(!user.isReadonly());</span>
+
+<span class="nc" id="L172">        form.add(gm, missionDate, successState, achievements, notes, operatives);</span>
+<span class="nc" id="L173">        form.add(actions);</span>
+
+<span class="nc" id="L175">        form.setColspan(achievements, 3);</span>
+<span class="nc" id="L176">        form.setColspan(notes, 3);</span>
+<span class="nc" id="L177">        form.setColspan(actions, 3);</span>
+
+<span class="nc" id="L179">        getContent().add(form);</span>
+
+
+        // mark as initialized.
+<span class="nc" id="L183">        initialized = true;</span>
+<span class="nc" id="L184">    }</span>
+
+    protected void scrape() {
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        if (data == null) data = new MissionReport();</span>
+
+<span class="nc" id="L189">        data.setDate(missionDate.getValue());</span>
+<span class="nc" id="L190">        data.setObjectivesMet(successState.getValue());</span>
+<span class="nc" id="L191">        data.setAchievements(achievements.getValue());</span>
+<span class="nc" id="L192">        data.setNotes(notes.getValue());</span>
+<span class="nc" id="L193">        data.setGameMaster(gm.getValue());</span>
+<span class="nc" id="L194">    }</span>
+
+
+    @Override
+    protected void populate() {
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        if (data == null) {</span>
+<span class="nc" id="L200">            LOG.warn(&quot;Tried to polulate form data without a mission report defined.&quot;);</span>
+<span class="nc" id="L201">            return;</span>
+        }
+
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (data.getId() != null) {</span>
+<span class="nc" id="L205">            id.setValue(data.getId().toString());</span>
+        }
+
+<span class="nc" id="L208">        bindData(data.getDate(), missionDate);</span>
+<span class="nc" id="L209">        bindData(data.getObjectivesMet(), successState);</span>
+<span class="nc" id="L210">        bindData(data.getAchievements(), achievements);</span>
+<span class="nc" id="L211">        bindData(data.getNotes(), notes);</span>
+<span class="nc" id="L212">        bindData(data.getGameMaster(), gm);</span>
+<span class="nc" id="L213">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc bnc" id="L217" title="All 6 branches missed.">        if (user == null || data == null || locale == null) {</span>
+<span class="nc" id="L218">            LOG.warn(</span>
+                    &quot;Can't build mission report group report editor due to mission data. user={}, data={}, locale={}&quot;,
+                    user, data, locale
+            );
+
+<span class="nc" id="L223">            return;</span>
+        }
+
+<span class="nc" id="L226">        LOG.debug(&quot;Building mission report group edit form. data={}, locale={}&quot;, data, locale);</span>
+
+        // Form fields
+<span class="nc" id="L229">        id.setLabel(getTranslation(&quot;input.id.caption&quot;));</span>
+<span class="nc" id="L230">        id.setHelperText(getTranslation(&quot;input.id.help&quot;));</span>
+
+<span class="nc" id="L232">        missionDate.setLabel(getTranslation(&quot;missionreport.date.caption&quot;));</span>
+<span class="nc" id="L233">        missionDate.setHelperText(getTranslation(&quot;missionreport.date.help&quot;));</span>
+
+<span class="nc" id="L235">        successState.setLabel(getTranslation(&quot;missionreport.success.caption&quot;));</span>
+
+<span class="nc" id="L237">        achievements.setLabel(getTranslation(&quot;missionreport.achievements.caption&quot;));</span>
+<span class="nc" id="L238">        achievements.setHelperText(getTranslation(&quot;missionreport.achievements.help&quot;));</span>
+
+<span class="nc" id="L240">        notes.setLabel(getTranslation(&quot;missionreport.notes.caption&quot;));</span>
+<span class="nc" id="L241">        notes.setHelperText(getTranslation(&quot;missionreport.notes.help&quot;));</span>
+
+<span class="nc" id="L243">        gm.setLocale(locale);</span>
+<span class="nc" id="L244">        actions.setLocale(locale);</span>
+<span class="nc" id="L245">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

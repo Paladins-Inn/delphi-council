@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonSelector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.components</a> &gt; <span class="el_source">PersonSelector.java</span></div><h1>PersonSelector.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.components;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import de.paladinsinn.tp.dcis.data.person.PersonRepository;
+import de.paladinsinn.tp.dcis.security.LoggedInUser;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Locale;
+
+/**
+ * PersonSelector -- A ComboBox for Person with database query for data.
+ *
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-04-07
+ */
+public class PersonSelector extends ComboBox&lt;Person&gt; implements LocaleChangeObserver, TranslatableComponent {
+<span class="nc" id="L46">    private static final Logger LOG = LoggerFactory.getLogger(PersonSelector.class);</span>
+
+    private Locale locale;
+    private final String i18nPrefix;
+
+    public PersonSelector(
+            @NotNull final String i18nPrefix,
+            @NotNull final PersonRepository personService,
+            @NotNull final LoggedInUser user
+<span class="nc" id="L55">    ) {</span>
+<span class="nc" id="L56">        this.i18nPrefix = i18nPrefix;</span>
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (locale == null) {</span>
+<span class="nc" id="L59">            locale = VaadinSession.getCurrent().getLocale();</span>
+        }
+
+<span class="nc bnc" id="L62" title="All 6 branches missed.">        setReadOnly(!user.isAdmin() &amp;&amp; !user.isOrga() &amp;&amp; !user.isJudge());</span>
+<span class="nc" id="L63">        setDataProvider(DataProvider.fromFilteringCallbacks(</span>
+                query -&gt; {
+<span class="nc" id="L65">                    String filter = query.getFilter().orElse(null);</span>
+<span class="nc" id="L66">                    LOG.trace(&quot;person query. filter='{}'&quot;, filter);</span>
+
+<span class="nc" id="L68">                    int offset = query.getOffset();</span>
+<span class="nc" id="L69">                    int limit = query.getLimit();</span>
+
+<span class="nc" id="L71">                    Pageable page = PageRequest.of(offset / limit, limit);</span>
+<span class="nc" id="L72">                    Page&lt;Person&gt; players = personService.findAll(page);</span>
+
+<span class="nc" id="L74">                    return players.stream();</span>
+                },
+                query -&gt; {
+<span class="nc" id="L77">                    String filter = query.getFilter().orElse(null);</span>
+<span class="nc" id="L78">                    LOG.trace(&quot;person count query. filter='{}'&quot;, filter);</span>
+
+<span class="nc" id="L80">                    return (int) personService.count();</span>
+                }
+        ));
+<span class="nc" id="L83">        setItemLabelGenerator((ItemLabelGenerator&lt;Person&gt;) Person::getName);</span>
+
+<span class="nc" id="L85">        translate();</span>
+<span class="nc" id="L86">    }</span>
+
+    @Override
+    public void setReadonly(boolean readOnly) {
+<span class="nc" id="L90">        super.setReadonly(readOnly);</span>
+<span class="nc" id="L91">        super.setRequired(readOnly);</span>
+<span class="nc" id="L92">        super.setRequiredIndicatorVisible(readOnly);</span>
+<span class="nc" id="L93">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L97">        setLabel(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;caption&quot;)));</span>
+<span class="nc" id="L98">        setHelperText(getTranslation(String.format(&quot;%s.%s&quot;, i18nPrefix, &quot;help&quot;)));</span>
+<span class="nc" id="L99">    }</span>
+
+
+    @Override
+    public void localeChange(LocaleChangeEvent event) {
+<span class="nc" id="L104">        setLocale(event.getLocale());</span>
+<span class="nc" id="L105">    }</span>
+
+
+    @Override
+    public void setLocale(Locale locale) {
+<span class="nc bnc" id="L110" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L111">            LOG.debug(&quot;Locale already set - ignoring event. old={}, new={}&quot;, this.locale, locale);</span>
+<span class="nc" id="L112">            return;</span>
+        }
+
+<span class="nc" id="L115">        translate();</span>
+<span class="nc" id="L116">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

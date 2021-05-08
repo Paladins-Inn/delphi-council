@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Operative.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.data.operative</a> &gt; <span class="el_source">Operative.java</span></div><h1>Operative.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.data.operative;
+
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.server.StreamResource;
+import de.paladinsinn.tp.dcis.data.*;
+import de.paladinsinn.tp.dcis.data.person.Person;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
+
+@Entity
+@Table(
+        name = &quot;OPERATIVES&quot;,
+        uniqueConstraints = {
+                @UniqueConstraint(name = &quot;OPERATIVES_ID_UK&quot;, columnNames = &quot;ID&quot;),
+                @UniqueConstraint(name = &quot;OPERATIVES_NAME_UK&quot;, columnNames = {&quot;LAST_NAME&quot;, &quot;FIRST_NAME&quot;})
+        }
+)
+@Getter
+@Setter
+<span class="fc" id="L49">public class Operative extends AbstractRevisionedEntity implements HasAvatar, HasToken, HasName, HasCosm, HasClearance {</span>
+    @Column(name = &quot;NAME&quot;, length = 100, nullable = false)
+    @Audited
+    private String name;
+
+    @Column(name = &quot;LAST_NAME&quot;, length = 100, nullable = false)
+    @Audited
+    private String lastName;
+
+    @Column(name = &quot;FIRST_NAME&quot;, length = 100, nullable = false)
+    @Audited
+    private String firstName;
+
+    @Column(name = &quot;COSM&quot;, length = 50, nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Audited
+    private Cosm cosm;
+
+    @Column(name = &quot;CLEARANCE&quot;, length = 50, nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Audited
+    private Clearance clearance;
+
+    @Column(name = &quot;XP&quot;, nullable = false)
+    @Audited
+    private int xp;
+
+    @ManyToOne(
+            targetEntity = Person.class,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+
+            optional = false
+    )
+    @JoinColumn(
+            name = &quot;PERSON_ID&quot;,
+            nullable = false,
+            foreignKey = @ForeignKey(name = &quot;OPERATIVES_PERSON_FK&quot;)
+    )
+    @Audited
+    private Person player;
+
+<span class="fc" id="L91">    @OneToMany(</span>
+            targetEntity = OperativeReport.class,
+            mappedBy = &quot;operative&quot;,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            orphanRemoval = true
+    )
+    private Set&lt;OperativeReport&gt; reports = new HashSet&lt;&gt;();
+
+<span class="fc" id="L100">    @OneToMany(</span>
+            targetEntity = OperativeSpecialReport.class,
+            mappedBy = &quot;operative&quot;,
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.REFRESH},
+            orphanRemoval = true
+    )
+    private Set&lt;OperativeSpecialReport&gt; specialReports = new HashSet&lt;&gt;();
+
+
+    @Column(name = &quot;DELETED&quot;)
+    @Audited
+    private OffsetDateTime deleted;
+
+    @Lob
+    @Column(name = &quot;AVATAR&quot;, length = 16777215)
+    private byte[] avatar;
+
+    @Lob
+    @Column(name = &quot;TOKEN&quot;, length = 16777215)
+    private byte[] token;
+
+
+    /**
+     * @param report to add to the operatives file.
+     */
+    public void addOperativeReport(@NotNull OperativeReport report) {
+<span class="nc bnc" id="L127" title="All 6 branches missed.">        if (report != null &amp; !reports.contains(report)) {</span>
+<span class="nc" id="L128">            reports.add(report);</span>
+
+<span class="nc" id="L130">            report.setOperative(this);</span>
+        }
+<span class="nc" id="L132">    }</span>
+
+    /**
+     * @param report to remove from the operatives file.
+     */
+    public void removeOperativeReport(@NotNull OperativeReport report) {
+<span class="nc bnc" id="L138" title="All 4 branches missed.">        if (report != null &amp;&amp; reports.contains(report)) {</span>
+<span class="nc" id="L139">            reports.remove(report);</span>
+
+<span class="nc" id="L141">            report.setOperative(null);</span>
+        }
+<span class="nc" id="L143">    }</span>
+
+
+    /**
+     * @param report to add to the operatives file.
+     */
+    public void addSpecialReport(@NotNull OperativeSpecialReport report) {
+<span class="nc bnc" id="L150" title="All 6 branches missed.">        if (report != null &amp; !specialReports.contains(report)) {</span>
+<span class="nc" id="L151">            specialReports.add(report);</span>
+
+<span class="nc" id="L153">            report.setOperative(this);</span>
+        }
+<span class="nc" id="L155">    }</span>
+
+    /**
+     * @param report to remove from the operatives file.
+     */
+    public void removeSpecialReport(@NotNull OperativeSpecialReport report) {
+<span class="nc bnc" id="L161" title="All 4 branches missed.">        if (report != null &amp;&amp; specialReports.contains(report)) {</span>
+<span class="nc" id="L162">            specialReports.remove(report);</span>
+
+<span class="nc" id="L164">            report.setOperative(null);</span>
+        }
+<span class="nc" id="L166">    }</span>
+
+
+    @Override
+    public Image getAvatarImage() {
+<span class="nc" id="L171">        Image result = new Image();</span>
+
+<span class="nc" id="L173">        StreamResource data = getAvatar();</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (data != null) {</span>
+<span class="nc" id="L175">            result.setSrc(data);</span>
+        }
+
+<span class="nc" id="L178">        return result;</span>
+    }
+
+    @Override
+    public StreamResource getAvatar() {
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        if (avatar != null) {</span>
+<span class="nc" id="L184">            return new StreamResource(getId().toString() + &quot;png&quot;, () -&gt; new ByteArrayInputStream(avatar));</span>
+        } else {
+<span class="nc" id="L186">            return null;</span>
+        }
+    }
+
+    /**
+     * @param data data to read.
+     * @throws IOException If the data can't be read.
+     */
+    @Override
+    public void setAvatar(InputStream data) throws IOException {
+<span class="nc" id="L196">        avatar = data.readAllBytes();</span>
+<span class="nc" id="L197">    }</span>
+
+
+    @Override
+    public Image getTokenImage() {
+<span class="nc" id="L202">        Image result = new Image();</span>
+
+<span class="nc" id="L204">        StreamResource data = getToken();</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">        if (data != null) {</span>
+<span class="nc" id="L206">            result.setSrc(data);</span>
+        }
+
+<span class="nc" id="L209">        return result;</span>
+    }
+
+    @Override
+    public StreamResource getToken() {
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (token != null) {</span>
+<span class="nc" id="L215">            return new StreamResource(getId().toString() + &quot;png&quot;, () -&gt; new ByteArrayInputStream(token));</span>
+        } else {
+<span class="nc" id="L217">            return null;</span>
+        }
+    }
+
+    /**
+     * @param data data to read.
+     * @throws IOException If the data can't be read.
+     */
+    @Override
+    public void setToken(InputStream data) throws IOException {
+<span class="nc" id="L227">        token = data.readAllBytes();</span>
+<span class="nc" id="L228">    }</span>
+
+    /**
+     * @param xp sets the new XP of this operative.
+     */
+    public void setXp(@NotNull final int xp) {
+<span class="nc" id="L234">        this.xp = xp;</span>
+<span class="nc" id="L235">        clearance = Clearance.valueOf(xp);</span>
+<span class="nc" id="L236">    }</span>
+
+    @Override
+    public Operative clone() throws CloneNotSupportedException {
+<span class="nc" id="L240">        Operative result = (Operative) super.clone();</span>
+
+<span class="nc" id="L242">        result.name = name;</span>
+<span class="nc" id="L243">        result.firstName = firstName;</span>
+<span class="nc" id="L244">        result.lastName = lastName;</span>
+
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        if (avatar != null) {</span>
+<span class="nc" id="L247">            result.avatar = Arrays.copyOf(avatar, avatar.length);</span>
+        }
+
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        if (token != null) {</span>
+<span class="nc" id="L251">            result.token = Arrays.copyOf(token, token.length);</span>
+        }
+
+<span class="nc" id="L254">        result.player = player.clone();</span>
+
+<span class="nc" id="L256">        result.cosm = cosm;</span>
+<span class="nc" id="L257">        result.clearance = clearance;</span>
+<span class="nc" id="L258">        result.xp = xp;</span>
+
+<span class="nc" id="L260">        result.reports = Set.copyOf(reports);</span>
+
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        if (deleted != null) {</span>
+<span class="nc" id="L263">            result.deleted = OffsetDateTime.from(deleted);</span>
+        }
+
+<span class="nc" id="L266">        return result;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L271">        return new StringJoiner(&quot;, &quot;, Operative.class.getSimpleName() + &quot;[&quot;, &quot;]&quot;)</span>
+<span class="nc" id="L272">                .merge(super.getToStringJoiner())</span>
+
+<span class="nc" id="L274">                .add(&quot;player='&quot; + player.getName() + &quot;'&quot;)</span>
+<span class="nc" id="L275">                .add(&quot;name='&quot; + name + &quot;'&quot;)</span>
+<span class="nc" id="L276">                .add(&quot;cosm=&quot; + cosm)</span>
+<span class="nc" id="L277">                .add(&quot;clearance=&quot; + clearance)</span>
+
+<span class="nc" id="L279">                .toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

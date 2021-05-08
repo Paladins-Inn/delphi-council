@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Delphi Council IS</a> &gt; <a href="index.source.html" class="el_package">de.paladinsinn.tp.dcis.ui.views.login</a> &gt; <span class="el_source">LoginView.java</span></div><h1>LoginView.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package de.paladinsinn.tp.dcis.ui.views.login;
+
+import ch.carnet.kasparscherrer.LanguageSelect;
+import com.sun.istack.NotNull;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.i18n.LocaleChangeEvent;
+import com.vaadin.flow.i18n.LocaleChangeObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import de.paladinsinn.tp.dcis.ui.components.TorgButton;
+import de.paladinsinn.tp.dcis.ui.components.TorgScreen;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
+import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
+import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import java.util.Locale;
+
+import static com.vaadin.flow.component.Unit.PIXELS;
+
+/**
+ * LoginView -- The view for log in a user to the system.
+ * &lt;p&gt;
+ * We use the component {@link LoginForm} for logging in users.
+ *
+ * @author paulroemer (github.com/vaadin-lerning-center/spring-secured-vaadin)
+ * @author klenkes74 {@literal &lt;rlichti@kaiserpfalz-edv.de&gt;}
+ * @since 0.1.0  2021-03-26
+ */
+@Tag(&quot;sa-login-view&quot;)
+@Route(LoginView.ROUTE)
+@I18nPageTitle(&quot;login.caption&quot;)
+<span class="nc" id="L59">public class LoginView extends TorgScreen implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {</span>
+<span class="nc" id="L60">    private static final Logger LOG = LoggerFactory.getLogger(LoginView.class);</span>
+
+    public static final String ROUTE = &quot;login&quot;;
+
+    private H1 title;
+    private Div description;
+
+    private LanguageSelect languageSelect;
+    private LoginForm login;
+    private TorgButton register;
+
+    private Locale locale;
+
+    @PostConstruct
+    public void init() {
+<span class="nc" id="L75">        LOG.debug(&quot;Creating login view.&quot;);</span>
+
+<span class="nc" id="L77">        setSizeFull();</span>
+
+<span class="nc" id="L79">        VerticalLayout center = generateLoginForm();</span>
+
+<span class="nc" id="L81">        Image logo = new Image(&quot;/images/logo.png&quot;, &quot;Delphi Council&quot;);</span>
+<span class="nc" id="L82">        logo.setClassName(&quot;centered&quot;);</span>
+<span class="nc" id="L83">        logo.setMaxWidth(200, PIXELS);</span>
+<span class="nc" id="L84">        logo.setMaxHeight(200, PIXELS);</span>
+
+<span class="nc" id="L86">        addInLeftBorder(logo);</span>
+
+<span class="nc" id="L88">        add(center);</span>
+<span class="nc" id="L89">    }</span>
+
+    private VerticalLayout generateLoginForm() {
+<span class="nc" id="L92">        VerticalLayout result = new VerticalLayout();</span>
+<span class="nc" id="L93">        result.setHeightFull();</span>
+
+<span class="nc" id="L95">        title = new H1(getTranslation(&quot;login.caption&quot;));</span>
+<span class="nc" id="L96">        description = new Div();</span>
+<span class="nc" id="L97">        description.setText(getTranslation(&quot;login.help&quot;));</span>
+
+<span class="nc" id="L99">        languageSelect = new I18nSelector(&quot;input.locale&quot;, VaadinSession.getCurrent().getLocale());</span>
+<span class="nc" id="L100">        languageSelect.setRequiredIndicatorVisible(true);</span>
+<span class="nc" id="L101">        languageSelect.setValue(VaadinSession.getCurrent().getLocale());</span>
+
+<span class="nc" id="L103">        login = new LoginForm();</span>
+<span class="nc" id="L104">        login.setAction(&quot;login&quot;);</span>
+<span class="nc" id="L105">        login.addForgotPasswordListener(event -&gt; getUI().ifPresent(ui -&gt; ui.navigate(PasswordResetView.class)));</span>
+
+<span class="nc" id="L107">        register = new TorgButton(</span>
+                &quot;login.register-link&quot;,
+                RegistrationView.class
+        );
+
+<span class="nc" id="L112">        result.add(title, description, languageSelect, login, register);</span>
+
+<span class="nc" id="L114">        return result;</span>
+    }
+
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+<span class="nc" id="L120">        login.setError(event.getLocation().getQueryParameters().getParameters().containsKey(&quot;error&quot;));</span>
+
+<span class="nc" id="L122">        LOG.trace(&quot;Entering login view. ui={}, location={}, error={}&quot;,</span>
+<span class="nc" id="L123">                event.getUI().getId(), event.getLocation(),</span>
+<span class="nc" id="L124">                event.getLocation().getQueryParameters().getParameters().containsKey(&quot;error&quot;));</span>
+<span class="nc" id="L125">    }</span>
+
+    @Override
+    public void localeChange(@NotNull final LocaleChangeEvent event) {
+<span class="nc" id="L129">        setLocale(event.getLocale());</span>
+<span class="nc" id="L130">    }</span>
+
+    @Override
+    public void setLocale(@NotNull final Locale locale) {
+<span class="nc bnc" id="L134" title="All 4 branches missed.">        if (this.locale != null &amp;&amp; this.locale.equals(locale)) {</span>
+<span class="nc" id="L135">            LOG.debug(&quot;Language not changed - ignoring event. locale={}&quot;, locale);</span>
+<span class="nc" id="L136">            return;</span>
+        }
+
+<span class="nc" id="L139">        LOG.trace(&quot;Changing locale. locale={}&quot;, locale);</span>
+
+<span class="nc" id="L141">        this.locale = locale;</span>
+
+<span class="nc" id="L143">        translate();</span>
+<span class="nc" id="L144">    }</span>
+
+    @Override
+    public void translate() {
+<span class="nc" id="L148">        LOG.trace(&quot;Translating. locale={}, vaadin={}&quot;, locale, VaadinSession.getCurrent().getLocale());</span>
+
+<span class="nc" id="L150">        title.setText(getTranslation(&quot;login.caption&quot;));</span>
+<span class="nc" id="L151">        description.setText(getTranslation(&quot;login.help&quot;));</span>
+
+<span class="nc" id="L153">        languageSelect.setLabel(getTranslation(&quot;input.locale.caption&quot;));</span>
+<span class="nc" id="L154">        languageSelect.setHelperText(getTranslation(&quot;input.locale.help&quot;));</span>
+
+<span class="nc" id="L156">        register.translate();</span>
+<span class="nc" id="L157">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

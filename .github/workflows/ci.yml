@@ -82,3 +82,7 @@ jobs:
           registry: ${{ secrets.QUAY_REPO }}
           username: ${{ secrets.QUAY_USER }}
           password: ${{ secrets.QUAY_TOKEN }}
+
+      - name: Clean up all images
+        id: clean-up-images
+        run: yes | podman image prune -a

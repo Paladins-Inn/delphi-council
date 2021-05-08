@@ -22,14 +22,7 @@ jobs:
 
       - name: Build
         id: build-java
-        run: mvn package site -B -Pproduction
-
-      - name: Update github pages
-        id: update-github-pages
-        uses: JamesIves/github-pages-deploy-action@4.1.1
-        with:
-          branch: gh-pages
-          folder: target/site
+        run: mvn package -B -Pproduction
 
       - name: Set Image name and version
         run: |

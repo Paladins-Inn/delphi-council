@@ -20,21 +20,21 @@ jobs:
         with:
           java-version: 11
 
-      - name: check-dirs
-        id: check-dirs
-        run: |
-          echo -n "Directory: " ; pwd
-          ls -la target/site
-          ls -la
-          find . -name "site"
-
       - name: Build
         id: build-java
         run: echo mvn site -B -Pproduction
+
+      - name: check-dirs
+          id: check-dirs
+          run: |
+            echo -n "Directory: " ; pwd
+            ls -la target/site
+            ls -la
+            find . -name "site"
 
       - name: Update github pages
         id: update-github-pages
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           branch: gh-pages
-          folder: target/site
+          folder: ./target/site

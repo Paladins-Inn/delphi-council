@@ -25,8 +25,7 @@ import de.paladinsinn.tp.dcis.data.HasAvatar;
 import de.paladinsinn.tp.dcis.data.missions.MissionReport;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.envers.Audited;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,8 +51,11 @@ import java.util.*;
                 @UniqueConstraint(name = "PERSONS_EMAIL_UK", columnNames = "EMAIL")
         }
 )
+@Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Person extends AbstractRevisionedEntity implements UserDetails, HasAvatar {
     /**
      * Iteration count for the BCrypt password encoding.

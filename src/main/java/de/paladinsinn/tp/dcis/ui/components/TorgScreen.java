@@ -18,6 +18,7 @@
 package de.paladinsinn.tp.dcis.ui.components;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -43,16 +44,19 @@ public class TorgScreen extends Div {
     private static final Logger LOG = LoggerFactory.getLogger(TorgScreen.class);
 
     private final VerticalLayout left, center, right;
+    protected final FormLayout form;
 
     public TorgScreen() {
         setSizeFull();
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSizeFull();
 
+        form = new FormLayout();
         left = generateLeftBorder();
         right = generateRightBorder();
         center = generateContentBox();
         center.setWidth(25, PERCENTAGE);
+
 
         layout.add(left, center, right);
         layout.setFlexGrow(2, left);
@@ -95,6 +99,17 @@ public class TorgScreen extends Div {
         result.setHeightFull();
         result.setMinWidth(10, PIXELS);
         result.setMaxWidth(25, PERCENTAGE);
+
+        form.setHeightFull();
+        form.setMinWidth(400, PIXELS);
+        form.setMaxWidth(600, PIXELS);
+
+        form.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("1px", 1),
+                new FormLayout.ResponsiveStep("300px", 2),
+                new FormLayout.ResponsiveStep("600px", 4)
+        );
+        result.add(form);
 
         return result;
     }

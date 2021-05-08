@@ -21,6 +21,8 @@ import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import de.paladinsinn.tp.dcis.data.person.AccountSecurityStatus;
+import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.ui.i18n.Translator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,7 @@ import org.springframework.test.context.ActiveProfiles;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.UUID;
@@ -51,8 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Slf4j
 public class MailSenderTest {
 
-    public static final String EMAIL_ADDRESS = "test@delpi-council.org";
-    public static final String EMAIL_SUBJECT = "mail.password-reset.subject";
+    private static final String EMAIL_ADDRESS = "test@delpi-council.org";
+    private static final String EMAIL_SUBJECT = "mail.password-reset.subject";
 
     @RegisterExtension
     static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
@@ -88,19 +91,33 @@ public class MailSenderTest {
 
         HashMap<String, Object> params = new HashMap<>(2);
         params.put("token", token);
-        params.put("username", "qs");
+        params.put("person", Person.builder()
+                .username("qs")
+                .firstname("Quin")
+                .lastname("Sebastian")
+                .email(EMAIL_ADDRESS)
+                .status(AccountSecurityStatus.builder().build())
+                .build());
+
+        ArrayList<Object> subjectParams = new ArrayList<>(1);
+        subjectParams.add("qs");
 
         // when
-        sut.send(EMAIL_ADDRESS, EMAIL_SUBJECT, "password-reset", params, Locale.GERMANY);
+        sut.send(EMAIL_ADDRESS, EMAIL_SUBJECT, subjectParams, "password-reset", params, Locale.GERMANY);
 
         // then
         MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
 
-        log.trace("Message body:\n{}", GreenMailUtil.getBody(receivedMessage));
+        log.trace("from={}, to={}, subjet='{}', body:\n-----8<-----8<-----8<-----\n{}\n-----8<-----8<-----8<-----",
+                receivedMessage.getSender(),
+                receivedMessage.getAllRecipients(),
+                receivedMessage.getSubject(),
+                GreenMailUtil.getBody(receivedMessage));
 
+        assertEquals("Quin Sebastian <quin.sebastian@delphi-council.org>", receivedMessage.getSender().toString());
         assertEquals(1, receivedMessage.getAllRecipients().length);
         assertEquals(EMAIL_ADDRESS, receivedMessage.getAllRecipients()[0].toString());
-        assertEquals(i18n.getTranslation(EMAIL_SUBJECT, Locale.GERMAN), receivedMessage.getSubject());
+        assertEquals(i18n.getTranslation(EMAIL_SUBJECT, Locale.GERMAN, "qs"), receivedMessage.getSubject());
 
         // needs to remove all mime linebreaks because the token is often divided on two lines.
         assertThat(GreenMailUtil.getBody(receivedMessage).replaceAll("=[\r\n]+", ""), containsString(token.toString()));

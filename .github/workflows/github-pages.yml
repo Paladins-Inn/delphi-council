@@ -25,12 +25,11 @@ jobs:
         run: echo mvn site -B -Pproduction
 
       - name: check-dirs
-          id: check-dirs
-          run: |
-            echo -n "Directory: " ; pwd
-            ls -la target/site
-            ls -la
-            find . -name "site"
+        run: |
+          echo -n "Directory: " ; pwd
+          ls -la target/site
+          ls -la
+          find . -name "site"
 
       - name: Update github pages
         id: update-github-pages

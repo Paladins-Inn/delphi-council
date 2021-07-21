@@ -17,10 +17,8 @@
 
 package de.paladinsinn.tp.dcis.data.person;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -44,9 +42,11 @@ import java.util.StringJoiner;
 @Embeddable
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Slf4j
 public class AccountSecurityStatus implements Serializable, Cloneable {
-    private static final Logger LOG = LoggerFactory.getLogger(AccountSecurityStatus.class);
-
     private static final Period CREDENTIALS_VALID_FOR = Period.ofYears(5);
     private static final Period ACCOUNT_IS_VALID_FOR = Period.ofYears(10);
 
@@ -134,7 +134,7 @@ public class AccountSecurityStatus implements Serializable, Cloneable {
             result.deleted = OffsetDateTime.from(deleted);
         }
 
-        LOG.trace("Cloned AccountSecurityStatus. orig={}, clone={}", this, result);
+        log.trace("Cloned AccountSecurityStatus. orig={}, clone={}", this, result);
         return result;
     }
 

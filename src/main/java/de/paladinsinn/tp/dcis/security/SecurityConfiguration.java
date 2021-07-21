@@ -17,8 +17,7 @@
 
 package de.paladinsinn.tp.dcis.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,9 +41,9 @@ import javax.validation.constraints.NotNull;
  */
 @EnableWebSecurity
 @Configuration
+@Slf4j
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     static final String LOGIN_URL = "/login";
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
     private static final String LOGIN_PROCESSING_URL = "/login";
     private static final String LOGIN_FAILURE_URL = "/login";
     private static final String LOGOUT_SUCCESS_URL = "/login";
@@ -64,7 +63,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        LOG.info("Configuring Vaadin security.");
+        log.info("Configuring Vaadin security.");
 
         http
                 // Not using Spring CSRF here to be able to use plain HTML for the login page
@@ -100,7 +99,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) {
-        LOG.info("Configuring web security.");
+        log.info("Configuring web security.");
 
         web.ignoring().antMatchers(
                 // Vaadin Flow static resources
@@ -121,6 +120,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 "/register",
                 "/register/**",
+
+                "/password-reset",
+                "/password-reset/**",
 
                 // web application manifest
                 "/manifest.webmanifest",
@@ -146,7 +148,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        LOG.info("Configuring database based authentication.");
+        log.info("Configuring database based authentication.");
 
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
@@ -156,7 +158,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        LOG.debug("Creating the BCrypt based password encoder.");
+        log.debug("Creating the BCrypt based password encoder.");
 
         return new BCryptPasswordEncoder();
     }

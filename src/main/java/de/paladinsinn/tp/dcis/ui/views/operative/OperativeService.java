@@ -21,9 +21,8 @@ import com.vaadin.flow.component.ComponentEventListener;
 import de.paladinsinn.tp.dcis.data.operative.Operative;
 import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
@@ -38,16 +37,12 @@ import java.util.UUID;
  * @since 0.1.0  2021-03-26
  */
 @Service
+@Slf4j
+@AllArgsConstructor
 public class OperativeService extends CrudService<Operative, UUID> implements ComponentEventListener<OperativeSaveEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(OperativeService.class);
-
     private static final String DATA_TYPE_TITLE = "operative.editor.caption";
 
     private final OperativeRepository repository;
-
-    public OperativeService(@Autowired OperativeRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     protected OperativeRepository getRepository() {
@@ -61,7 +56,7 @@ public class OperativeService extends CrudService<Operative, UUID> implements Co
 
         try {
             Operative saved = repository.saveAndFlush(data);
-            LOG.info("Saved {}. data={}", getClass().getSimpleName(), data);
+            log.info("Saved {}. data={}", getClass().getSimpleName(), data);
 
             event.getSource().setData(saved);
 
@@ -73,7 +68,7 @@ public class OperativeService extends CrudService<Operative, UUID> implements Co
 
             event.getSource().getUI().ifPresent(ui -> ui.getPage().getHistory().back());
         } catch (Exception e) {
-            LOG.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
+            log.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
 
             new TorgNotification("input.data.saved.failed",
                     ev -> {

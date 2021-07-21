@@ -17,10 +17,9 @@
 
 package de.paladinsinn.tp.dcis.ui.i18n;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.logging.MDC;
 import org.junit.jupiter.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,9 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-08
  */
+@Slf4j
 class TranslatorTest {
-    private static final Logger LOG = LoggerFactory.getLogger(Translator.class);
-
     private static final List<Locale> supportedLocales = Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
     private static final Locale DEFAULT_LOCALE = Locale.GERMAN;
 
@@ -53,7 +51,7 @@ class TranslatorTest {
         MDC.put("test-name", "supported-locales");
 
         List<Locale> result = sut.getProvidedLocales();
-        LOG.debug("result: {}", result.toArray());
+        log.debug("result: {}", result.toArray());
 
         assertArrayEquals(supportedLocales.toArray(new Locale[]{}), result.toArray(new Locale[]{}), "The supported locals do not equal the expected ones.");
     }
@@ -63,7 +61,7 @@ class TranslatorTest {
         MDC.put("test-name", "valid-german-translation");
 
         String result = sut.getTranslation("existing.no-params", DEFAULT_LOCALE);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals("Dies ist ein Teststring.", result);
     }
@@ -73,7 +71,7 @@ class TranslatorTest {
         MDC.put("test-name", "valid-german-translation-class-bundle");
 
         String result = sut.getTranslation(this, "existing.no-params", DEFAULT_LOCALE);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals("Dies ist ein Teststring aus TranslatorTest.", result);
     }
@@ -84,7 +82,7 @@ class TranslatorTest {
         MDC.put("test-name", "missing-german-translation");
 
         String result = sut.getTranslation("non-existing", DEFAULT_LOCALE);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals("!non-existing", result);
     }
@@ -97,7 +95,7 @@ class TranslatorTest {
         String expected = String.format("Dies ist ein Teststring mit 1 Parameter: 0='%s'", uuid);
 
         String result = sut.getTranslation("existing.with-param", DEFAULT_LOCALE, uuid);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals(expected, result);
     }
@@ -110,7 +108,7 @@ class TranslatorTest {
         String expected = String.format("Dieser String hat 2 Parameter: 0='%s', 1='{1}'.", uuid);
 
         String result = sut.getTranslation("existing.with-params", DEFAULT_LOCALE, uuid);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals(expected, result);
     }
@@ -125,7 +123,7 @@ class TranslatorTest {
         String expected = String.format("Dieser String hat 2 Parameter: 0='%s', 1='%s'.", uuid, param2);
 
         String result = sut.getTranslation("existing.with-params", DEFAULT_LOCALE, uuid, param2);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals(expected, result);
     }
@@ -135,7 +133,7 @@ class TranslatorTest {
         MDC.put("test-name", "valid-english-translation");
 
         String result = sut.getTranslation("existing.no-params", Locale.ENGLISH);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals("This is a string to test.", result);
     }
@@ -145,7 +143,7 @@ class TranslatorTest {
         MDC.put("test-name", "non-existing-bundle");
 
         String result = sut.getTranslation("ignored", "ignored", Locale.GERMAN);
-        LOG.debug("result: {}", result);
+        log.debug("result: {}", result);
 
         assertEquals("!ignored", result);
     }
@@ -159,7 +157,7 @@ class TranslatorTest {
 
     @BeforeEach
     void setUp() {
-        sut = new Translator();
+        sut = new Translator("test-messages");
     }
 
     @AfterEach
@@ -171,12 +169,12 @@ class TranslatorTest {
     @BeforeAll
     static void setUpAll() {
         MDC.put("test-class", TranslatorTest.class.getSimpleName());
-        LOG.info("Starting tests.");
+        log.info("Starting tests.");
     }
 
     @AfterAll
     static void tearDownAll() {
-        LOG.info("Tests ended.");
+        log.info("Tests ended.");
         MDC.remove("test-class");
     }
 }

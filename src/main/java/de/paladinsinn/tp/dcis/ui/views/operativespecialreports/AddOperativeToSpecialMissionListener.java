@@ -26,8 +26,7 @@ import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMissionRepository;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +40,8 @@ import java.util.Arrays;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AddOperativeToSpecialMissionListener implements ComponentEventListener<AddOperativeToSpecialMissionEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(AddOperativeToSpecialMissionListener.class);
-
-
     private final SpecialMissionRepository missionRepository;
     private final OperativeSpecialReportRepository missionReportRepository;
     private final OperativeRepository operativeRepository;
@@ -59,16 +56,16 @@ public class AddOperativeToSpecialMissionListener implements ComponentEventListe
             report.setSpecialMission(mission);
             report.setOperative(operative);
             report = missionReportRepository.save(report);
-            LOG.debug("Created new operative report. data={}", report);
+            log.debug("Created new operative report. data={}", report);
 
             operative.addSpecialReport(report);
             mission.addOperativeReport(report);
 
             operative = operativeRepository.save(operative);
-            LOG.trace("Saved operative report to operative. operative={}", operative);
+            log.trace("Saved operative report to operative. operative={}", operative);
 
             mission = missionRepository.save(mission);
-            LOG.info("Added operative report. report={}, execution={}, mission='{}', operative='{}'",
+            log.info("Added operative report. report={}, execution={}, mission='{}', operative='{}'",
                     report.getId(), mission.getId(), mission.getCode(), operative.getName());
 
             new TorgNotification(

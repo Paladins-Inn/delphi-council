@@ -17,8 +17,6 @@
 
 package de.paladinsinn.tp.dcis.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +30,6 @@ import javax.servlet.http.HttpServletResponse;
  * @since 0.1.0  2021-03-26
  */
 public class CustomRequestCache extends HttpSessionRequestCache {
-    private static final Logger LOG = LoggerFactory.getLogger(CustomRequestCache.class);
-
     /**
      * {@inheritDoc}
      * <p>

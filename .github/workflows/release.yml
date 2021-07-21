@@ -29,9 +29,6 @@ jobs:
           echo "IMAGE=$(cat target/classes/Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
           echo "VERSION=$(cat target/classes/Dockerfile | grep APP_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
 
-      - name: Image name and version
-        run: echo "Working on image '${{ env.IMAGE }}:${{ env.VERSION }}'."
-
       - name: Upload Artifact
         id: upload-jar
         uses: actions/upload-artifact@v2

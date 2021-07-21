@@ -18,11 +18,11 @@
 package de.paladinsinn.tp.dcis.ui.components;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.StringJoiner;
 
@@ -39,20 +39,22 @@ import static com.vaadin.flow.component.Unit.PIXELS;
  * @since 0.3.0  2021-04-18
  */
 @SuppressWarnings("ALL")
+@Slf4j
 public class TorgScreen extends Div {
-    private static final Logger LOG = LoggerFactory.getLogger(TorgScreen.class);
-
     private final VerticalLayout left, center, right;
+    protected final FormLayout form;
 
     public TorgScreen() {
         setSizeFull();
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSizeFull();
 
+        form = new FormLayout();
         left = generateLeftBorder();
         right = generateRightBorder();
         center = generateContentBox();
         center.setWidth(25, PERCENTAGE);
+
 
         layout.add(left, center, right);
         layout.setFlexGrow(2, left);
@@ -96,121 +98,132 @@ public class TorgScreen extends Div {
         result.setMinWidth(10, PIXELS);
         result.setMaxWidth(25, PERCENTAGE);
 
+        form.setHeightFull();
+        form.setMinWidth(400, PIXELS);
+        form.setMaxWidth(600, PIXELS);
+
+        form.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("1px", 1),
+                new FormLayout.ResponsiveStep("300px", 2),
+                new FormLayout.ResponsiveStep("600px", 4)
+        );
+        result.add(form);
+
         return result;
     }
 
     @Override
     public void add(Component... components) {
-        LOG.debug("Adding center components: {}", (Object[]) components);
+        log.debug("Adding center components: {}", (Object[]) components);
 
         center.add(components);
     }
 
     @Override
     public void add(String text) {
-        LOG.debug("Adding center text: '{}'", text);
+        log.debug("Adding center text: '{}'", text);
 
         center.add(text);
     }
 
     @Override
     public void remove(Component... components) {
-        LOG.debug("Removing center components: {}", (Object[]) components);
+        log.debug("Removing center components: {}", (Object[]) components);
 
         center.remove(components);
     }
 
     @Override
     public void removeAll() {
-        LOG.debug("Removing all center components.");
+        log.debug("Removing all center components.");
 
         center.removeAll();
     }
 
     @Override
     public void addComponentAtIndex(int index, Component component) {
-        LOG.debug("Add center component. index={}, component={}", index, component);
+        log.debug("Add center component. index={}, component={}", index, component);
 
         center.addComponentAtIndex(index, component);
     }
 
     @Override
     public void addComponentAsFirst(Component component) {
-        LOG.debug("Add center component as first. component={}", component);
+        log.debug("Add center component as first. component={}", component);
 
         center.addComponentAsFirst(component);
     }
 
 
     public void addInLeftBorder(Component... components) {
-        LOG.debug("Adding left components: {}", (Object[]) components);
+        log.debug("Adding left components: {}", (Object[]) components);
 
         left.add(components);
     }
 
     public void addInLeftBorder(String text) {
-        LOG.debug("Adding left text: '{}'", text);
+        log.debug("Adding left text: '{}'", text);
 
         left.add(text);
     }
 
     public void removeFromLeftBorder(Component... components) {
-        LOG.debug("Removing left components: {}", (Object[]) components);
+        log.debug("Removing left components: {}", (Object[]) components);
 
         left.remove(components);
     }
 
     public void removeAllFromLeftBorder() {
-        LOG.debug("Removing all left components.");
+        log.debug("Removing all left components.");
 
         left.removeAll();
     }
 
     public void addComponentAtIndexInLeftBorder(int index, Component component) {
-        LOG.debug("Add left component. index={}, component={}", index, component);
+        log.debug("Add left component. index={}, component={}", index, component);
 
         left.addComponentAtIndex(index, component);
     }
 
     public void addComponentAsFirstInLeftBorder(Component component) {
-        LOG.debug("Add left component as first. component={}", component);
+        log.debug("Add left component as first. component={}", component);
 
         left.addComponentAsFirst(component);
     }
 
 
     public void addInRightBorder(Component... components) {
-        LOG.debug("Adding right components: {}", (Object[]) components);
+        log.debug("Adding right components: {}", (Object[]) components);
 
         right.add(components);
     }
 
     public void addInRightBorder(String text) {
-        LOG.debug("Adding right text: '{}'", text);
+        log.debug("Adding right text: '{}'", text);
 
         right.add(text);
     }
 
     public void removeFromRightBorder(Component... components) {
-        LOG.debug("Removing right components: {}", (Object[]) components);
+        log.debug("Removing right components: {}", (Object[]) components);
 
         right.remove(components);
     }
 
     public void removeAllFromRightBorder() {
-        LOG.debug("Removing all right components.");
+        log.debug("Removing all right components.");
 
         right.removeAll();
     }
 
     public void addComponentAtIndexInRightBorder(int index, Component component) {
-        LOG.debug("Add right component. index={}, component={}", index, component);
+        log.debug("Add right component. index={}, component={}", index, component);
 
         right.addComponentAtIndex(index, component);
     }
 
     public void addComponentAsFirstInRightBorder(Component component) {
-        LOG.debug("Add right component as first. component={}", component);
+        log.debug("Add right component as first. component={}", component);
 
         right.addComponentAsFirst(component);
     }

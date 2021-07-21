@@ -38,8 +38,7 @@ import de.paladinsinn.tp.dcis.ui.components.Avatar;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -61,9 +60,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
+@Slf4j
 public class PersonForm extends Div implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonForm.class);
-
     /**
      * The service for writing data to.
      */
@@ -130,16 +128,15 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
 
     public void init() {
         if (initialized || data == null || user == null) {
-            LOG.debug("Already initialized or not initializable. initialized={}, data={}, user={}, locale={}",
+            log.debug("Already initialized or not initializable. initialized={}, data={}, user={}, locale={}",
                     initialized, data, user, locale);
             return;
         }
 
         addListener(PersonSaveEvent.class, personSaveService);
-        user.allow(user.getPerson().getName().equals(data.getUsername()));
         ensureLocale();
 
-        LOG.debug("initializing. data={}, user={}, locale={}", data, user, locale);
+        log.debug("initializing. data={}, user={}, locale={}", data, user, locale);
 
         form = new FormLayout();
         form.setResponsiveSteps(
@@ -157,31 +154,19 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         firstName = generateTextField(user.isReadonly(), true);
 
         language = new I18nSelector(data.getLocale());
-        language.setReadOnly(user.isReadonly());
         language.setRequiredIndicatorVisible(true);
-
         lastLogin = new DateTimePicker();
-        lastLogin.setReadOnly(true);
-
         deleted = new DateTimePicker();
-        deleted.setReadOnly(!user.isAdmin());
-
         lastPasswordChange = new DateTimePicker();
-        lastPasswordChange.setReadOnly(true);
-
         expiryDate = new DateTimePicker();
-        expiryDate.setReadOnly(!user.isAdmin());
         expiryDate.setRequiredIndicatorVisible(true);
 
         status = new CheckboxGroup<>();
-        status.setReadOnly(!user.isAdmin() && !user.isOrga() && !user.isJudge());
 
         flags = new CheckboxGroup<>();
-        flags.setReadOnly(user.isReadonly());
 
         roles = new CheckboxGroup<>();
         roles.setItems(RoleName.PERSON.getRoleNamesWithoutGM());
-        roles.setReadOnly(!user.isAdmin() && !user.isOrga());
 
         avatar = new Avatar(
                 "person.avatar",
@@ -206,10 +191,6 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
                     getUI().ifPresent(ui -> ui.getPage().getHistory().back());
                 },
                 null
-        );
-        actions.setReadOnly(user.isReadonly()
-                && !user.getPerson().equals(data)
-                && !user.isAdmin()
         );
 
 
@@ -274,20 +255,43 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
             this.oldData = data.clone();
         } catch (CloneNotSupportedException e) {
             // should not happen
-            LOG.error("All entities need to be clonable: data={}", data);
+            log.error("All entities need to be clonable: data={}", data);
         }
         this.data = data;
 
-        LOG.debug("Set data. id={}, name={}",
+        log.debug("Set data. id={}, name={}",
                 this.data.getId(), this.data.getName());
 
         init();
         populate();
+        recalculateReadOnly();
+    }
+
+    private void recalculateReadOnly() {
+        user.allow(user.getPerson().getId().equals(data.getId()));
+
+        password.setReadOnly(user.isReadonly());
+        email.setReadOnly(user.isReadonly());
+        name.setReadOnly(user.isReadonly());
+        lastName.setReadOnly(user.isReadonly());
+        firstName.setReadOnly(user.isReadonly());
+        language.setReadOnly(user.isReadonly());
+        lastLogin.setReadOnly(true);
+        deleted.setReadOnly(!user.isAdmin());
+        lastPasswordChange.setReadOnly(true);
+        expiryDate.setReadOnly(!user.isAdmin());
+        status.setReadOnly(!user.isAdmin() && !user.isOrga() && !user.isJudge());
+        flags.setReadOnly(user.isReadonly());
+        roles.setReadOnly(!user.isAdmin() && !user.isOrga());
+        actions.setReadOnly(user.isReadonly()
+                && !user.getPerson().equals(data)
+                && !user.isAdmin()
+        );
     }
 
     private void populate() {
         if (!initialized || data == null) {
-            LOG.warn("Form is not initialized or data is not set. initialized={}, data={}", initialized, data);
+            log.warn("Form is not initialized or data is not set. initialized={}, data={}", initialized, data);
             return;
         }
 
@@ -309,18 +313,16 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
 
         roles.setValue(RoleName.PERSON.getActiveRoleNames(data));
 
-        if (roles.getValue().contains(RoleName.GM.name())) {
-            flags.add(getTranslation("person.status-is-gm.caption"));
-        }
-        if (data.isGravatarAllowed()) {
-            flags.add(getTranslation("person.status-allow-gravatar.caption"));
-        }
         flags.addSelectionListener(e -> {
             roles.getValue().remove(RoleName.GM.name());
-
+            data.disableGravatar();
             for (String s : e.getAllSelectedItems()) {
                 if (s.equals(getTranslation("person.status-is-gm.caption"))) {
                     roles.getValue().add(RoleName.GM.name());
+                }
+
+                if (s.equals(getTranslation("person.status-allow-gravatar.caption"))) {
+                    data.enableGravatar();
                 }
             }
         });
@@ -334,14 +336,14 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         data.setUsername(username.getValue());
 
         if (!password.isEmpty()) {
-            LOG.info("Changing password. user='{}'", data.getUsername());
+            log.info("Changing password. user='{}'", data.getUsername());
             data.setPassword(password.getValue());
         }
 
         data.setEmail(email.getValue());
 
         data.setName(name.getValue());
-        LOG.info("Changing name. name='{}'", data.getName());
+        log.info("Changing name. name='{}'", data.getName());
 
         data.setLastname(lastName.getValue());
         data.setFirstname(firstName.getValue());
@@ -361,16 +363,28 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
 
         data.getRoles().clear();
         for (String b : roles.getValue()) {
-            data.getRoles().add(new Role(RoleName.valueOf(b)));
+            Role role = new Role(RoleName.valueOf(b));
+            data.addRole(role);
+
+            log.debug("Add role: {} ({})", b, data.getRoles().contains(role));
         }
 
         data.disableGravatar();
-
+        data.getRoles().remove(new Role(RoleName.GM));
         for (String b : flags.getValue()) {
             if (getTranslation("person.status-allow-gravatar.caption").equals(b)) {
+                log.debug("Allow usage of gravatar");
                 data.enableGravatar();
             }
+
+            if (getTranslation("person.status-is-gm.caption").equals(b)) {
+                Role role = new Role(RoleName.GM);
+                data.addRole(role);
+
+                log.debug("Add role: {} ({})", RoleName.GM, data.getRoles().contains(role));
+            }
         }
+
 
         if (deleted.getValue() != null) {
             data.getStatus().setDeleted(deleted.getValue().atOffset(UTC));
@@ -391,7 +405,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         }
 
         // Form fields
-        LOG.trace("Adding all form elements.");
+        log.trace("Adding all form elements.");
         id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
@@ -424,19 +438,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         status.setItems(Arrays.asList(statusEnabled, statusLocked));
         status.setValue(statusOptionsSelected);
 
-        final String userChangeableFlagIsGm = getTranslation("person.status-is-gm.caption");
-        final String userChangeableFlagAllowGravatar = getTranslation("person.status-allow-gravatar.caption");
-        final HashSet<String> userChangeableFlagSelected = new HashSet<>(2);
-        if (data.isGravatarAllowed()) {
-            userChangeableFlagSelected.add(getTranslation("person.status-allow-gravatar.caption"));
-        }
-        if (roles.getValue().contains(RoleName.GM.name())) {
-            userChangeableFlagSelected.add(getTranslation("person.status-is-gm.caption"));
-        }
-        flags.removeAll();
-        flags.setLabel(getTranslation("person.user-changeable-flags.caption"));
-        flags.setItems(Arrays.asList(userChangeableFlagIsGm, userChangeableFlagAllowGravatar));
-        flags.setValue(userChangeableFlagSelected);
+        updateFlags();
 
         lastName.setLabel(getTranslation("person.last-name.caption"));
         lastName.setHelperText(getTranslation("person.last-name.help"));
@@ -454,6 +456,25 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         actions.translate();
     }
 
+    private void updateFlags() {
+        final HashSet<String> userChangeableFlagSelected = new HashSet<>(2);
+
+        if (data.isGravatarAllowed()) {
+            userChangeableFlagSelected.add(getTranslation("person.status-allow-gravatar.caption"));
+        }
+        if (roles.getValue().contains(RoleName.GM.name())) {
+            userChangeableFlagSelected.add(getTranslation("person.status-is-gm.caption"));
+        }
+
+        flags.removeAll();
+        flags.setLabel(getTranslation("person.user-changeable-flags.caption"));
+        flags.setItems(Arrays.asList(
+                getTranslation("person.status-is-gm.caption"),
+                getTranslation("person.status-allow-gravatar.caption")
+        ));
+        flags.setValue(userChangeableFlagSelected);
+    }
+
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
@@ -463,7 +484,7 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
     @Override
     public void setLocale(Locale locale) {
         if (locale == null || (locale.equals(this.locale))) {
-            LOG.debug("Locale already set or new locale would be null, old={}, new={}", this.locale, locale);
+            log.debug("Locale already set or new locale would be null, old={}, new={}", this.locale, locale);
             return;
         }
 
@@ -475,14 +496,14 @@ public class PersonForm extends Div implements LocaleChangeObserver, Translatabl
         try {
             return super.getTranslation(key);
         } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
+            log.warn("Can't call translator from vaadin: {}", e.getMessage());
             return "!" + key;
         }
     }
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing form.");
+        log.debug("Closing form.");
         removeAll();
         status.removeAll();
         roles.removeAll();

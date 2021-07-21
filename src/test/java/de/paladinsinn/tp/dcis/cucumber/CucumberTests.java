@@ -32,9 +32,16 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         monochrome = true,
         stepNotifications = true,
-        strict = true,
-        features = {"target/test-classes/features", "classpath:de.paladinsinn.tp.dcis.cucumber"},
-        plugin = {"html:target/site/cucumber.html", "json:target/cucumber-report.json"}
+        features = {
+                "target/test-classes/features",
+                "classpath:de.paladinsinn.tp.dcis.cucumber"
+        },
+        plugin = {
+                "usage",
+                "html:target/site/cucumber.html",
+                "json:target/cucumber/cucumber.json",
+                "junit:target/cucumber/cucumber.xml"
+        }
 )
 public class CucumberTests {
 }

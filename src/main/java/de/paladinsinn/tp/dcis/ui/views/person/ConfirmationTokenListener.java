@@ -26,8 +26,7 @@ import de.paladinsinn.tp.dcis.data.person.PersonService;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
 import de.paladinsinn.tp.dcis.ui.views.login.LoginView;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -41,15 +40,14 @@ import java.util.Optional;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ConfirmationTokenListener implements ComponentEventListener<ConfirmationTokenEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfirmationTokenListener.class);
-
     private final PersonService personService;
     private final ConfirmationTokenService tokenService;
 
     @Override
     public void onComponentEvent(@NotNull final ConfirmationTokenEvent event) {
-        LOG.info("User wants to confirm registration. event={}", event);
+        log.info("User wants to confirm registration. event={}", event);
 
         Optional<ConfirmationToken> token = tokenService.load(event.getToken());
 

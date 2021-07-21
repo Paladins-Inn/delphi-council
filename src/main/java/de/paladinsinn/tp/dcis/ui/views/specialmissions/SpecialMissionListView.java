@@ -38,8 +38,7 @@ import de.paladinsinn.tp.dcis.ui.components.DataCard;
 import de.paladinsinn.tp.dcis.ui.components.TorgButton;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -64,9 +63,8 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @I18nPageTitle("specialmission.list.title")
 @CssImport("./views/lists-view.css")
 @Secured({"ORGA", "JUDGE", "ADMIN"})
+@Slf4j
 public class SpecialMissionListView extends Div implements Serializable, AutoCloseable, LocaleChangeObserver, TranslatableComponent, AfterNavigationObserver {
-    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionListView.class);
-
     private final HashSet<TranslatableComponent> translatables = new HashSet<>();
     private Locale locale;
 
@@ -212,7 +210,7 @@ public class SpecialMissionListView extends Div implements Serializable, AutoClo
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Locale change event. locale={}", event.getLocale());
+        log.trace("Locale change event. locale={}", event.getLocale());
 
         setLocale(event.getLocale());
         translate();
@@ -220,7 +218,7 @@ public class SpecialMissionListView extends Div implements Serializable, AutoClo
 
     @Override
     public void translate() {
-        LOG.trace("Translate View. locale={}", locale);
+        log.trace("Translate View. locale={}", locale);
 
         for (TranslatableComponent t : translatables) {
             t.translate();
@@ -241,7 +239,7 @@ public class SpecialMissionListView extends Div implements Serializable, AutoClo
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing view.");
+        log.debug("Closing view.");
 
         removeAll();
     }

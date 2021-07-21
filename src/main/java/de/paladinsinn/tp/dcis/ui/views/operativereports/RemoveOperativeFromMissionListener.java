@@ -26,8 +26,7 @@ import de.paladinsinn.tp.dcis.data.operative.OperativeReportRepository;
 import de.paladinsinn.tp.dcis.data.operative.OperativeRepository;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -42,9 +41,8 @@ import java.util.Arrays;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class RemoveOperativeFromMissionListener implements ComponentEventListener<RemoveOperativeFromMissionEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveOperativeFromMissionListener.class);
-
     private final MissionReportRepository missionReportRepository;
     private final OperativeRepository operativeRepository;
     private final OperativeReportRepository operativeReportRepository;
@@ -62,7 +60,7 @@ public class RemoveOperativeFromMissionListener implements ComponentEventListene
         String operativeId = report.getOperative().getId().toString();
         String operativeName = report.getOperative().getName();
 
-        LOG.info("Deleting operative report. report={}, execution={}, mission='{}', operative='{}'",
+        log.info("Deleting operative report. report={}, execution={}, mission='{}', operative='{}'",
                 report.getId(), missionId, missionCode, operativeName);
 
         report.setOperative(null);

@@ -24,7 +24,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.login.LoginForm;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.i18n.LocaleChangeEvent;
 import com.vaadin.flow.i18n.LocaleChangeObserver;
@@ -37,8 +36,7 @@ import de.paladinsinn.tp.dcis.ui.components.TorgScreen;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nPageTitle;
 import de.paladinsinn.tp.dcis.ui.i18n.I18nSelector;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
 import java.util.Locale;
@@ -57,9 +55,8 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @Tag("sa-login-view")
 @Route(LoginView.ROUTE)
 @I18nPageTitle("login.caption")
+@Slf4j
 public class LoginView extends TorgScreen implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
-    private static final Logger LOG = LoggerFactory.getLogger(LoginView.class);
-
     public static final String ROUTE = "login";
 
     private H1 title;
@@ -73,7 +70,7 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
 
     @PostConstruct
     public void init() {
-        LOG.debug("Creating login view.");
+        log.debug("Creating login view.");
 
         setSizeFull();
 
@@ -93,9 +90,6 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
         VerticalLayout result = new VerticalLayout();
         result.setHeightFull();
 
-        /**
-         * The login component.
-         */
         title = new H1(getTranslation("login.caption"));
         description = new Div();
         description.setText(getTranslation("login.help"));
@@ -106,7 +100,7 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
 
         login = new LoginForm();
         login.setAction("login");
-        login.addForgotPasswordListener(event -> Notification.show("sorry, not implemented yet", 2000, Notification.Position.BOTTOM_STRETCH));
+        login.addForgotPasswordListener(event -> getUI().ifPresent(ui -> ui.navigate(PasswordResetView.class)));
 
         register = new TorgButton(
                 "login.register-link",
@@ -123,7 +117,7 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
     public void beforeEnter(BeforeEnterEvent event) {
         login.setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
 
-        LOG.trace("Entering login view. ui={}, location={}, error={}",
+        log.trace("Entering login view. ui={}, location={}, error={}",
                 event.getUI().getId(), event.getLocation(),
                 event.getLocation().getQueryParameters().getParameters().containsKey("error"));
     }
@@ -136,11 +130,11 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
     @Override
     public void setLocale(@NotNull final Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Language not changed - ignoring event. locale={}", locale);
+            log.debug("Language not changed - ignoring event. locale={}", locale);
             return;
         }
 
-        LOG.trace("Changing locale. locale={}", locale);
+        log.trace("Changing locale. locale={}", locale);
 
         this.locale = locale;
 
@@ -149,7 +143,7 @@ public class LoginView extends TorgScreen implements BeforeEnterObserver, Locale
 
     @Override
     public void translate() {
-        LOG.trace("Translating. locale={}, vaadin={}", locale, VaadinSession.getCurrent().getLocale());
+        log.trace("Translating. locale={}, vaadin={}", locale, VaadinSession.getCurrent().getLocale());
 
         title.setText(getTranslation("login.caption"));
         description.setText(getTranslation("login.help"));

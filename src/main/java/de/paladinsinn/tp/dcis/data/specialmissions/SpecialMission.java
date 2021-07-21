@@ -23,11 +23,9 @@ import de.paladinsinn.tp.dcis.data.HasClearance;
 import de.paladinsinn.tp.dcis.data.HasId;
 import de.paladinsinn.tp.dcis.data.operative.OperativeSpecialReport;
 import de.paladinsinn.tp.dcis.data.person.Person;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -51,11 +49,13 @@ import java.util.UUID;
                 @UniqueConstraint(name = "SPECIALMISSIONS_TITLE_UK", columnNames = "TITLE")
         }
 )
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
+@Builder
+@Slf4j
 public class SpecialMission extends AbstractRevisionedEntity implements HasId, HasClearance, Cloneable {
-    private static final Logger LOG = LoggerFactory.getLogger(SpecialMission.class);
-
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDCharType")
     @Column(name = "CODE", length = 36, nullable = false, updatable = false, unique = true)
     private UUID code;

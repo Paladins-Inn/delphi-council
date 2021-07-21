@@ -25,8 +25,7 @@ import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +39,8 @@ import java.util.stream.Collectors;
  * @since 0.1.0  2021-04-04
  */
 @Getter
+@Slf4j
 public class TorgNotification extends Notification {
-    private final static Logger LOG = LoggerFactory.getLogger(TorgNotification.class);
-
     /**
      * The duration of the message in millis.
      */
@@ -82,7 +80,7 @@ public class TorgNotification extends Notification {
         setDuration(DEFAULT_DURATION);
         setPosition(Position.BOTTOM_END);
 
-        LOG.debug("Created notification. data={}", this);
+        log.debug("Created notification. data={}", this);
     }
 
     private NativeButton createButton(ComponentEventListener<ClickEvent<NativeButton>> event) {
@@ -96,7 +94,7 @@ public class TorgNotification extends Notification {
 
     @Override
     public void open() {
-        LOG.trace("Opening notification. data={}", this);
+        log.trace("Opening notification. data={}", this);
 
         List<String> params = this.i18nParameters.stream().map(this::getTranslation).collect(Collectors.toList());
         this.parameters.forEach(params::add);

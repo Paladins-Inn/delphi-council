@@ -21,8 +21,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
@@ -38,9 +37,8 @@ import java.util.UUID;
  * @since 0.1.0  2021-04-05
  */
 @Service
+@Slf4j
 public class PersonSaveService extends CrudService<Person, UUID> implements ComponentEventListener<PersonSaveEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonSaveService.class);
-
     private static final String DATA_TYPE_TITLE = "person.editor.caption";
 
     private final PersonRepository repository;
@@ -60,7 +58,7 @@ public class PersonSaveService extends CrudService<Person, UUID> implements Comp
 
         try {
             Person saved = repository.saveAndFlush(data);
-            LOG.info("Saved {}. data={}", getClass().getSimpleName(), data);
+            log.info("Saved {}. data={}, saved={}", getClass().getSimpleName(), data, saved);
 
             event.getSource().setData(saved);
 
@@ -70,7 +68,7 @@ public class PersonSaveService extends CrudService<Person, UUID> implements Comp
                     Arrays.asList(data.getId().toString(), data.getName())
             ).open();
         } catch (Exception e) {
-            LOG.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
+            log.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
 
             new TorgNotification("input.data.saved.failed",
                     ev -> {

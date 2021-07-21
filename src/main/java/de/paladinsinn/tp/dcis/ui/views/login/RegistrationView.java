@@ -17,12 +17,12 @@
 
 package de.paladinsinn.tp.dcis.ui.views.login;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -42,13 +42,11 @@ import de.paladinsinn.tp.dcis.ui.views.person.ConfirmationTokenEvent;
 import de.paladinsinn.tp.dcis.ui.views.person.ConfirmationTokenListener;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonRegistrationEvent;
 import de.paladinsinn.tp.dcis.ui.views.person.PersonRegistrationListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,9 +63,8 @@ import static com.vaadin.flow.component.Unit.PIXELS;
 @Route(RegistrationView.ROUTE + "/:token?")
 @I18nPageTitle("registration.caption")
 @CssImport("./views/edit-view.css")
+@Slf4j
 public class RegistrationView extends TorgScreen implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent {
-    private static final Logger LOG = LoggerFactory.getLogger(RegistrationView.class);
-
     public static final String ROUTE = "register";
 
 
@@ -110,16 +107,6 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
         }
 
         setSizeFull();
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setSizeFull();
-
-        FormLayout form = new FormLayout();
-        form.setHeightFull();
-        form.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("100px", 1),
-                new FormLayout.ResponsiveStep("300px", 2),
-                new FormLayout.ResponsiveStep("600px", 4)
-        );
 
         title = new H1(getTranslation("registration.caption"));
         description = new Div();
@@ -174,41 +161,11 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
         languageSelect.setRequiredIndicatorVisible(true);
         languageSelect.setValue(VaadinSession.getCurrent().getLocale());
 
-        // save
-        // reset
-        // cancel
         actions = new TorgActionBar(
                 "buttons",
-                ev -> { // save
-                    getEventBus().fireEvent(new PersonRegistrationEvent(
-                            this,
-                            name.getValue(),
-                            lastname.getValue(), firstname.getValue(),
-                            email.getValue(),
-                            username.getValue(), password.getValue(),
-                            languageSelect.getValue()
-                    ));
-
-                    new TorgNotification(
-                            "registration.send-registration",
-                            null,
-                            null,
-                            Arrays.asList(name.getValue(), username.getValue(), email.getValue())
-                    ).open();
-
-                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
-                },
-                ev -> { // reset
-                    name.setValue(null);
-                    lastname.setValue(null);
-                    firstname.setValue(null);
-                    email.setValue(null);
-                    username.setValue(null);
-                    password.setValue(null);
-                },
-                ev -> { // cancel
-                    ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
-                },
+                this::save,
+                this::reset,
+                this::cancel,
                 null
         );
 
@@ -230,8 +187,32 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
 
         form.setMinWidth(400, PIXELS);
         form.setMaxWidth(600, PIXELS);
+    }
 
-        add(form);
+    private void save(ClickEvent<NativeButton> ev) {
+        getEventBus().fireEvent(new PersonRegistrationEvent(
+                this,
+                name.getValue(),
+                lastname.getValue(), firstname.getValue(),
+                email.getValue(),
+                username.getValue(), password.getValue(),
+                languageSelect.getValue()
+        ));
+    }
+
+    private void reset(@SuppressWarnings("unused") ClickEvent<NativeButton> ev) {
+        // reset
+        name.setValue(null);
+        lastname.setValue(null);
+        firstname.setValue(null);
+        email.setValue(null);
+        username.setValue(null);
+        password.setValue(null);
+    }
+
+    private void cancel(ClickEvent<NativeButton> ev) {
+        // cancel
+        ev.getSource().getUI().ifPresent(ui -> ui.navigate(LoginView.ROUTE));
     }
 
 
@@ -241,7 +222,7 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
             locale = VaadinSession.getCurrent().getLocale();
         }
 
-        LOG.trace("Translating form. locale={}", locale.getDisplayName());
+        log.trace("Translating form. locale={}", locale.getDisplayName());
 
         title.setText(getTranslation("registration.caption"));
         description.setText(getTranslation("registration.help"));
@@ -269,11 +250,11 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<String> tokenString = event.getRouteParameters().get("token");
-        LOG.trace("confirming new user. token={}", tokenString);
+        log.trace("confirming new user. token={}", tokenString);
 
         tokenString.ifPresent(token -> {
             try {
-                LOG.info("Confirming token. token={}", token);
+                log.info("Confirming token. token={}", token);
 
                 ConfirmationTokenEvent cte = new ConfirmationTokenEvent(this, UUID.fromString(token));
                 fireEvent(cte);
@@ -303,7 +284,7 @@ public class RegistrationView extends TorgScreen implements BeforeEnterObserver,
     @Override
     public void setLocale(Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale not changed. current={}, new={}", this.locale.getDisplayName(), locale.getDisplayName());
+            log.debug("Locale not changed. current={}, new={}", this.locale.getDisplayName(), locale.getDisplayName());
             return;
         }
 

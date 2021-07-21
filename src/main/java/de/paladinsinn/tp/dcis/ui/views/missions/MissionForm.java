@@ -35,8 +35,7 @@ import de.paladinsinn.tp.dcis.data.missions.Mission;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.components.TorgActionBar;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -55,8 +54,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Service
 @Scope(SCOPE_PROTOTYPE)
+@Slf4j
 public class MissionForm extends Composite<Div> implements LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(MissionForm.class);
     public static final int DEFAULT_PAYMENT = 250;
     public static final int DEFAULT_XP = 5;
 
@@ -110,7 +109,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
     private void init() {
         if (data == null || user == null || initialized) {
-            LOG.debug(
+            log.debug(
                     "Can't initialize or already initialized. initialized={}, data={}, user={}",
                     initialized, data, user
             );
@@ -201,13 +200,13 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
     public void setData(@NotNull Mission data) {
         if (this.data != null && this.data.equals(data)) {
-            LOG.info("Mission report didn't change. Ignoring event. code={}, id={}",
+            log.info("Mission report didn't change. Ignoring event. code={}, id={}",
                     this.data.getCode(), this.data.getId());
 
             return;
         }
 
-        LOG.debug("Set mission. id={}, code={}, title={}", data.getId(), data.getCode(), data.getName());
+        log.debug("Set mission. id={}, code={}, title={}", data.getId(), data.getCode(), data.getName());
 
         this.data = data;
 
@@ -218,7 +217,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
     public void populate() {
         if (data == null) {
-            LOG.warn("Tried to populate form data without a mission defined.");
+            log.warn("Tried to populate form data without a mission defined.");
             return;
         }
 
@@ -270,7 +269,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Change locale event. locale={}", event.getLocale());
+        log.trace("Change locale event. locale={}", event.getLocale());
 
         setLocale(event.getLocale());
     }
@@ -278,7 +277,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
     @Override
     public void translate() {
         if (user == null || data == null || locale == null) {
-            LOG.warn(
+            log.warn(
                     "Can't build mission form. user={}, mission={}, locale={}",
                     user, data, locale
             );
@@ -286,14 +285,14 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
             return;
         }
 
-        LOG.debug("Building mission edit form. locale={}, mission={}", locale, data);
+        log.debug("Building mission edit form. locale={}, mission={}", locale, data);
 
-        LOG.trace("Removing all form elements.");
+        log.trace("Removing all form elements.");
         form.removeAll();
 
 
         // Form fields
-        LOG.trace("Translating form elements.");
+        log.trace("Translating form elements.");
         id.setLabel(getTranslation("input.id.caption"));
         id.setHelperText(getTranslation("input.id.help"));
 
@@ -332,7 +331,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
         objectivesOutstanding.setHelperText(getTranslation("mission.objectives.outstanding.help"));
 
 
-        LOG.trace("adding all form elements.");
+        log.trace("adding all form elements.");
         form.add(code, clearance, title, publication, payment, xp, image, description,
                 objectivesSuccess, objectivesGood, objectivesOutstanding);
 
@@ -352,7 +351,7 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
     @Override
     public void setLocale(Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale has not changed. Ignoring event. locale={}", locale);
+            log.debug("Locale has not changed. Ignoring event. locale={}", locale);
             return;
         }
 
@@ -364,14 +363,14 @@ public class MissionForm extends Composite<Div> implements LocaleChangeObserver,
         try {
             return super.getTranslation(key);
         } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
+            log.warn("Can't call translator from vaadin: {}", e.getMessage());
             return "!" + key;
         }
     }
 
     @Override
     public void close() throws Exception {
-        LOG.debug("Closing form.");
+        log.debug("Closing form.");
         getContent().removeAll();
         form.removeAll();
     }

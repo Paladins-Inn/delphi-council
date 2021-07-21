@@ -61,6 +61,10 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="XP" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+
             <column name="CLEARANCE" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
@@ -91,6 +95,7 @@
             <column name="LAST_NAME" type="VARCHAR(100)"/>
             <column name="FIRST_NAME" type="VARCHAR(100)"/>
             <column name="COSM" type="VARCHAR(20)"/>
+            <column name="XP" type="INT"/>
             <column name="CLEARANCE" type="VARCHAR(20)"/>
             <column name="DELETED" type="TIMESTAMP"/>
         </createTable>
@@ -127,22 +132,6 @@
             <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_USERNAME_UK"/>
             <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_PK"/>
             <dropTable tableName="OPERATIVES"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="operatives-data" author="rlichti">
-        <loadData tableName="OPERATIVES" file="operatives.csv" relativeToChangelogFile="true"/>
-
-        <sql>
-            INSERT INTO OPERATIVES_AUD(ID,REVTYPE,PERSON_ID,NAME,LAST_NAME,FIRST_NAME,CLEARANCE,COSM) SELECT
-            u.ID,0,u.PERSON_ID,u.NAME,u.LAST_NAME,u.FIRST_NAME,u.CLEARANCE,u.COSM FROM OPERATIVES u;
-            INSERT INTO REVINFO(REV,REVTSTMP) SELECT u.REV,1615716576979 FROM OPERATIVES_AUD u;
-        </sql>
-
-        <rollback>
-            <sql>TRUNCATE OPERATIVES;</sql>
-            <sql>TRUNCATE OPERATIVES_AUD;</sql>
-            <sql>TRUNCATE REVINFO;</sql>
         </rollback>
     </changeSet>
 </databaseChangeLog>

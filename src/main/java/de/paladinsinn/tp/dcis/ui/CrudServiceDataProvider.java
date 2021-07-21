@@ -19,8 +19,6 @@ package de.paladinsinn.tp.dcis.ui;
 
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.vaadin.artur.helpers.CrudService;
@@ -39,9 +37,6 @@ import java.util.List;
  * @since 0.1.0  2021-03-26
  */
 public class CrudServiceDataProvider<T, F, I> extends FilterablePageableDataProvider<T, F> {
-    private static final Logger LOG = LoggerFactory.getLogger(CrudServiceDataProvider.class);
-
-
     private final CrudService<T, I> service;
     private final List<QuerySortOrder> defaultSortOrders;
 

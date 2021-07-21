@@ -40,8 +40,7 @@ import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
 import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.OperativeSpecialReportForm;
 import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.OperativeSpecialReportService;
 import de.paladinsinn.tp.dcis.ui.views.operativespecialreports.RemoveOperativeFromSpecialMissionListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 
@@ -63,9 +62,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @I18nPageTitle("missionreport.editor.caption")
 @CssImport("./views/edit-view.css")
 @Secured({"GM", "JUDGE", "ORGA", "ADMIN"})
+@Slf4j
 public class SpecialMissionView extends Div implements BeforeEnterObserver, LocaleChangeObserver, TranslatableComponent, Serializable, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionView.class);
-
     @Autowired
     private LoggedInUser user;
 
@@ -112,10 +110,10 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
         tabs.add(reportTab);
         tabs.setSelectedTab(reportTab);
         tabs.addSelectedChangeListener(event -> {
-            LOG.trace("Change selected tabs. old='{}', new='{}'",
+            log.trace("Change selected tabs. old='{}', new='{}'",
                     event.getPreviousTab(), event.getSelectedTab());
             if (event.getSelectedTab() == null || event.getSelectedTab().equals(event.getPreviousTab())) {
-                LOG.debug("Tab not changed or new tab is 'null'. old='{}', new='{}'",
+                log.debug("Tab not changed or new tab is 'null'. old='{}', new='{}'",
                         event.getPreviousTab(), event.getSelectedTab());
                 return;
             }
@@ -155,13 +153,13 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
         init();
 
         Optional<String> reportId = event.getRouteParameters().get("id");
-        LOG.trace("Entering form. reportId={}", reportId);
+        log.trace("Entering form. reportId={}", reportId);
 
         Optional<SpecialMission> report = Optional.empty();
         if (reportId.isPresent()) {
             report = missionReportRepository.get().findById(UUID.fromString(reportId.get()));
         } else {
-            LOG.warn("ReportId is missing. reportId={}", reportId);
+            log.warn("ReportId is missing. reportId={}", reportId);
         }
 
         report.ifPresent(r -> {
@@ -173,7 +171,7 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
     }
 
     private void setData(@NotNull SpecialMission report) {
-        LOG.trace("Loaded MissionReport. report={}", report);
+        log.trace("Loaded MissionReport. report={}", report);
 
         this.report = report;
     }
@@ -182,13 +180,13 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
         operatives.clear();
         for (OperativeSpecialReport o : report.getOperatives()) {
             if (!canViewOperative(o.getOperative())) {
-                LOG.debug(
+                log.debug(
                         "Person is not allowed to display operative. user='{}', operative='{}'",
                         user.getPerson().getName(),
                         o.getOperative().getName()
                 );
             } else {
-                LOG.debug("Adding operative. operative='{}'", o.getOperative().getName());
+                log.debug("Adding operative. operative='{}'", o.getOperative().getName());
 
                 Tab tab = new Tab(o.getOperative().getName());
 
@@ -205,7 +203,7 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
 
     @Override
     public void localeChange(LocaleChangeEvent event) {
-        LOG.trace("Locale change event. locale={}", event.getLocale());
+        log.trace("Locale change event. locale={}", event.getLocale());
 
         setLocale(event.getLocale());
     }
@@ -213,7 +211,7 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
     @Override
     public void setLocale(@NotNull final Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale did not change - ignore event. locale={}", this.locale);
+            log.debug("Locale did not change - ignore event. locale={}", this.locale);
             return;
         }
 
@@ -246,14 +244,14 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
         try {
             return super.getTranslation(key);
         } catch (NullPointerException e) {
-            LOG.warn("Can't call translator from vaadin: {}", e.getMessage());
+            log.warn("Can't call translator from vaadin: {}", e.getMessage());
             return "!" + key;
         }
     }
 
     @Override
     public void close() throws Exception {
-        LOG.trace("Closing form.");
+        log.trace("Closing form.");
 
         missionReportForm.close();
 
@@ -262,6 +260,6 @@ public class SpecialMissionView extends Div implements BeforeEnterObserver, Loca
         }
 
         removeAll();
-        LOG.debug("Closed form.");
+        log.debug("Closed form.");
     }
 }

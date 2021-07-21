@@ -28,8 +28,7 @@ import de.paladinsinn.tp.dcis.data.person.Person;
 import de.paladinsinn.tp.dcis.data.person.PersonRepository;
 import de.paladinsinn.tp.dcis.security.LoggedInUser;
 import de.paladinsinn.tp.dcis.ui.i18n.TranslatableComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,9 +41,8 @@ import java.util.Locale;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
+@Slf4j
 public class PersonSelector extends ComboBox<Person> implements LocaleChangeObserver, TranslatableComponent {
-    private static final Logger LOG = LoggerFactory.getLogger(PersonSelector.class);
-
     private Locale locale;
     private final String i18nPrefix;
 
@@ -63,7 +61,7 @@ public class PersonSelector extends ComboBox<Person> implements LocaleChangeObse
         setDataProvider(DataProvider.fromFilteringCallbacks(
                 query -> {
                     String filter = query.getFilter().orElse(null);
-                    LOG.trace("person query. filter='{}'", filter);
+                    log.trace("person query. filter='{}'", filter);
 
                     int offset = query.getOffset();
                     int limit = query.getLimit();
@@ -75,7 +73,7 @@ public class PersonSelector extends ComboBox<Person> implements LocaleChangeObse
                 },
                 query -> {
                     String filter = query.getFilter().orElse(null);
-                    LOG.trace("person count query. filter='{}'", filter);
+                    log.trace("person count query. filter='{}'", filter);
 
                     return (int) personService.count();
                 }
@@ -108,7 +106,7 @@ public class PersonSelector extends ComboBox<Person> implements LocaleChangeObse
     @Override
     public void setLocale(Locale locale) {
         if (this.locale != null && this.locale.equals(locale)) {
-            LOG.debug("Locale already set - ignoring event. old={}, new={}", this.locale, locale);
+            log.debug("Locale already set - ignoring event. old={}, new={}", this.locale, locale);
             return;
         }
 

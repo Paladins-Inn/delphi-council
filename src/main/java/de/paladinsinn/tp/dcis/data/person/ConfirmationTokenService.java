@@ -19,8 +19,7 @@ package de.paladinsinn.tp.dcis.data.person;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -35,9 +34,8 @@ import java.util.UUID;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ConfirmationTokenService {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfirmationTokenService.class);
-
     private final ConfirmationTokenRepository repository;
 
     /**
@@ -47,7 +45,7 @@ public class ConfirmationTokenService {
      * @return persisted token.
      */
     public ConfirmationToken save(@NotNull final ConfirmationToken token) {
-        LOG.debug("Saving confirmation token. data={}", token);
+        log.debug("Saving confirmation token. data={}", token);
 
         return repository.saveAndFlush(token);
     }
@@ -58,7 +56,7 @@ public class ConfirmationTokenService {
      * @param id The token to remove.
      */
     public void delete(@NotNull final UUID id) {
-        LOG.debug("Removing token. id={}", id);
+        log.debug("Removing token. id={}", id);
 
         repository.deleteById(id);
     }
@@ -70,7 +68,7 @@ public class ConfirmationTokenService {
      * @return The token with person data.
      */
     public Optional<ConfirmationToken> load(@NotNull final UUID id) {
-        LOG.debug("Loading token. id={}", id);
+        log.debug("Loading token. id={}", id);
 
         return repository.findById(id);
     }

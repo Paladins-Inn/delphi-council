@@ -22,8 +22,7 @@ import de.paladinsinn.tp.dcis.data.missions.Mission;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMission;
 import de.paladinsinn.tp.dcis.data.specialmissions.SpecialMissionRepository;
 import de.paladinsinn.tp.dcis.ui.components.TorgNotification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
@@ -39,9 +38,8 @@ import java.util.UUID;
  * @since 0.1.0  2021-03-26
  */
 @Service
+@Slf4j
 public class SpecialMissionService extends CrudService<SpecialMission, UUID> implements ComponentEventListener<SpecialMissionSaveEvent> {
-    private static final Logger LOG = LoggerFactory.getLogger(SpecialMissionService.class);
-
     private static final String DATA_TYPE_TITLE = "specialmission.editor.caption";
 
     private final SpecialMissionRepository repository;
@@ -61,7 +59,7 @@ public class SpecialMissionService extends CrudService<SpecialMission, UUID> imp
 
         try {
             SpecialMission saved = repository.saveAndFlush(data);
-            LOG.info("Saved {}. data={}", getClass().getSimpleName(), data);
+            log.info("Saved {}. data={}", getClass().getSimpleName(), data);
             event.getSource().setData(saved);
 
             new TorgNotification("input.data.saved.success",
@@ -72,7 +70,7 @@ public class SpecialMissionService extends CrudService<SpecialMission, UUID> imp
 
             event.getSource().getUI().ifPresent(ui -> ui.getPage().getHistory().back());
         } catch (Exception e) {
-            LOG.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
+            log.error("Could not save " + getClass().getSimpleName() + ". data=" + data, e);
 
             new TorgNotification("input.data.saved.failed",
                     ev -> {

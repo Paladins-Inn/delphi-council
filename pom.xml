@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.2</version>
+        <version>2.5.3</version>
     </parent>
 
     <groupId>de.paladinsinn.delphicouncil</groupId>
@@ -113,7 +113,7 @@
         <info-reports-plugin.version>3.1.2</info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
 
-        <vaadin.version>14.5.4</vaadin.version>
+        <vaadin.version>20.0.6</vaadin.version>
         <spring-boot.version>2.4.5</spring-boot.version>
         <spring-boot.envers.version>2.5.3</spring-boot.envers.version>
     </properties>
@@ -360,13 +360,13 @@
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java8</artifactId>
-            <version>6.10.4</version>
+            <version>6.11.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>6.10.4</version>
+            <version>6.11.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -484,7 +484,7 @@
             <plugin>
                 <groupId>net.masterthought</groupId>
                 <artifactId>maven-cucumber-reporting</artifactId>
-                <version>5.5.0</version>
+                <version>5.5.4</version>
                 <configuration>
                     <projectName>${project.name}</projectName>
                     <buildNumber>${env.github.run_id}</buildNumber>

@@ -1,0 +1,11 @@
+{msg:mail.greeting(person.getFirstname()}
+
+{mail.confirmation.intro_text}
+
+{mail.confirmation.token_text(token)}
+
+{mail.goodbye}
+
+---
+Delphi Council
+Registration Office

@@ -113,15 +113,15 @@ spec:
           successThreshold: 1
           timeoutSeconds: 5
         volumeMounts:
-        - mountPath: /deployments/config/application.properties
+        - mountPath: /deployments/config/application.yaml
           name: config-volume
-          subPath: application.properties
+          subPath: application.yaml
       volumes:
         - configMap:
             defaultMode: 420
             items:
-              - key: application.properties
-                path: application.properties
+              - key: application.yaml
+                path: application.yaml
             name: "{{ .Chart.Name }}-config"
           name: config-volume
 

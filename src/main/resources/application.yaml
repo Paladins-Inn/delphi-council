@@ -1,0 +1,176 @@
+#
+# Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+quarkus:
+  application:
+    name: ${project.name}
+    version: ${project.version}
+
+  http:
+    insecure-requests: enabled
+    port: 8080
+    ssl-port: 8443
+    ssl:
+      protocols: TLSv1.3
+      sni: true
+
+    auth:
+      realm: ${quarkus.application.name}
+      proactive: false
+    cors: true
+
+    access-log:
+      enabled: true
+      log-to-file: false
+      exclude-pattern: "/q/.*"
+      pattern: combined
+    test-port: 8081
+    test-ssl-port: 8444
+
+  datasource:
+    db-kind: mariadb
+    jdbc:
+      ~: true
+      url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
+      enable-metrics: true
+    username: "${DB_USER:sa}"
+    password: "${DB_PASSWORD:sa}"
+    metrics:
+      enabled: true
+
+  hibernate-orm:
+    database:
+      generation:
+        ~: none
+        create-schemas: false
+      log:
+        sql: true
+        jdbc-warnings: true
+        queries-slower-than-ms: 10
+
+  hibernate-envers:
+    store-data-at-delete: true
+
+  liquibase:
+    change-log: db/changelog/db.changelog-master.xml
+
+
+  mailer:
+    host: "${MAIL_HOST:smtp.kaiserpfalz-edv.de}"
+    port: "${MAIL_PORT:587}"
+    ssl: true
+    from: "${MAIL_FROM_NAME:Quin Sebastian} <${MAIL_FROM_ADDRESS:quin.sebastian@delphi-council.org}>"
+    username: "${MAIL_USER:no}"
+    password: "${MAIL_PASSWORD:no}"
+    bounce-address: "${MAIL_BOUNCE_ADDRESS:tech@kaiserpfalz-edv.de}"
+
+  qute:
+    property-not-found-strategy: throw_exception
+    remove-standalone-lines: false
+    strict-rendering: true
+
+
+  log:
+    metrics:
+      enabled: true
+    console:
+      json: true
+      enable: true
+    level: INFO
+    min-level: ALL
+
+  resteasy:
+    problem:
+      include-mdc-properties: workflow-id,step-id,application,version,node
+
+  smallrye-health:
+    ui:
+      enable: true
+
+  micrometer:
+    enabled: true
+    binder:
+      http-server:
+        enabled: true
+        match-patterns: "/api/"
+      mp-metrics:
+        enabled: true
+      jvm: true
+      system: true
+      vertx:
+        enabled: true
+    binder-enabled-default: true
+    export:
+      json:
+        enabled: true
+        path: /q/json-metrics
+      prometheus:
+        enabled: true
+        path: /q/metrics
+        default-registry: true
+
+  smallrye-openapi:
+    enable: true
+    path: /api/openapi
+    operation-id-strategy: method
+    info: ${quarkus.application.name} API
+    info-version: ${quarkus.application.version}
+    info-description: ${project.description}
+    info-terms-of-service: Service provided as is without any warranty
+    info-contact-email: info@paladins-inn.de
+    info-contact-name: Paladins Inn
+    info-contact-url: https://www.paladins-inn.de
+    info-license-name: GPL 3+
+    info-license-url: http://www.gnu.org/licenses/
+
+  swagger-ui:
+    enable: true
+    always-include: true
+    path: /api/docs
+
+
+"%dev":
+  quarkus:
+    datasource: &datasource-dev
+      db-kind: h2
+      jdbc:
+        ~: true
+        url: jdbc:h2:file:./target/db/delphi-council;USER=sa;PASSWORD=sa;MODE=MYSQL;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0
+        enable-metrics: true
+      username: sa
+      password: sa
+    log: &log-dev
+      console:
+        json: false
+        enable: true
+      level: DEBUG
+      min-level: ALL
+
+"%test":
+  quarkus:
+    datasource: *datasource-dev
+    log: *log-dev
+
+
+application:
+  api:
+    version: "${api.version}"
+  registration:
+    signature: "${MAIL_FROM_NAME:Quin Sebastian}"
+    redirect-url: https://www.delphi-council.org/user-registered
+    cancel-url: https://www.delphi-council.org/user-registration-canceled
+

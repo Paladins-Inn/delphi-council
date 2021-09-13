@@ -113,7 +113,7 @@
         <info-reports-plugin.version>3.1.2</info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
 
-        <vaadin.version>14.5.4</vaadin.version>
+        <vaadin.version>21.0.1</vaadin.version>
         <spring-boot.version>2.4.5</spring-boot.version>
         <spring-boot.envers.version>2.5.4</spring-boot.envers.version>
     </properties>

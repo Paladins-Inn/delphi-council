@@ -93,6 +93,11 @@
             <id>github</id>
             <url>scm:git:git@github.com:Paladins-Inn/delphi-council.git</url>
         </site>
+        <repository>
+            <id>gh-paladins</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Paladins-Inn/kp-commons</url>
+        </repository>
     </distributionManagement>
 
     <properties>

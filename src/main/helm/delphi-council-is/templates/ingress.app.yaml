@@ -16,7 +16,7 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: "{{ .Chart.Name }}"
+          serviceName: "{{ .Chart.Name }}-app"
           servicePort: 8080
   tls:
   - hosts:

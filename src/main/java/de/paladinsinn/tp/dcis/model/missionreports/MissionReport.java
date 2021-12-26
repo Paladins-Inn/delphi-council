@@ -88,7 +88,6 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
             foreignKey = @ForeignKey(name = "REPORTS_PERSONS_FK")
     )
     @Audited
-    @Setter
     private Person gameMaster;
 
     @OneToMany(

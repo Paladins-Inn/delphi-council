@@ -74,10 +74,11 @@ public enum RoleName {
      * @return All active roles of that person.
      */
     public Set<String> getActiveRoleNames(@NotNull final Person person) {
-        HashSet<String> result = new HashSet<>(person.getRoles().size());
+        String[] roles = person.getRoles().split(",");
+        HashSet<String> result = new HashSet<>(roles.length);
 
-        for (Role r : person.getRoles()) {
-            result.add(r.getAuthority());
+        for (String r : roles) {
+            result.add(r);
         }
 
         return result;

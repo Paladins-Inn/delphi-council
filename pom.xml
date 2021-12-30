@@ -23,14 +23,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.4</version>
+        <artifactId>kp-rpg-parent</artifactId>
+        <groupId>de.kaiserpfalz-edv.rpg</groupId>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
     <groupId>de.paladinsinn.delphicouncil</groupId>
     <artifactId>delphi-council-is</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Delphi Council IS</name>
@@ -93,69 +93,35 @@
             <id>github</id>
             <url>scm:git:git@github.com:Paladins-Inn/delphi-council.git</url>
         </site>
+        <repository>
+            <id>gh-paladins</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Paladins-Inn/kp-commons</url>
+        </repository>
     </distributionManagement>
 
     <properties>
-        <skipTests>false</skipTests>
+        <api.version>v1</api.version>
 
+        <activate.jcenter>true</activate.jcenter>
         <java.version>11</java.version>
 
-        <maven.compiler.parameters>true</maven.compiler.parameters>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <propertiesEncoding>UTF-8</propertiesEncoding>
-
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <site-plugin.version>3.9.1</site-plugin.version>
-        <info-reports-plugin.version>3.1.2</info-reports-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
-
-        <vaadin.version>14.5.4</vaadin.version>
-        <spring-boot.version>2.4.5</spring-boot.version>
-        <spring-boot.envers.version>2.5.4</spring-boot.envers.version>
     </properties>
-
-    <repositories>
-        <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
-
-        <!-- Main Maven repository -->
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <!-- Repository used by many Vaadin add-ons -->
-        <repository>
-            <id>Vaadin Directory</id>
-            <url>https://maven.vaadin.com/vaadin-addons</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <!-- Main Maven repository -->
-        <pluginRepository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-bom</artifactId>
-                <version>${vaadin.version}</version>
+                <groupId>de.kaiserpfalz-edv.commons</groupId>
+                <artifactId>kp-commons-bom</artifactId>
+                <version>2.0.2-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.kaiserpfalz-edv.rpg</groupId>
+                <artifactId>rpg-bom</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -163,6 +129,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>de.kaiserpfalz-edv.rpg</groupId>
+            <artifactId>rpg-torg</artifactId>
+        </dependency>
+
         <!-- Evaluate mathematical expressions -->
         <dependency>
             <groupId>net.objecthunter</groupId>
@@ -177,145 +148,18 @@
             <version>0.13</version>
         </dependency>
 
+        <!-- Image manipulation -->
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
+            <version>1.53j</version>
+        </dependency>
+
         <!-- BCrypt -->
         <dependency>
             <groupId>org.connectbot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>1.0.2</version>
-        </dependency>
-
-        <!-- Vaadin Components -->
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.vaadin.webjar</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.insites</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymer</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymerelements</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.vaadin</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.webcomponents</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>vaadin-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.artur</groupId>
-            <artifactId>a-vaadin-helper</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>de.codecamp.vaadin</groupId>
-            <artifactId>vaadin-service-ref</artifactId>
-            <version>0.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.carnet.kasparscherrer</groupId>
-            <artifactId>language-select</artifactId>
-            <version>1.0.9</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-envers</artifactId>
-            <version>${spring-boot.envers.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -324,15 +168,112 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
+        </dependency>
+
+        <!-- Quarkus -->
+        <dependency>
+            <groupId>io.quarkiverse.loggingmanager</groupId>
+            <artifactId>quarkus-logging-manager</artifactId>
+            <version>2.0.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-security-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-config-yaml</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-testbench</artifactId>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-envers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-rest-data-panache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-liquibase</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-mariadb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
             <scope>test</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-reactive</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tietoevry.quarkus</groupId>
+            <artifactId>quarkus-resteasy-problem</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-mailer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-qute</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-scheduler</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-swagger-ui</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.microprofile.metrics</groupId>
+            <artifactId>microprofile-metrics-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-opentracing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jaeger</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-openshift</artifactId>
+        </dependency>
+
+        <!-- Testing -->
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
@@ -382,6 +323,25 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>bintray</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+
+        <repository>
+            <id>gh-paladins</id>
+            <url>https://maven.pkg.github.com/Paladins-Inn</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -400,31 +360,6 @@
                         <version>1.18.20</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- Clean build and startup time for Vaadin apps sometimes may exceed
-                     the default Spring Boot's 30sec timeout.  -->
-                <configuration>
-                    <wait>500</wait>
-                    <maxAttempts>240</maxAttempts>
-                    <excludeDevtools>false</excludeDevtools>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-frontend</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
 
@@ -682,12 +617,6 @@
                         <directory>src/main/docker</directory>
                         <filtering>true</filtering>
                     </resource>
-
-                    <resource>
-                        <directory>src/main/helm</directory>
-                        <targetPath>../helm</targetPath>
-                        <filtering>true</filtering>
-                    </resource>
                 </resources>
 
                 <plugins>
@@ -768,6 +697,78 @@
                         <configuration>
                             <scmBranch>gh-pages</scmBranch>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>helm</id>
+            <activation>
+                <file>
+                    <exists>src/main/helm</exists>
+                </file>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/helm</directory>
+                        <targetPath>../helm</targetPath>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+
+        <profile>
+            <id>react</id>
+            <activation>
+                <file>
+                    <exists>src/main/webapp/package.json</exists>
+                </file>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.12.1</version>
+                        <configuration>
+                            <workingDirectory>${project.basedir}/src/main/webapp</workingDirectory>
+                            <installDirectory>target</installDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>v16.13.1</nodeVersion>
+                                    <npmVersion>8.3.0</npmVersion>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm run build</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run prod</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

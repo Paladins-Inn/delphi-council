@@ -17,10 +17,10 @@
 
 package de.paladinsinn.tp.dcis.model.missions;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.UUID;
 
-public interface MissionRepository extends PanacheRepositoryBase<Mission, UUID> {
+public interface MissionRepository extends PagingAndSortingRepository<Mission, UUID> {
 
 }

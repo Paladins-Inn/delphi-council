@@ -17,20 +17,17 @@ package de.paladinsinn.tp.dcis.model.operativereports;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.paladinsinn.tp.dcis.model.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.missionreports.MissionReport;
 import de.paladinsinn.tp.dcis.model.HasOperative;
 import de.paladinsinn.tp.dcis.model.operative.Operative;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.util.StringJoiner;
 
 /**
  * OperativeReport --
@@ -51,6 +48,8 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OperativeReport.OperativeReportBuilder.class)
 public class OperativeReport extends AbstractRevisionedEntity implements Comparable<OperativeReport>, HasOperative {
@@ -131,16 +130,5 @@ public class OperativeReport extends AbstractRevisionedEntity implements Compara
         result.notes = notes;
 
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", OperativeReport.class.getSimpleName() + "[", "]")
-                .merge(super.getToStringJoiner())
-
-                .add("report=" + report.getId())
-                .add("operative='" + operative.getName() + "'")
-
-                .toString();
     }
 }

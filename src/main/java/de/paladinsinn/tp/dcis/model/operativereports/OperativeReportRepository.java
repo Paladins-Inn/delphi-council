@@ -17,11 +17,11 @@ package de.paladinsinn.tp.dcis.model.operativereports;
 
 import de.paladinsinn.tp.dcis.model.missionreports.MissionReport;
 import de.paladinsinn.tp.dcis.model.operative.Operative;
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.UUID;
 
-public interface OperativeReportRepository extends PanacheRepositoryBase<OperativeReport, UUID> {
+public interface OperativeReportRepository extends PagingAndSortingRepository<OperativeReport, UUID> {
     /**
      * @param report    mission execution to look up.
      * @param operative operative to look up.

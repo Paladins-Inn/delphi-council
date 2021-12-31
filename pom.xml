@@ -22,12 +22,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <artifactId>kp-rpg-parent</artifactId>
-        <groupId>de.kaiserpfalz-edv.rpg</groupId>
-        <version>1.2.0-SNAPSHOT</version>
-    </parent>
-
     <groupId>de.paladinsinn.delphicouncil</groupId>
     <artifactId>delphi-council-is</artifactId>
     <version>2.0.0-SNAPSHOT</version>
@@ -94,7 +88,7 @@
             <url>scm:git:git@github.com:Paladins-Inn/delphi-council.git</url>
         </site>
         <repository>
-            <id>gh-paladins</id>
+            <id>github</id>
             <name>GitHub Packages</name>
             <url>https://maven.pkg.github.com/Paladins-Inn/kp-commons</url>
         </repository>
@@ -103,9 +97,38 @@
     <properties>
         <api.version>v1</api.version>
 
-        <activate.jcenter>true</activate.jcenter>
-        <java.version>11</java.version>
+        <skipTests>false</skipTests>
+        <skip.jar>false</skip.jar>
+        <skip.javadoc>false</skip.javadoc>
+        <skip.source>false</skip.source>
+        <skip.site>false</skip.site>
 
+        <war.output.directory>undefined</war.output.directory>
+        <delombok.output>${project.build.directory}/delombok/main</delombok.output>
+        <delombok.test-output>${project.build.directory}/delombok/test</delombok.test-output>
+
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+        <quarkus.platform.version>2.6.1.Final</quarkus.platform.version>
+
+        <compiler-plugin.version>3.8.1</compiler-plugin.version>
+        <quarkus-plugin.version>2.6.1.Final</quarkus-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
+        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+        <maven-site-plugin.version>3.10.0</maven-site-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+        <lombok-maven-plugin.version>1.18.20.0</lombok-maven-plugin.version>
+        <jandex-maven-plugin.version>1.2.1</jandex-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
     </properties>
 
@@ -120,7 +143,7 @@
             </dependency>
             <dependency>
                 <groupId>de.kaiserpfalz-edv.rpg</groupId>
-                <artifactId>rpg-bom</artifactId>
+                <artifactId>kp-rpg-bom</artifactId>
                 <version>1.2.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -131,7 +154,7 @@
     <dependencies>
         <dependency>
             <groupId>de.kaiserpfalz-edv.rpg</groupId>
-            <artifactId>rpg-torg</artifactId>
+            <artifactId>kp-rpg-torg</artifactId>
         </dependency>
 
         <!-- Evaluate mathematical expressions -->
@@ -172,6 +195,10 @@
             <artifactId>commons-compress</artifactId>
             <version>1.21</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
 
         <!-- Quarkus -->
         <dependency>
@@ -183,6 +210,18 @@
 
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-oidc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-keycloak-authorization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-elytron-security-properties-file</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-security-jpa</artifactId>
         </dependency>
 
@@ -192,15 +231,11 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm</artifactId>
+            <artifactId>quarkus-spring-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-envers</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm-rest-data-panache</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -275,51 +310,10 @@
 
         <!-- Testing -->
         <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hamcrest</groupId>
-                    <artifactId>hamcrest-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.0.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.icegreen</groupId>
             <artifactId>greenmail-junit5</artifactId>
             <version>1.6.5</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-java8</artifactId>
-            <version>7.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>7.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-spring</artifactId>
-            <version>7.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.masterthought</groupId>
-            <artifactId>cucumber-reporting</artifactId>
-            <version>5.6.1</version>
         </dependency>
     </dependencies>
 
@@ -334,7 +328,7 @@
         </repository>
 
         <repository>
-            <id>gh-paladins</id>
+            <id>github</id>
             <url>https://maven.pkg.github.com/Paladins-Inn</url>
             <snapshots>
                 <enabled>true</enabled>
@@ -342,136 +336,229 @@
         </repository>
     </repositories>
 
-    <build>
+    <reporting>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-g</arg>
-                    </compilerArgs>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
-                        <version>1.18.22</version>
-                    </dependency>
-                </dependencies>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
             </plugin>
-
-
-            <!-- Runs the integration tests (*IT) after the server is started -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <trimStackTrace>false</trimStackTrace>
-                    <enableAssertions>true</enableAssertions>
-                </configuration>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
-
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <configuration>
-                    <rules>
-                        <rule implementation="org.jacoco.maven.RuleConfiguration">
-                            <element>BUNDLE</element>
-                            <limits>
-                                <limit implementation="org.jacoco.report.check.Limit">
-                                    <counter>INSTRUCTION</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.80</minimum>
-                                </limit>
-                            </limits>
-                        </rule>
-                    </rules>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
             </plugin>
-
             <plugin>
-                <groupId>net.masterthought</groupId>
-                <artifactId>maven-cucumber-reporting</artifactId>
-                <version>5.6.2</version>
-                <configuration>
-                    <projectName>${project.name}</projectName>
-                    <buildNumber>${env.github.run_id}</buildNumber>
-                    <skip>false</skip>
-                    <outputDirectory>${project.build.directory}/site</outputDirectory>
-                    <inputDirectory>${project.build.directory}/cucumber</inputDirectory>
-                    <jsonFiles>
-                        <jsonFile>*.json</jsonFile>
-                    </jsonFiles>
-                    <mergeFeaturesWithRetest>true</mergeFeaturesWithRetest>
-                    <mergeFeaturesById>true</mergeFeaturesById>
-                    <checkBuildResult>false</checkBuildResult>
-                    <skipEmptyJSONFiles>true</skipEmptyJSONFiles>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>execution</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
         </plugins>
+    </reporting>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${compiler-plugin.version}</version>
+                    <configuration>
+                        <parameters>${maven.compiler.parameters}</parameters>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <compileSourceRoots>
+                            <compileSourceRoot>${delombok.output}</compileSourceRoot>
+                        </compileSourceRoots>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-testCompile</id>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                            <phase>test-compile</phase>
+                            <configuration>
+                                <skip>${skipTests}</skip>
+                                <compileSourceRoots>
+                                    <compileSourceRoot>${delombok.test-output}</compileSourceRoot>
+                                </compileSourceRoots>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                    <configuration>
+                        <skipIfEmpty>true</skipIfEmpty>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok-maven-plugin</artifactId>
+                    <version>${lombok-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>delombok-main</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>delombok</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+                                <outputDirectory>${delombok.output}</outputDirectory>
+                                <addOutputDirectory>false</addOutputDirectory>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>delombok-test</id>
+                            <phase>generate-test-sources</phase>
+                            <goals>
+                                <goal>testDelombok</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirectory>${project.basedir}/src/test/java</sourceDirectory>
+                                <outputDirectory>${delombok.test-output}</outputDirectory>
+                                <addOutputDirectory>false</addOutputDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <sourcepath>${delombok.output}</sourcepath>
+                        <skip>${skip.javadoc}</skip>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
+                    <configuration>
+                        <skipSource>${skip.source}</skipSource>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <propertiesEncoding>${project.build.sourceEncoding}</propertiesEncoding>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>test-sources-generation</id>
+                            <phase>generate-test-resources</phase>
+                            <goals>
+                                <goal>testResources</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${skipTests}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.3.2</version>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <webResources>
+                            <resource>
+                                <directory>${war.output.directory}</directory>
+                            </resource>
+                        </webResources>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jboss.jandex</groupId>
+                    <artifactId>jandex-maven-plugin</artifactId>
+                    <version>${jandex-maven-plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.jboss</groupId>
+                            <artifactId>jandex</artifactId>
+                            <version>2.4.1.Final</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>make-index</id>
+                            <goals>
+                                <goal>jandex</goal>
+                            </goals>
+                            <phase>process-classes</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven-site-plugin.version}</version>
+                    <configuration>
+                        <skip>${skip.site}</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
         <resources>
             <resource>
                 <filtering>true</filtering>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-
-            <resource>
-                <filtering>true</filtering>
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>**/*.docx</exclude>
                     <exclude>**/*.xlsx</exclude>
                     <exclude>**/*.zip</exclude>
                     <exclude>**/*.tgz</exclude>
+                    <exclude>**/*.xcf</exclude>
                     <exclude>**/*.png</exclude>
                     <exclude>**/*.jpg</exclude>
+                    <exclude>**/*.jpeg</exclude>
+                    <exclude>**/*.webp</exclude>
+                    <exclude>**/*.svg</exclude>
+                    <exclude>**/*.json</exclude>
                     <exclude>**/*.gpg</exclude>
                     <exclude>**/*.license</exclude>
-                    <exclude>**/*.js</exclude>
-                    <exclude>**/*.js.*</exclude>
-                    <exclude>**/*.ttf</exclude>
-                    <exclude>**/*.woff*</exclude>
-                    <exclude>**/*.eot</exclude>
+                    <exclude>src/main/resources/static/*</exclude>
                 </excludes>
             </resource>
             <resource>
@@ -482,166 +569,236 @@
                     <include>**/*.xlsx</include>
                     <include>**/*.zip</include>
                     <include>**/*.tgz</include>
+                    <include>**/*.xcf</include>
                     <include>**/*.png</include>
                     <include>**/*.jpg</include>
+                    <include>**/*.jpeg</include>
+                    <include>**/*.webp</include>
+                    <include>**/*.svg</include>
+                    <include>**/*.json</include>
                     <include>**/*.gpg</include>
                     <include>**/*.license</include>
-                    <include>**/*.js</include>
-                    <include>**/*.js.*</include>
-                    <include>**/*.ttf</include>
-                    <include>**/*.woff*</include>
-                    <include>**/*.eot</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>LICENSE</include>
-                    <include>LICENSE.*</include>
                 </includes>
             </resource>
         </resources>
-
-        <testResources>
-            <testResource>
-                <filtering>true</filtering>
-                <directory>src/test/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </testResource>
-
-            <testResource>
-                <filtering>true</filtering>
-                <directory>src/test/resources</directory>
-                <excludes>
-                    <exclude>**/*.docx</exclude>
-                    <exclude>**/*.xlsx</exclude>
-                    <exclude>**/*.zip</exclude>
-                    <exclude>**/*.tgz</exclude>
-                    <exclude>**/*.png</exclude>
-                    <exclude>**/*.jpg</exclude>
-                    <exclude>**/*.gpg</exclude>
-                    <exclude>**/*.license</exclude>
-                    <exclude>**/*.js</exclude>
-                    <exclude>**/*.js.*</exclude>
-                    <exclude>**/*.ttf</exclude>
-                    <exclude>**/*.woff*</exclude>
-                    <exclude>**/*.eot</exclude>
-                </excludes>
-            </testResource>
-            <testResource>
-                <filtering>false</filtering>
-                <directory>src/test/resources</directory>
-                <includes>
-                    <include>**/*.docx</include>
-                    <include>**/*.xlsx</include>
-                    <include>**/*.zip</include>
-                    <include>**/*.tgz</include>
-                    <include>**/*.png</include>
-                    <include>**/*.jpg</include>
-                    <include>**/*.gpg</include>
-                    <include>**/*.license</include>
-                    <include>**/*.js</include>
-                    <include>**/*.js.*</include>
-                    <include>**/*.ttf</include>
-                    <include>**/*.woff*</include>
-                    <include>**/*.eot</include>
-                </includes>
-            </testResource>
-        </testResources>
     </build>
 
 
     <profiles>
         <profile>
-            <!-- Production mode is activated using -Pproduction -->
-            <id>production</id>
+            <id>java</id>
 
-            <reporting>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-site-plugin</artifactId>
-                        <version>${site-plugin.version}</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-project-info-reports-plugin</artifactId>
-                        <version>${info-reports-plugin.version}</version>
-                    </plugin>
+            <activation>
+                <file>
+                    <exists>src/main/java</exists>
+                </file>
+            </activation>
 
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven-javadoc-plugin.version}</version>
-                        <configuration>
-                            <source>${java.version}</source>
-                            <failOnError>false</failOnError>
-                            <failOnWarnings>false</failOnWarnings>
-                        </configuration>
-                        <reportSets>
-                            <reportSet><!-- by default, id = "default" -->
-                                <reports><!-- select non-aggregate reports -->
-                                    <report>javadoc</report>
-                                </reports>
-                            </reportSet>
-                        </reportSets>
-                    </plugin>
+            <dependencies>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </dependency>
 
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-report-plugin</artifactId>
-                        <version>3.0.0-M5</version>
-                    </plugin>
+                <dependency>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                </dependency>
 
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>jdepend-maven-plugin</artifactId>
-                        <version>2.0</version>
-                    </plugin>
+                <dependency>
+                    <groupId>jakarta.annotation</groupId>
+                    <artifactId>jakarta.annotation-api</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.inject</groupId>
+                    <artifactId>jakarta.inject-api</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.enterprise</groupId>
+                    <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.validation</groupId>
+                    <artifactId>jakarta.validation-api</artifactId>
+                </dependency>
+            </dependencies>
 
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jxr-plugin</artifactId>
-                        <version>3.1.1</version>
-                    </plugin>
+            <repositories>
+                <repository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>central</id>
+                    <name>bintray</name>
+                    <url>https://jcenter.bintray.com</url>
+                </repository>
+            </repositories>
 
-                </plugins>
-            </reporting>
+            <pluginRepositories>
+                <pluginRepository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>central</id>
+                    <name>bintray-plugins</name>
+                    <url>https://jcenter.bintray.com</url>
+                </pluginRepository>
+            </pluginRepositories>
 
             <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/docker</directory>
-                        <filtering>true</filtering>
-                    </resource>
-                </resources>
-
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-site-plugin</artifactId>
-                        <version>${site-plugin.version}</version>
+                        <artifactId>maven-compiler-plugin</artifactId>
                     </plugin>
-
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven-javadoc-plugin.version}</version>
+                        <artifactId>maven-jar-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>java-test</id>
+            <activation>
+                <file>
+                    <exists>src/test/java</exists>
+                </file>
+            </activation>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-surefire-plugin.version}</version>
                         <configuration>
-                            <source>${java.version}</source>
-                            <failOnError>false</failOnError>
-                            <failOnWarnings>false</failOnWarnings>
-                            <attach>true</attach>
-                            <encoding>${project.reporting.outputEncoding}</encoding>
+                            <argLine>-Dorg.jboss.logging.provider=slf4j</argLine>
                         </configuration>
+                    </plugin>
+
+                    <!-- Runs the integration tests (*IT) after the server is started -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>attach-javadocs</id>
                                 <goals>
-                                    <goal>jar</goal>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <maven.home>${maven.home}</maven.home>
+                            </systemPropertyVariables>
+                            <trimStackTrace>false</trimStackTrace>
+                            <enableAssertions>true</enableAssertions>
+                        </configuration>
+                    </plugin>
+                </plugins>
+
+                <testResources>
+                    <testResource>
+                        <filtering>true</filtering>
+                        <directory>src/test/resources</directory>
+                        <excludes>
+                            <exclude>**/*.docx</exclude>
+                            <exclude>**/*.xlsx</exclude>
+                            <exclude>**/*.zip</exclude>
+                            <exclude>**/*.tgz</exclude>
+                            <exclude>**/*.xcf</exclude>
+                            <exclude>**/*.png</exclude>
+                            <exclude>**/*.jpg</exclude>
+                            <exclude>**/*.jpeg</exclude>
+                            <exclude>**/*.webp</exclude>
+                            <exclude>**/*.svg</exclude>
+                            <exclude>**/*.json</exclude>
+                            <exclude>**/*.gpg</exclude>
+                            <exclude>**/*.license</exclude>
+                        </excludes>
+                    </testResource>
+                    <testResource>
+                        <filtering>false</filtering>
+                        <directory>src/test/resources</directory>
+                        <includes>
+                            <include>**/*.docx</include>
+                            <include>**/*.xlsx</include>
+                            <include>**/*.zip</include>
+                            <include>**/*.tgz</include>
+                            <include>**/*.xcf</include>
+                            <include>**/*.png</include>
+                            <include>**/*.jpg</include>
+                            <include>**/*.jpeg</include>
+                            <include>**/*.webp</include>
+                            <include>**/*.svg</include>
+                            <include>**/*.json</include>
+                            <include>**/*.gpg</include>
+                            <include>**/*.license</include>
+                        </includes>
+                    </testResource>
+                </testResources>
+            </build>
+        </profile>
+
+        <profile>
+            <id>quarkus</id>
+            <activation>
+                <file>
+                    <exists>src/test/resources/application.properties</exists>
+                </file>
+            </activation>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss</groupId>
+                    <artifactId>jandex</artifactId>
+                    <version>2.4.1.Final</version>
+                </dependency>
+
+
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-junit5</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.rest-assured</groupId>
+                    <artifactId>rest-assured</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.quarkus</groupId>
+                        <artifactId>quarkus-maven-plugin</artifactId>
+                        <!--suppress MavenModelInspection -->
+                        <version>${quarkus.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>build</goal>
+                                    <goal>generate-code</goal>
+                                    <goal>generate-code-tests</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -649,53 +806,18 @@
 
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>${maven-source-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-source</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>com.vaadin</groupId>
-                        <artifactId>vaadin-maven-plugin</artifactId>
-                        <version>${vaadin.version}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build-frontend</goal>
-                                </goals>
-                                <phase>compile</phase>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <productionMode>true</productionMode>
-                        </configuration>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <!-- Clean build and startup time for Vaadin apps sometimes may exceed
-                             the default Spring Boot's 30sec timeout.  -->
-                        <configuration>
-                            <wait>500</wait>
-                            <maxAttempts>240</maxAttempts>
-                            <excludeDevtools>true</excludeDevtools>
-                        </configuration>
+                        <artifactId>maven-compiler-plugin</artifactId>
                     </plugin>
 
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-publish-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <scmBranch>gh-pages</scmBranch>
+                            <systemPropertyVariables>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <maven.home>${maven.home}</maven.home>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -704,20 +826,123 @@
 
         <profile>
             <id>helm</id>
+
             <activation>
                 <file>
                     <exists>src/main/helm</exists>
                 </file>
             </activation>
+
             <build>
                 <resources>
                     <resource>
-                        <directory>src/main/helm</directory>
-                        <targetPath>../helm</targetPath>
                         <filtering>true</filtering>
+                        <directory>src/main/helm</directory>
+                        <excludes>
+                            <exclude>**/*.docx</exclude>
+                            <exclude>**/*.xlsx</exclude>
+                            <exclude>**/*.zip</exclude>
+                            <exclude>**/*.tgz</exclude>
+                            <exclude>**/*.xcf</exclude>
+                            <exclude>**/*.png</exclude>
+                            <exclude>**/*.jpg</exclude>
+                            <exclude>**/*.jpeg</exclude>
+                            <exclude>**/*.webp</exclude>
+                            <exclude>**/*.svg</exclude>
+                            <exclude>**/*.json</exclude>
+                            <exclude>**/*.gpg</exclude>
+                            <exclude>**/*.license</exclude>
+                        </excludes>
+                        <targetPath>../helm</targetPath>
+                    </resource>
+                    <resource>
+                        <filtering>false</filtering>
+                        <directory>src/main/helm</directory>
+                        <includes>
+                            <include>**/*.docx</include>
+                            <include>**/*.xlsx</include>
+                            <include>**/*.zip</include>
+                            <include>**/*.tgz</include>
+                            <include>**/*.xcf</include>
+                            <include>**/*.png</include>
+                            <include>**/*.jpg</include>
+                            <include>**/*.jpeg</include>
+                            <include>**/*.webp</include>
+                            <include>**/*.svg</include>
+                            <include>**/*.json</include>
+                            <include>**/*.gpg</include>
+                            <include>**/*.license</include>
+                        </includes>
+                        <targetPath>../helm</targetPath>
                     </resource>
                 </resources>
             </build>
+        </profile>
+
+        <profile>
+            <id>release</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <!--suppress MavenModelInspection -->
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <systemPropertyVariables>
+                                        <native.image.path>
+                                            ${project.build.directory}/${project.build.finalName}-runner
+                                        </native.image.path>
+                                        <java.util.logging.manager>org.jboss.logmanager.LogManager
+                                        </java.util.logging.manager>
+                                        <!--suppress UnresolvedMavenProperty -->
+                                        <maven.home>${maven.home}</maven.home>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <properties>
+                <quarkus.package.type>native</quarkus.package.type>
+            </properties>
         </profile>
 
         <profile>

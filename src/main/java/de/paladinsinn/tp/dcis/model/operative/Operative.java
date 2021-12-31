@@ -20,17 +20,14 @@ package de.paladinsinn.tp.dcis.model.operative;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
+import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
+import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.model.*;
 import de.paladinsinn.tp.dcis.model.operativereports.OperativeReport;
 import de.paladinsinn.tp.dcis.model.operativespecialreports.OperativeSpecialReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.validation.constraints.NotNull;
-import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
-import de.paladinsinn.tp.dcis.model.*;
-import de.paladinsinn.tp.dcis.model.person.Person;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
@@ -41,7 +38,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringJoiner;
 
 @RegisterForReflection
 @Entity
@@ -56,6 +52,8 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Operative.OperativeBuilder.class)
 public class Operative extends AbstractRevisionedEntity implements HasAvatar, HasToken, HasName, HasCosm, HasClearance {
@@ -85,21 +83,10 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
     @Audited
     private int xp;
 
-    @ManyToOne(
-            targetEntity = Person.class,
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.REFRESH},
-
-            optional = false
-    )
-    @JoinColumn(
-            name = "PERSON_ID",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "OPERATIVES_PERSON_FK")
-    )
     @Audited
     @Setter
-    private Person player;
+    @Column(name = "PLAYER", nullable = false)
+    private String player;
 
     @OneToMany(
             targetEntity = OperativeReport.class,
@@ -222,7 +209,7 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
             result.token = Arrays.copyOf(token, token.length);
         }
 
-        result.player = player.clone();
+        result.player = player;
 
         result.cosm = cosm;
         result.clearance = clearance;
@@ -235,18 +222,5 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
         }
 
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Operative.class.getSimpleName() + "[", "]")
-                .merge(super.getToStringJoiner())
-
-                .add("player='" + player.getName() + "'")
-                .add("name='" + name + "'")
-                .add("cosm=" + cosm)
-                .add("clearance=" + clearance)
-
-                .toString();
     }
 }

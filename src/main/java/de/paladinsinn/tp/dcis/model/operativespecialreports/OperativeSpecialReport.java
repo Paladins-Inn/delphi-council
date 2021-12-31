@@ -17,21 +17,18 @@ package de.paladinsinn.tp.dcis.model.operativespecialreports;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.paladinsinn.tp.dcis.model.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.HasName;
 import de.paladinsinn.tp.dcis.model.HasOperative;
 import de.paladinsinn.tp.dcis.model.operative.Operative;
 import de.paladinsinn.tp.dcis.model.specialmissions.SpecialMission;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.util.StringJoiner;
 
 /**
  * OperativeSpecialReport -- The special report for a local table game.
@@ -52,6 +49,8 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OperativeSpecialReport.OperativeSpecialReportBuilder.class)
 public class OperativeSpecialReport extends AbstractRevisionedEntity implements Comparable<OperativeSpecialReport>, HasName, HasOperative {
@@ -134,17 +133,5 @@ public class OperativeSpecialReport extends AbstractRevisionedEntity implements 
         result.notes = notes;
 
         return result;
-    }
-
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", OperativeSpecialReport.class.getSimpleName() + "[", "]")
-                .merge(super.getToStringJoiner())
-
-                .add("report=" + specialMission.getId())
-                .add("operative='" + operative.getName() + "'")
-
-                .toString();
     }
 }

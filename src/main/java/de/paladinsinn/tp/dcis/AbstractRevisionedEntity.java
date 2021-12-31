@@ -15,12 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.model;
+package de.paladinsinn.tp.dcis;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
@@ -35,9 +32,10 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true, setterPrefix = "with")
+@ToString(callSuper = true)
 @Getter
 @Setter
-public class AbstractRevisionedEntity extends AbstractEntity {
+public abstract class AbstractRevisionedEntity extends AbstractEntity {
     @RevisionNumber
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DbSequence")
     @SequenceGenerator(name = "DbSequence", sequenceName = "hibernate_sequence")
@@ -47,18 +45,6 @@ public class AbstractRevisionedEntity extends AbstractEntity {
     @RevisionTimestamp
     @Column(name = "REVISIONED")
     protected OffsetDateTime revisioned;
-
-    @Override
-    public String toString() {
-        return getToStringJoiner().toString();
-    }
-
-    protected StringJoiner getToStringJoiner() {
-        return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
-                .merge(super.getToStringJoiner())
-                .add("revId=" + revId)
-                .add("revisioned=" + revisioned);
-    }
 
 
     @Override

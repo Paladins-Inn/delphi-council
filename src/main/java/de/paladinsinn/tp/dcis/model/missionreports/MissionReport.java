@@ -18,16 +18,11 @@ package de.paladinsinn.tp.dcis.model.missionreports;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
+import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.missions.Mission;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.validation.constraints.NotNull;
-import de.paladinsinn.tp.dcis.model.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.operativereports.OperativeReport;
-import de.paladinsinn.tp.dcis.model.person.Person;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
@@ -36,7 +31,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringJoiner;
 
 /**
  * MissionReport -- A report of the gaming results.
@@ -57,6 +51,7 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = MissionReport.MissionReportBuilder.class)
 public class MissionReport extends AbstractRevisionedEntity implements Comparable<MissionReport>, Cloneable {
@@ -75,20 +70,10 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
     @Setter
     private Mission mission;
 
-    @ManyToOne(
-            cascade = {CascadeType.REFRESH},
-            fetch = FetchType.EAGER,
-            optional = false,
-            targetEntity = Person.class
-    )
-    @JoinColumn(
-            name = "GM_ID",
-            referencedColumnName = "ID",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "REPORTS_PERSONS_FK")
-    )
     @Audited
-    private Person gameMaster;
+    @Setter
+    @Column(name = "GAME_MASTER", nullable = false)
+    private String gameMaster;
 
     @OneToMany(
             targetEntity = OperativeReport.class,
@@ -116,20 +101,6 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
     @Audited
     private String notes;
 
-    public void setGameMaster(@NotNull final Person gameMaster) {
-        if (this.gameMaster != null) {
-            if (this.gameMaster.equals(gameMaster))
-                return;
-
-            Person oldGameMaster = this.gameMaster;
-            this.gameMaster = gameMaster;
-            oldGameMaster.removeGameMasterReport(this);
-        } else {
-            this.gameMaster = gameMaster;
-            gameMaster.addGameMasterReport(this);
-        }
-    }
-
     public void addOperativeReport(OperativeReport operative) {
         if (operative != null && !operatives.contains(operative)) {
             operatives.add(operative);
@@ -155,15 +126,6 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
                 .toComparison();
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", MissionReport.class.getSimpleName() + "[", "]")
-                .merge(super.getToStringJoiner())
-                .add("mission=" + mission.getCode())
-                .add("gameMaster='" + gameMaster.getName() + "'")
-                .add("date=" + date)
-                .toString();
-    }
 
     @Override
     public MissionReport clone() throws CloneNotSupportedException {
@@ -172,7 +134,7 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
         result.achievements = achievements;
         result.notes = notes;
 
-        result.gameMaster = gameMaster.clone();
+        result.gameMaster = gameMaster;
         result.mission = mission.clone();
         result.objectivesMet = objectivesMet;
 

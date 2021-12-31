@@ -1,11 +1,9 @@
 package de.paladinsinn.tp.dcis;
 
-import de.paladinsinn.tp.dcis.model.person.AvatarInformation;
+import de.paladinsinn.tp.dcis.model.images.Avatar;
 import de.paladinsinn.tp.dcis.model.threadcards.SizeModifier;
 import de.paladinsinn.tp.dcis.model.threadcards.ThreadCard;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,7 +31,7 @@ public class ThreadCardTest {
         sut = ThreadCard.builder()
                 .withName("Testthreat")
                 .withImage(
-                        AvatarInformation.builder()
+                        Avatar.builder()
                                 .withGravatar(true)
                                 .build()
                 )

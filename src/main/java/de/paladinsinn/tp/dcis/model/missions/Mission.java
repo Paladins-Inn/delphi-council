@@ -20,14 +20,12 @@ package de.paladinsinn.tp.dcis.model.missions;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
+import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.missionreports.MissionReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.validation.constraints.NotNull;
 import de.paladinsinn.tp.dcis.model.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -36,7 +34,6 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringJoiner;
 
 @RegisterForReflection
 @Entity
@@ -53,6 +50,8 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Mission.MissionBuilder.class)
 @Schema(description = "Delphi Council Mission")
@@ -144,16 +143,6 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
         return new CompareToBuilder()
                 .append(getCode(), o.getCode())
                 .toComparison();
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Mission.class.getSimpleName() + "[", "]")
-                .add("code='" + code + "'")
-                .add("title='" + name + "'")
-                .add("payment=" + payment)
-                .add("xp=" + xp)
-                .toString();
     }
 
     @SneakyThrows

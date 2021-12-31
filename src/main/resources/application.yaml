@@ -17,8 +17,8 @@
 
 quarkus:
   application:
-    name: ${project.name}
-    version: ${project.version}
+    name: @project.name@
+    version: @project.version@
 
   http:
     insecure-requests: enabled
@@ -29,7 +29,7 @@ quarkus:
       sni: true
 
     auth:
-      realm: ${quarkus.application.name}
+      realm: @quarkus.application.name@
       proactive: false
     cors: true
 
@@ -127,9 +127,9 @@ quarkus:
     enable: true
     path: /api/openapi
     operation-id-strategy: method
-    info: ${quarkus.application.name} API
-    info-version: ${quarkus.application.version}
-    info-description: ${project.description}
+    info: @quarkus.application.name@ API
+    info-version: @quarkus.application.version@
+    info-description: @project.description@
     info-terms-of-service: Service provided as is without any warranty
     info-contact-email: info@paladins-inn.de
     info-contact-name: Paladins Inn
@@ -142,6 +142,20 @@ quarkus:
     always-include: true
     path: /api/docs
 
+  oidc:
+    auth-server-url: ${OAUTH2_URL}
+    client-id: ${OAUTH2_CLIENT}
+    credentials:
+      secret: ${OAUTH2_SECRET}
+    tls:
+      verification: none
+
+  keycloak:
+    policy-enforcer:
+      enable: true
+
+    devservices:
+      realm-path: quarkus-realm.json
 
 "%dev":
   quarkus:
@@ -168,9 +182,5 @@ quarkus:
 
 application:
   api:
-    version: "${api.version}"
-  registration:
-    signature: "${MAIL_FROM_NAME:Quin Sebastian}"
-    redirect-url: https://www.delphi-council.org/user-registered
-    cancel-url: https://www.delphi-council.org/user-registration-canceled
+    version: "@api.version@"
 

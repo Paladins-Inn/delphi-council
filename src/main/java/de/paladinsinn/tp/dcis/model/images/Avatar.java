@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.model.person;
+package de.paladinsinn.tp.dcis.model.images;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.paladinsinn.tp.dcis.model.HasAvatar;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.internal.Base64;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -38,21 +35,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+// FIXME 2021-12-31 klenkes74 Refactor to generic image instead of avatar.
 /**
- * AvatarInformation --
+ * Avatar -- An avatar of the stormknight or threat.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-05
  */
 @Embeddable
 @Builder(toBuilder = true, setterPrefix = "with")
+@EqualsAndHashCode
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonDeserialize(builder = AvatarInformation.AvatarInformationBuilder.class)
+@JsonDeserialize(builder = Avatar.AvatarBuilder.class)
 @Schema(description = "User avatar.")
-public class AvatarInformation implements HasAvatar, Serializable, Cloneable {
+public class Avatar implements HasAvatar, Serializable, Cloneable {
     @Lob
     @Column(name = "AVATAR", length = 16777215)
     @Schema(description = "The avatar image itself encoded in BASE64.")
@@ -90,8 +90,8 @@ public class AvatarInformation implements HasAvatar, Serializable, Cloneable {
 
 
     @Override
-    public AvatarInformation clone() throws CloneNotSupportedException {
-        AvatarInformation result = (AvatarInformation) super.clone();
+    public Avatar clone() throws CloneNotSupportedException {
+        Avatar result = (Avatar) super.clone();
 
         if (avatar != null) {
             result.avatar = Arrays.copyOf(avatar, avatar.length);

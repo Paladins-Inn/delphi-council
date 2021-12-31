@@ -20,11 +20,10 @@ package de.paladinsinn.tp.dcis.model.specialmissions;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
-import de.paladinsinn.tp.dcis.model.AbstractRevisionedEntity;
+import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.HasClearance;
 import de.paladinsinn.tp.dcis.model.HasId;
 import de.paladinsinn.tp.dcis.model.operativespecialreports.OperativeSpecialReport;
-import de.paladinsinn.tp.dcis.model.person.Person;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -35,7 +34,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 /**
@@ -55,6 +53,8 @@ import java.util.UUID;
         }
 )
 @SuperBuilder(toBuilder = true, setterPrefix = "with")
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -89,14 +89,9 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
     @Column(name = "PUBLICATION")
     private String publication;
 
-    @ManyToOne(
-            targetEntity = Person.class,
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.REFRESH},
-            optional = false
-    )
-    @JoinColumn(name = "GM", nullable = false)
-    private Person gameMaster;
+    @Column(name = "GAME_MASTER")
+    @Setter
+    private String gameMaster;
 
     @OneToMany(
             targetEntity = OperativeSpecialReport.class,
@@ -113,23 +108,6 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
 
     @Column(name = "NOTES", length = 4000)
     private String notes;
-
-    /**
-     * @param gameMaster the GM of this local table play.
-     */
-    @Transient
-    public void setGameMaster(Person gameMaster) {
-        Person old = this.gameMaster;
-        this.gameMaster = gameMaster;
-
-        if (gameMaster != null && !gameMaster.equals(old)) {
-            gameMaster.addSpecialMission(this);
-
-            if (old != null) {
-                old.removeSpecialMission(this);
-            }
-        }
-    }
 
 
     /**
@@ -175,18 +153,10 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
         result.xp = xp;
         result.imageUrl = imageUrl;
         result.publication = publication;
+        result.gameMaster = gameMaster;
+        result.notes = notes;
+        result.missionDate = missionDate;
 
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", SpecialMission.class.getSimpleName() + "[", "]")
-                .add("code=" + code)
-                .add("title='" + title + "'")
-                .add("clearance=" + clearance)
-                .add("payment=" + payment)
-                .add("xp=" + xp)
-                .toString();
     }
 }

@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.model;
+package de.paladinsinn.tp.dcis;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import de.paladinsinn.tp.dcis.model.HasId;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
@@ -37,9 +34,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true, setterPrefix = "with")
+@ToString
 @Getter
 @Setter
-public abstract class AbstractEntity extends PanacheEntityBase implements Cloneable, HasId {
+public abstract class AbstractEntity implements Serializable, Cloneable, HasId {
     @Id
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(generator = "uuid2")
@@ -98,26 +96,6 @@ public abstract class AbstractEntity extends PanacheEntityBase implements Clonea
     @Override
     public int hashCode() {
         return Objects.hash(getId());
-    }
-
-    @Override
-    public String toString() {
-        StringJoiner result = getToStringJoiner();
-
-        return result.toString();
-    }
-
-    protected StringJoiner getToStringJoiner() {
-        StringJoiner result = new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
-                .add("hash=" + System.identityHashCode(this))
-                .add("id=" + id)
-                .add("created=" + created);
-
-        if (modified != null) {
-            result.add("modified=" + modified);
-        }
-
-        return result;
     }
 
     @Override

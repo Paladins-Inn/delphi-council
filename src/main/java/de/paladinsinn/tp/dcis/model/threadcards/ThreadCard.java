@@ -3,18 +3,14 @@ package de.paladinsinn.tp.dcis.model.threadcards;
 import de.paladinsinn.tp.dcis.model.HasAvatar;
 import de.paladinsinn.tp.dcis.model.HasId;
 import de.paladinsinn.tp.dcis.model.HasName;
-import de.paladinsinn.tp.dcis.model.person.AvatarInformation;
+import de.paladinsinn.tp.dcis.model.images.Avatar;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.OutputStream;
 import java.util.UUID;
@@ -28,8 +24,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true, setterPrefix = "with")
-@Getter
+@EqualsAndHashCode
 @ToString(onlyExplicitlyIncluded = true)
+@Getter
 public class ThreadCard implements HasId, HasName, HasAvatar, Cloneable {
     @ToString.Include
     @Builder.Default
@@ -43,8 +40,7 @@ public class ThreadCard implements HasId, HasName, HasAvatar, Cloneable {
     @Size(min = 2, max = 20)
     private String name;
 
-    @NotNull
-    private AvatarInformation image;
+    private Avatar image;
 
     @Min(0)
     private int intimidation, maneuver, taunt, trick,

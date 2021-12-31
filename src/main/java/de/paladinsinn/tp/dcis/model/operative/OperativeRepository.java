@@ -17,10 +17,10 @@
 
 package de.paladinsinn.tp.dcis.model.operative;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.UUID;
 
-public interface OperativeRepository extends PanacheRepositoryBase<Operative, UUID> {
+public interface OperativeRepository extends PagingAndSortingRepository<Operative, UUID> {
 
 }

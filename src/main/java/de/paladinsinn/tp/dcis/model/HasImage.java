@@ -29,10 +29,10 @@ import java.io.OutputStream;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
-public interface HasAvatar {
-    String getAvatarImage();
+public interface HasImage {
+    public String getData();
 
-    OutputStream getAvatar();
+    public OutputStream getDataStream();
 
     default public OutputStream getOutputStream(byte[] data) {
         if (data != null) {

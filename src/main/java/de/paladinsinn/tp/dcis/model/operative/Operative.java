@@ -56,7 +56,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Operative.OperativeBuilder.class)
-public class Operative extends AbstractRevisionedEntity implements HasAvatar, HasToken, HasName, HasCosm, HasClearance {
+public class Operative extends AbstractRevisionedEntity implements HasImage, HasToken, HasName, HasCosm, HasClearance {
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited
     private String name;
@@ -167,12 +167,12 @@ public class Operative extends AbstractRevisionedEntity implements HasAvatar, Ha
 
 
     @Override
-    public String getAvatarImage() {
+    public String getData() {
         return Base64.getEncoder().encodeToString(avatar);
     }
 
     @Override
-    public OutputStream getAvatar() {
+    public OutputStream getDataStream() {
         return getOutputStream(avatar);
     }
 

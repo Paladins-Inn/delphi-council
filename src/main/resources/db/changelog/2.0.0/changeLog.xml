@@ -23,4 +23,5 @@
 
     <include file="security.xml" relativeToChangelogFile="true"/>
     <include file="remove-person.xml" relativeToChangelogFile="true"/>
+    <include file="files.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

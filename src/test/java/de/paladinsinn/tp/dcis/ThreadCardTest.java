@@ -1,6 +1,6 @@
 package de.paladinsinn.tp.dcis;
 
-import de.paladinsinn.tp.dcis.model.images.Avatar;
+import de.paladinsinn.tp.dcis.model.files.FileData;
 import de.paladinsinn.tp.dcis.model.threadcards.SizeModifier;
 import de.paladinsinn.tp.dcis.model.threadcards.ThreadCard;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +31,7 @@ public class ThreadCardTest {
         sut = ThreadCard.builder()
                 .withName("Testthreat")
                 .withImage(
-                        Avatar.builder()
-                                .withGravatar(true)
+                        FileData.builder()
                                 .build()
                 )
 

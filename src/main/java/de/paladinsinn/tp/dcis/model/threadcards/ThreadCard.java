@@ -1,9 +1,10 @@
 package de.paladinsinn.tp.dcis.model.threadcards;
 
-import de.paladinsinn.tp.dcis.model.HasAvatar;
+import de.paladinsinn.tp.dcis.AbstractEntity;
+import de.paladinsinn.tp.dcis.model.HasImage;
 import de.paladinsinn.tp.dcis.model.HasId;
 import de.paladinsinn.tp.dcis.model.HasName;
-import de.paladinsinn.tp.dcis.model.images.Avatar;
+import de.paladinsinn.tp.dcis.model.files.FileData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,28 +12,23 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.OutputStream;
-import java.util.UUID;
 
 /**
- * @author rlichti
- * @version 1.0.0 2021-12-25
- * @since 1.0.0 2021-12-25
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @version 2.0.0 2021-12-25
+ * @since 2.0.0 2021-12-25
  */
 @RegisterForReflection
+@SuperBuilder(toBuilder = true, setterPrefix = "with")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(toBuilder = true, setterPrefix = "with")
 @EqualsAndHashCode
 @ToString(onlyExplicitlyIncluded = true)
 @Getter
-public class ThreadCard implements HasId, HasName, HasAvatar, Cloneable {
-    @ToString.Include
-    @Builder.Default
-    @NotNull
-    private UUID id = UUID.randomUUID();
-
+public class ThreadCard extends AbstractEntity implements HasId, HasName, HasImage, Cloneable {
     @ToString.Include
     @NotEmpty
     @NotNull
@@ -40,7 +36,7 @@ public class ThreadCard implements HasId, HasName, HasAvatar, Cloneable {
     @Size(min = 2, max = 20)
     private String name;
 
-    private Avatar image;
+    private FileData image;
 
     @Min(0)
     private int intimidation, maneuver, taunt, trick,
@@ -52,16 +48,16 @@ public class ThreadCard implements HasId, HasName, HasAvatar, Cloneable {
     private SizeModifier size = SizeModifier.Normal;
 
     @Override
-    public String getAvatarImage() {
+    public String getData() {
         if (image == null) return "";
-        return image.getAvatarImage();
+        return image.getData();
     }
 
     @Override
-    public OutputStream getAvatar() {
+    public OutputStream getDataStream() {
         if (image == null) return getOutputStream(null);
 
-        return image.getAvatar();
+        return image.getDataStream();
     }
 
     @Override

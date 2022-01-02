@@ -13,6 +13,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.util.MimeTypeUtils;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -28,12 +30,22 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 @Slf4j
-@Path("/api/files")
+@Path("/api/v1/files")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class FileService {
     private final FileRepository repository;
     private final Paging paging;
+
+    @PostConstruct
+    public void init() {
+        log.info("Started file service.");
+    }
+
+    @PreDestroy
+    public void close() {
+        log.info("Closing file service ...");
+    }
 
     @Schema(
             description = "Index of all files."

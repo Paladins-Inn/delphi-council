@@ -29,7 +29,7 @@ quarkus:
       sni: true
 
     auth:
-      realm: @quarkus.application.name@
+      realm: ${quarkus.application.name}
       proactive: false
     cors: true
 
@@ -57,10 +57,6 @@ quarkus:
       generation:
         ~: none
         create-schemas: false
-      log:
-        sql: true
-        jdbc-warnings: true
-        queries-slower-than-ms: 10
 
   hibernate-envers:
     store-data-at-delete: true
@@ -127,8 +123,8 @@ quarkus:
     enable: true
     path: /api/openapi
     operation-id-strategy: method
-    info: @quarkus.application.name@ API
-    info-version: @quarkus.application.version@
+    info: ${quarkus.application.name} API
+    info-version: ${quarkus.application.version}
     info-description: @project.description@
     info-terms-of-service: Service provided as is without any warranty
     info-contact-email: info@paladins-inn.de
@@ -171,8 +167,16 @@ quarkus:
       console:
         json: false
         enable: true
-      level: DEBUG
+      level: INFO
       min-level: ALL
+      category:
+        "de.kaiserpfalzedv":
+          min-level: ALL
+          level: DEBUG
+        "de.paladinsinn":
+          min-level: ALL
+          level: DEBUG
+
 
 "%test":
   quarkus:

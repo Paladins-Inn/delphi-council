@@ -82,6 +82,7 @@ public class MissionReport extends AbstractRevisionedEntity implements Comparabl
             cascade = {CascadeType.REFRESH},
             orphanRemoval = true
     )
+    @Builder.Default
     private Set<OperativeReport> operatives = new HashSet<>();
 
     @Column(name = "MISSION_DATE", nullable = false)

@@ -19,14 +19,12 @@ package de.paladinsinn.tp.dcis.model;
 
 import de.paladinsinn.tp.dcis.model.files.FileData;
 
-import java.io.OutputStream;
-
 /**
- * HasToken -- This resource has an token (avatar on a VTT).
+ * HasAvatar -- This resource has an avatar.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
-public interface HasToken {
-    FileData getToken();
+public interface HasAvatar {
+    FileData getAvatar();
 }

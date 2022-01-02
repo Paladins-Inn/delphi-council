@@ -30,10 +30,6 @@ public class ThreadCardTest {
     void setUpTestClass() {
         sut = ThreadCard.builder()
                 .withName("Testthreat")
-                .withImage(
-                        FileData.builder()
-                                .build()
-                )
 
                 .withIntimidation(10)
                 .withManeuver(10)

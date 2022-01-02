@@ -20,7 +20,7 @@ package de.paladinsinn.tp.dcis.model.files;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.paladinsinn.tp.dcis.model.HasImage;
+import de.paladinsinn.tp.dcis.model.HasData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,7 +51,7 @@ import java.util.Arrays;
 @JsonDeserialize(builder = FileData.FileDataBuilder.class)
 @Embeddable
 @Schema(description = "Files saved on the server.")
-public class FileData implements HasImage, Serializable, Cloneable {
+public class FileData implements HasData, Serializable, Cloneable {
     @Column(name = "FILE_NAME", length = 100)
     @Schema(description = "The name of the file.")
     private String name;
@@ -69,7 +69,6 @@ public class FileData implements HasImage, Serializable, Cloneable {
     public OutputStream getDataStream() {
         return getOutputStream(data);
     }
-
 
     @Override
     public FileData clone() throws CloneNotSupportedException {

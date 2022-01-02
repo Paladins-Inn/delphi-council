@@ -50,7 +50,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Mission.MissionBuilder.class)
@@ -120,6 +119,7 @@ public class Mission extends AbstractRevisionedEntity implements Comparable<Miss
             orphanRemoval = true
     )
     @Schema(description = "Planned and finished missions.", minItems = 0, maxItems = 214783647)
+    @Builder.Default
     private Set<MissionReport> reports = new HashSet<>();
 
     public void addReport(@NotNull MissionReport report) {

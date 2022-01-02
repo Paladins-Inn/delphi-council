@@ -20,23 +20,23 @@ package de.paladinsinn.tp.dcis;
 import de.paladinsinn.tp.dcis.model.HasId;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
-@MappedSuperclass
+@SuperBuilder(toBuilder = true, setterPrefix = "with")
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder(toBuilder = true, setterPrefix = "with")
+@Data
 @ToString
-@Getter
-@Setter
+@MappedSuperclass
 public abstract class AbstractEntity implements Serializable, Cloneable, HasId {
     @Id
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -48,40 +48,17 @@ public abstract class AbstractEntity implements Serializable, Cloneable, HasId {
     @Version
     @Column(name = "VERSION", nullable = false)
     @Builder.Default
-    protected int version = 0;
+    protected Integer version = 0;
 
+    @CreationTimestamp
     @Column(name = "CREATED", nullable = false, updatable = false)
     protected OffsetDateTime created;
+    @UpdateTimestamp
     @Column(name = "MODIFIED")
     protected OffsetDateTime modified;
 
     public int getVersion() {
         return version;
-    }
-
-    protected OffsetDateTime getNowUTC() {
-        return OffsetDateTime.now(ZoneOffset.UTC);
-    }
-
-    @PrePersist
-    public void doPrePersist() {
-        created = getNowUTC();
-        modified = created;
-
-        prePersist();
-    }
-
-    public void prePersist() {
-    }
-
-    @PreUpdate
-    public void doPreUpdate() {
-        modified = getNowUTC();
-
-        preUpdate();
-    }
-
-    public void preUpdate() {
     }
 
 

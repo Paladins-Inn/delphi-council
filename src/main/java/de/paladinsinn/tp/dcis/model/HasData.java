@@ -29,8 +29,8 @@ import java.io.OutputStream;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-07
  */
-public interface HasImage {
-    public String getData();
+public interface HasData {
+    public byte[] getData();
 
     public OutputStream getDataStream();
 

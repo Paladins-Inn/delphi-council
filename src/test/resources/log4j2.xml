@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<Configuration status="WARN"
+               xmlns="http://logging.apache.org/log4j/2.0/config"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://logging.apache.org/log4j/2.0/config https://raw.githubusercontent.com/apache/logging-log4j2/master/log4j-core/src/main/resources/Log4j-config.xsd">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-5level|%t|%X{test}] %logger{20} - %msg%n"/>
+            <ThresholdFilter level="TRACE"/>
+        </Console>
+        <RollingFile name="Dev"
+                     fileName="target/r20conv.log"
+                     filePattern="target/r20conv-%d{MM-dd-yyyy-HH}.log.gz">
+            <PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss.SSS} [%-5level|%t|%X{test-class}|%X{test}] %logger{36} - %msg%n"/>
+            <ThresholdFilter level="TRACE"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1GB"/>
+                <TimeBasedTriggeringPolicy interval="24"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="de.kaiserpfalzedv" level="trace" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Dev"/>
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Dev"/>
+        </Root>
+    </Loggers>
+</Configuration>

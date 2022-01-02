@@ -53,7 +53,6 @@ import java.util.UUID;
         }
 )
 @SuperBuilder(toBuilder = true, setterPrefix = "with")
-@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -100,6 +99,7 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
             cascade = {CascadeType.REFRESH},
             orphanRemoval = true
     )
+    @Builder.Default
     private Set<OperativeSpecialReport> operatives = new HashSet<>();
 
 
@@ -133,7 +133,7 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
     }
 
 
-    @Override
+    @PrePersist
     public void prePersist() {
         if (code == null) {
             code = UUID.randomUUID();

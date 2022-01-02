@@ -17,6 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2021-12-31
+ * @version 2.0.0  2021-12-31
  */
 @SuperBuilder(setterPrefix = "with", toBuilder = true)
 @AllArgsConstructor

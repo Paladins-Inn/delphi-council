@@ -23,6 +23,7 @@ import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
 import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.*;
+import de.paladinsinn.tp.dcis.model.files.FileData;
 import de.paladinsinn.tp.dcis.model.operativereports.OperativeReport;
 import de.paladinsinn.tp.dcis.model.operativespecialreports.OperativeSpecialReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -52,11 +53,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Operative.OperativeBuilder.class)
-public class Operative extends AbstractRevisionedEntity implements HasImage, HasToken, HasName, HasCosm, HasClearance {
+public class Operative extends AbstractRevisionedEntity implements HasName, HasCosm, HasClearance, HasAvatar, HasToken {
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited
     private String name;
@@ -95,6 +95,7 @@ public class Operative extends AbstractRevisionedEntity implements HasImage, Has
             cascade = {CascadeType.REFRESH},
             orphanRemoval = true
     )
+    @Builder.Default
     private Set<OperativeReport> reports = new HashSet<>();
 
     @OneToMany(
@@ -104,6 +105,7 @@ public class Operative extends AbstractRevisionedEntity implements HasImage, Has
             cascade = {CascadeType.REFRESH},
             orphanRemoval = true
     )
+    @Builder.Default
     private Set<OperativeSpecialReport> specialReports = new HashSet<>();
 
 
@@ -111,13 +113,21 @@ public class Operative extends AbstractRevisionedEntity implements HasImage, Has
     @Audited
     private OffsetDateTime deleted;
 
-    @Lob
-    @Column(name = "AVATAR", length = 16777215)
-    private byte[] avatar;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "name", column = @Column(name="AVATAR_FILENAME")),
+        @AttributeOverride(name = "mediaType", column = @Column(name="AVATAR_MEDIATYPE")),
+        @AttributeOverride(name = "data", column = @Column(name="AVATAR_DATA"))
+    })
+    private FileData avatar;
 
-    @Lob
-    @Column(name = "TOKEN", length = 16777215)
-    private byte[] token;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name="TOKEN_FILENAME")),
+            @AttributeOverride(name = "mediaType", column = @Column(name="TOKEN_MEDIATYPE")),
+            @AttributeOverride(name = "data", column = @Column(name="TOKEN_DATA"))
+    })
+    private FileData token;
 
 
     /**
@@ -166,29 +176,7 @@ public class Operative extends AbstractRevisionedEntity implements HasImage, Has
     }
 
 
-    @Override
-    public String getData() {
-        return Base64.getEncoder().encodeToString(avatar);
-    }
-
-    @Override
-    public OutputStream getDataStream() {
-        return getOutputStream(avatar);
-    }
-
-
-    @Override
-    public String getTokenImage() {
-        return Base64.getMimeEncoder().encodeToString(token);
-    }
-
-    @Override
-    public OutputStream getToken() {
-        return getOutputStream(token);
-    }
-
-
-    @Override
+    @PreUpdate
     public void preUpdate() {
         clearance = Clearance.valueOf(xp);
     }
@@ -202,11 +190,11 @@ public class Operative extends AbstractRevisionedEntity implements HasImage, Has
         result.lastName = lastName;
 
         if (avatar != null) {
-            result.avatar = Arrays.copyOf(avatar, avatar.length);
+            result.avatar = avatar.clone();
         }
 
         if (token != null) {
-            result.token = Arrays.copyOf(token, token.length);
+            result.token = token.clone();
         }
 
         result.player = player;

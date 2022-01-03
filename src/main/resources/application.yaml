@@ -17,8 +17,8 @@
 
 quarkus:
   application:
-    name: @project.name@
-    version: @project.version@
+    name: Delphi Council IS
+    version: 2.0.0
     api-version: "v1"
 
   http:
@@ -80,7 +80,6 @@ quarkus:
       embedded:
         enabled: false
 
-
   datasource:
     db-kind: mariadb
     jdbc:
@@ -90,23 +89,38 @@ quarkus:
       transactions: xa
     username: "${DB_USER:sa}"
     password: "${DB_PASSWORD:sa}"
-    metrics:
-      enabled: true
     devservices:
+      enabled: false
+    health:
+      enabled: true
+    metrics:
       enabled: true
 
   hibernate-orm:
+    scripts:
+      generation: validate
+    jdbc:
+      timezone: UTC
+    dialect:
+      storage-engine: InnoDB
+    validate-in-dev-mode: true
+    second-level-caching-enabled: true
+    statistics: true
+    log-session-metrics: true
+    packages: de.paladinsinn,de.kaiserpfalzedv
+    metrics:
+      enabled: true
     database:
       generation:
-        ~: none
+        ~: validate
         create-schemas: false
         halt-on-error: true
     log:
+      bind-parameters: true
       jdbc-warnings: true
       format-sql: true
       sql: true
       queries-slower-than-ms: 100
-
   hibernate-envers:
     store-data-at-delete: true
 
@@ -119,7 +133,7 @@ quarkus:
     host: "${MAIL_HOST:smtp.kaiserpfalz-edv.de}"
     port: "${MAIL_PORT:587}"
     ssl: true
-    from: "${MAIL_FROM_NAME:Quin Sebastian} <${MAIL_FROM_ADDRESS:quin.sebastian@delphi-council.org}>"
+    from: "${MAIL_FROM_NAME:Quin Sebastian} <${MAIL_FROM_ADDRESS:quinn.sebastian@delphi-council.org}>"
     username: "${MAIL_USER:no}"
     password: "${MAIL_PASSWORD:no}"
     bounce-address: "${MAIL_BOUNCE_ADDRESS:tech@kaiserpfalz-edv.de}"
@@ -143,6 +157,9 @@ quarkus:
         level: INFO
       "de.kaiserpfalzedv":
         level: INFO
+      http-problem:
+        level: INFO
+
   logging-manager:
     enable: true
     ui:
@@ -164,7 +181,6 @@ quarkus:
     binder:
       http-server:
         enabled: true
-        match-patterns: "/api/"
       mp-metrics:
         enabled: true
       jvm: true
@@ -185,13 +201,13 @@ quarkus:
     operation-id-strategy: method
     info: ${quarkus.application.name} API ${quarkus.application.api-version}
     info-version: ${quarkus.application.version}
-    info-description: @project.description@
+    info-description: Software for managing Torganized Play in Germany.
     info-terms-of-service: Service provided as is without any warranty
     info-contact-email: info@paladins-inn.de
     info-contact-name: Paladins Inn
     info-contact-url: https://www.paladins-inn.de
     info-license-name: GPL 3+
-    info-license-url: http://www.gnu.org/licenses/
+    info-license-url: https://www.gnu.org/licenses/
 
   swagger-ui:
     enable: true
@@ -199,13 +215,13 @@ quarkus:
 
 
   container-image:
-    name: @project.artifactId@
-    tag: @project.version@
+    name: delphi-council-is
+    tag: ${quarkus.application.version}
   openshift:
     deployment-kind: deployment
 
   devservices:
-    enabled: true
+    enabled: false
   jaeger:
     enabled: true
   banner:
@@ -218,23 +234,60 @@ quarkus:
       db-kind: h2
       jdbc:
         ~: true
-        url: jdbc:h2:file:/Users/klenkes74/IdeaProjects/paladins-inn/delphi-council-is/target/db/delphi-council;USER=sa;PASSWORD=sa;MODE=MYSQL;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
+        url: jdbc:h2:file:./target/db/delphi-council;USER=sa;PASSWORD=sa;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
         enable-metrics: true
       username: sa
       password: sa
+      metrics:
+        enabled: true
+        jdbc:
+          enable-metrics: true
+      devservices:
+        enabled: false
+      health:
+        enabled: true
+    hibernate-orm: &orm-dev
+      scripts:
+        generation: validate
+      jdbc:
+        timezone: UTC
+      dialect:
+        ~: H2
+      validate-in-dev-mode: true
+      second-level-caching-enabled: true
+      statistics: true
+      log-session-metrics: true
+      packages: de.paladinsinn,de.kaiserpfalzedv
+      metrics:
+        enabled: true
+      database:
+        generation:
+          ~: validate
+          create-schemas: false
+          halt-on-error: true
+      log:
+        bind-parameters: true
+        jdbc-warnings: true
+        format-sql: true
+        sql: true
+        queries-slower-than-ms: 100
+    hibernate-envers: &envers-dev
+      store-data-at-delete: true
+
+
     log: &log-dev
       console:
         json: false
         enable: true
       level: INFO
-      min-level: ALL
+      min-level: TRACE
       category:
         "de.kaiserpfalzedv":
-          min-level: ALL
           level: DEBUG
         "de.paladinsinn":
-          min-level: ALL
           level: DEBUG
+        http-problem:
+          level: INFO
     oidc: &oidc-dev
       enabled: false
     keycloak: &keycloak-dev
@@ -265,6 +318,8 @@ quarkus:
 "%test":
   quarkus:
     datasource: *datasource-dev
+    hibernate-orm: *orm-dev
+    hibernate-envers: *envers-dev
     log: *log-dev
     oidc: *oidc-dev
     keycloak: *keycloak-dev

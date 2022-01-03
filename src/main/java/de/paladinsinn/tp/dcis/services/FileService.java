@@ -24,13 +24,13 @@ import de.paladinsinn.tp.dcis.model.files.FileResource;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.jboss.resteasy.annotations.cache.NoCache;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -46,13 +46,14 @@ import java.util.stream.Stream;
  * @version 2.0.0  2021-12-31
  * @since 2.0.0  2021-12-31
  */
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
 @Slf4j
-@Path("/api/v1/files")
+@ApplicationScoped
+@Path("/api/v1/file")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class FileService {
-    private final FileRepository repository;
+    @Inject
+    FileRepository repository;
 
     @Inject
     SecurityIdentity identity;
@@ -71,6 +72,7 @@ public class FileService {
             description = "Index of all files."
     )
     @GET
+    @Path("/")
     @Authenticated
     @NoCache
     public List<FileResource> index(

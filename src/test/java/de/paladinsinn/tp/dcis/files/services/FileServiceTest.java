@@ -17,14 +17,14 @@
 
 package de.paladinsinn.tp.dcis.files.services;
 
+import de.paladinsinn.tp.dcis.services.FileService;
+import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
-
-import javax.validation.constraints.NotNull;
 
 import static io.restassured.RestAssured.given;
 
@@ -35,6 +35,7 @@ import static io.restassured.RestAssured.given;
  * @since 2.0.0  2022-01-01
  */
 @QuarkusTest
+@TestHTTPEndpoint(FileService.class)
 @Slf4j
 public class FileServiceTest {
     @Test
@@ -49,7 +50,7 @@ public class FileServiceTest {
     }
 
 
-    private void logTest(@NotNull final String test, final Object... parameters) {
+    private void logTest(final String test, final Object... parameters) {
         MDC.put("test", test);
 
         log.debug("Starting. test='{}', parameters={}", test, parameters);

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.paladinsinn.tp.dcis.model.HasData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,7 @@ import java.util.Arrays;
  * @version 2.0.0  2021-12-31
  * @since 2.0.0  2021-12-31
  */
+@RegisterForReflection
 @SuperBuilder(setterPrefix = "with", toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor

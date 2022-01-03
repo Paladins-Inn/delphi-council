@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+  ~ Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -21,9 +21,12 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
     <changeSet id="removeperson" author="rlichti">
         <addColumn tableName="OPERATIVES">
-            <column name="PLAYER" defaultValue="unknown">
+            <column name="PLAYER" type="VARCHAR(100)" defaultValue="unknown">
                 <constraints nullable="false"/>
             </column>
+        </addColumn>
+        <addColumn tableName="OPERATIVES_AUD">
+            <column name="PLAYER" type="VARCHAR(100)"/>
         </addColumn>
 
         <sql>
@@ -32,23 +35,24 @@
                 select P.email
                 from OPERATIVES O join PERSONS P on (O.PERSON_ID = P.ID)
             );
+            UPDATE OPERATIVES_AUD
+            SET PLAYER=(
+                select P.email
+                from OPERATIVES_AUD O join PERSONS P on (O.PERSON_ID = P.ID)
+            );
         </sql>
-
         <dropForeignKeyConstraint baseTableName="PERSONS" constraintName="OPERATIVES_PERSONS_FK"/>
         <dropColumn tableName="OPERATIVES" columnName="PERSON_ID"/>
-
-
-        <dropForeignKeyConstraint baseTableName="CONFIRMATIONTOKENS" constraintName="CONFIRMATIONTOKENS_PERSONS_FK"/>
-        <dropTable tableName="CONFIRMATIONTOKENS"/>
-
-        <dropForeignKeyConstraint baseTableName="PWRESETTOKENS" constraintName="PWRESETTOKENS_PERSONS_FK"/>
-        <dropTable tableName="PWRESETTOKENS"/>
+        <dropColumn tableName="OPERATIVES_AUD" columnName="PERSON_ID"/>
 
 
         <addColumn tableName="MISSIONREPORTS">
-            <column name="GAME_MASTER" defaultValue="unknown">
+            <column name="GAME_MASTER" type="VARCHAR(100)" defaultValue="unknown">
                 <constraints nullable="false"/>
             </column>
+        </addColumn>
+        <addColumn tableName="MISSIONREPORTS_AUD">
+            <column name="GAME_MASTER" type="VARCHAR(100)"/>
         </addColumn>
         <sql>
             UPDATE MISSIONREPORTS
@@ -56,27 +60,23 @@
                 select P.email
                 from MISSIONREPORTS O join PERSONS P on (O.GM_ID = P.ID)
             );
-        </sql>
-        <dropForeignKeyConstraint baseTableName="MISSIONREPORTS" constraintName="REPORTS_PERSONS_FK"/>
-        <dropColumn tableName="MISSIONREPORTS" columnName="GM_ID"/>
-
-        <addColumn tableName="MISSIONREPORTS_AUD">
-            <column name="GAME_MASTER"/>
-        </addColumn>
-        <sql>
             UPDATE MISSIONREPORTS_AUD
             SET GAME_MASTER=(
                 select P.email
                 from MISSIONREPORTS_AUD O join PERSONS P on (O.GM_ID = P.ID)
             );
         </sql>
+        <dropColumn tableName="MISSIONREPORTS" columnName="GM_ID"/>
         <dropColumn tableName="MISSIONREPORTS_AUD" columnName="GM_ID"/>
 
 
         <addColumn tableName="SPECIALMISSIONS">
-            <column name="GAME_MASTER" defaultValue="unknown">
+            <column name="GAME_MASTER" type="VARCHAR(100)" defaultValue="unknown">
                 <constraints nullable="false"/>
             </column>
+        </addColumn>
+        <addColumn tableName="SPECIALMISSIONS_AUD">
+            <column name="GAME_MASTER" type="VARCHAR(100)"/>
         </addColumn>
         <sql>
             UPDATE SPECIALMISSIONS
@@ -84,11 +84,20 @@
                 select P.email
                 from SPECIALMISSIONS O join PERSONS P on (O.GM = P.ID)
             );
+            UPDATE SPECIALMISSIONS_AUD
+            SET GAME_MASTER=(
+                select P.email
+                from SPECIALMISSIONS_AUD O join PERSONS P on (O.GM = P.ID)
+            );
         </sql>
-        <dropForeignKeyConstraint baseTableName="SPECIALMISSIONS" constraintName="SPECIALMISSIONS_GM_FK"/>
         <dropColumn tableName="SPECIALMISSIONS" columnName="GM"/>
+        <dropColumn tableName="SPECIALMISSIONS_AUD" columnName="GM"/>
+
 
         <dropTable tableName="PERSONS"/>
         <dropTable tableName="PERSONS_AUD"/>
+        <dropTable tableName="ROLES"/>
+        <dropTable tableName="CONFIRMATIONTOKENS"/>
+        <dropTable tableName="PWRESETTOKENS"/>
     </changeSet>
 </databaseChangeLog>

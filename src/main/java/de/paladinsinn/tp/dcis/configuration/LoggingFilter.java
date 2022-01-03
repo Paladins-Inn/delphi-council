@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.model.operative;
+package de.paladinsinn.tp.dcis.configuration;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import javax.ws.rs.ext.Provider;
 
-import java.util.UUID;
-
-public interface OperativeRepository extends PagingAndSortingRepository<Operative, UUID> {
-
-}
+/**
+ * LoggingFilter -- Activates the common {@link de.kaiserpfalzedv.commons.core.rest.LoggingFilter}.
+ *
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 2.0.0  2022-01-02
+ */
+@Provider
+public class LoggingFilter extends de.kaiserpfalzedv.commons.core.rest.LoggingFilter {}

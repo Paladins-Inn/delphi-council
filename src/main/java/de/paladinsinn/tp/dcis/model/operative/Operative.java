@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,19 +24,14 @@ import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
 import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.*;
 import de.paladinsinn.tp.dcis.model.files.FileData;
-import de.paladinsinn.tp.dcis.model.operativereports.OperativeReport;
-import de.paladinsinn.tp.dcis.model.operativespecialreports.OperativeSpecialReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.io.OutputStream;
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,7 +80,7 @@ public class Operative extends AbstractRevisionedEntity implements HasName, HasC
 
     @Audited
     @Setter
-    @Column(name = "PLAYER", nullable = false)
+    @Column(name = "PLAYER", length = 100, nullable = false)
     private String player;
 
     @OneToMany(

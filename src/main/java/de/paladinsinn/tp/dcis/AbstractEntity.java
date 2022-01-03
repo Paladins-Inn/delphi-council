@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.UUID;
 

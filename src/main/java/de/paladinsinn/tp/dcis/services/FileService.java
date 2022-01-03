@@ -1,25 +1,43 @@
+/*
+ * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.paladinsinn.tp.dcis.services;
 
 import de.kaiserpfalzedv.commons.core.resources.Metadata;
-import de.paladinsinn.tp.dcis.configuration.Paging;
 import de.paladinsinn.tp.dcis.model.About;
 import de.paladinsinn.tp.dcis.model.files.File;
-import de.paladinsinn.tp.dcis.model.files.FileData;
 import de.paladinsinn.tp.dcis.model.files.FileResource;
+import io.quarkus.panache.common.Sort;
+import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.util.MimeTypeUtils;
+import org.jboss.resteasy.annotations.cache.NoCache;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * FileService -- Save a file or retrieve it.
@@ -35,7 +53,9 @@ import java.util.stream.Collectors;
 @Produces(MediaType.APPLICATION_JSON)
 public class FileService {
     private final FileRepository repository;
-    private final Paging paging;
+
+    @Inject
+    SecurityIdentity identity;
 
     @PostConstruct
     public void init() {
@@ -51,6 +71,8 @@ public class FileService {
             description = "Index of all files."
     )
     @GET
+    @Authenticated
+    @NoCache
     public List<FileResource> index(
             @Schema(
                     description = "Namespace to search for.",
@@ -63,36 +85,32 @@ public class FileService {
             @Schema(
                     description = "MediaType to look for.",
                     name = "mediaType",
-                    example = MimeTypeUtils.IMAGE_GIF_VALUE
+                    example = "image/png"
             )
             @QueryParam("mediaType") final String mediaType,
             @QueryParam("owner") final String owner,
             @QueryParam("limit") final int limit,
             @QueryParam("offset") final int offset,
             @QueryParam("direction") final String direction,
-            @QueryParam("sort") final List<String> sort
+            @QueryParam("sort") List<String> sort
     ) {
         log.info(
                 "List files. namespace='{}', mediaType='{}', limit={}, offset={}, direction='{}', sort[]={}",
                 nameSpace, mediaType, limit, offset, direction, sort
         );
 
-        Page<File> data = repository.findAll(
-                Example.of(File.builder()
-                    .withOwner(owner)
-                    .withNameSpace(nameSpace)
-                    .withFile(FileData.builder()
-                        .withMediaType(mediaType)
-                        .build()
-                    ).build()
-                ),
-                paging.calculatePage(limit, offset, direction, sort.toArray(new String[0]))
-        );
+        String owned = identity.getPrincipal().getName();
+        Sort order = calculateSort(sort, direction);
 
-        log.debug("Found entries. count={}", data.stream().count());
+        Stream<File> data = repository.streamAll(order).filter(d -> d.getOwner().equalsIgnoreCase(owned));
 
-        return data.get()
-                .map(d -> FileResource.builder()
+        if (owner != null) {
+            data = data.filter(d -> d.getOwner().equals(owner));
+        }
+
+        log.debug("Found result set. count={}", data.count());
+
+        return data.map(d -> FileResource.builder()
                         .withKind(FileResource.KIND)
                         .withApiVersion(FileResource.VERSION)
 
@@ -110,5 +128,22 @@ public class FileService {
                         .build()
                 )
                 .collect(Collectors.toList());
+    }
+
+
+    Sort calculateSort(@NotNull List<String> columns, final String direction) {
+        boolean ascending = "asc".equalsIgnoreCase(direction);
+
+        if (columns == null || columns.isEmpty()) {
+            log.trace("No columns to sort by given. Setting default column order (namespace, owner, name)");
+
+            columns = List.of("nameSpace", "owner", "name");
+        }
+
+        log.debug("Setting sort order. direction='{}', columns={}", ascending, columns);
+        return ascending
+                ? Sort.ascending(columns.toArray(new String[0]))
+                : Sort.descending(columns.toArray(new String[0]));
+
     }
 }

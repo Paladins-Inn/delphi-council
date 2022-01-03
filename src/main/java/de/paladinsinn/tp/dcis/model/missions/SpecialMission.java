@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.model.specialmissions;
+package de.paladinsinn.tp.dcis.model.missions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -23,7 +23,7 @@ import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
 import de.paladinsinn.tp.dcis.model.HasClearance;
 import de.paladinsinn.tp.dcis.model.HasId;
-import de.paladinsinn.tp.dcis.model.operativespecialreports.OperativeSpecialReport;
+import de.paladinsinn.tp.dcis.model.operative.OperativeSpecialReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -66,7 +66,7 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
     @Builder.Default
     private UUID code = UUID.randomUUID();
 
-    @Column(name = "TITLE", nullable = false)
+    @Column(name = "TITLE", length = 100, nullable = false)
     private String title;
 
     @Column(name = "CLEARANCE", nullable = false)
@@ -88,7 +88,7 @@ public class SpecialMission extends AbstractRevisionedEntity implements HasId, H
     @Column(name = "PUBLICATION")
     private String publication;
 
-    @Column(name = "GAME_MASTER")
+    @Column(name = "GAME_MASTER", length = 100)
     @Setter
     private String gameMaster;
 

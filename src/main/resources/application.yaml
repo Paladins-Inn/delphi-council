@@ -19,6 +19,7 @@ quarkus:
   application:
     name: @project.name@
     version: @project.version@
+    api-version: "v1"
 
   http:
     insecure-requests: enabled
@@ -28,18 +29,57 @@ quarkus:
       protocols: TLSv1.3
       sni: true
 
-    auth:
-      realm: ${quarkus.application.name}
-      proactive: false
-    cors: true
-
     access-log:
       enabled: true
       log-to-file: false
       exclude-pattern: "/q/.*"
       pattern: combined
+
     test-port: 8081
     test-ssl-port: 8444
+    enable-compression: true
+    enable-decompression: true
+    record-request-start-time: true
+
+    body:
+      delete-uploaded-files-on-end: true
+      handle-file-uploads: true
+      preallocate-body-buffer: true
+      merge-form-attributes: true
+
+    auth:
+      realm: ${quarkus.application.name}
+      proactive: false
+      policy:
+        metrics:
+          roles-allowed: metrics
+      permission:
+        protected:
+          paths: /api/v1/*
+          policy: authenticated
+        metrics:
+          paths: /q/*
+          policy: metrics
+        sw-js:
+          paths: /sw.js
+          policy: permit
+    cors: true
+  oidc:
+    application-type: hybrid
+    auth-server-url: ${OAUTH2_URL}
+    client-id: ${OAUTH2_CLIENT}
+    credentials:
+      secret: ${OAUTH2_SECRET}
+    tls:
+      verification: none
+  keycloak:
+    policy-enforcer:
+      enable: true
+  security:
+    users:
+      embedded:
+        enabled: false
+
 
   datasource:
     db-kind: mariadb
@@ -47,9 +87,12 @@ quarkus:
       ~: true
       url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
       enable-metrics: true
+      transactions: xa
     username: "${DB_USER:sa}"
     password: "${DB_PASSWORD:sa}"
     metrics:
+      enabled: true
+    devservices:
       enabled: true
 
   hibernate-orm:
@@ -57,11 +100,18 @@ quarkus:
       generation:
         ~: none
         create-schemas: false
+        halt-on-error: true
+    log:
+      jdbc-warnings: true
+      format-sql: true
+      sql: true
+      queries-slower-than-ms: 100
 
   hibernate-envers:
     store-data-at-delete: true
 
   liquibase:
+    migrate-at-start: true
     change-log: db/changelog/db.changelog-master.xml
 
 
@@ -73,21 +123,30 @@ quarkus:
     username: "${MAIL_USER:no}"
     password: "${MAIL_PASSWORD:no}"
     bounce-address: "${MAIL_BOUNCE_ADDRESS:tech@kaiserpfalz-edv.de}"
+    keep-alive: true
 
   qute:
     property-not-found-strategy: throw_exception
     remove-standalone-lines: false
     strict-rendering: true
 
-
   log:
     metrics:
       enabled: true
     console:
-      json: true
       enable: true
-    level: INFO
+      json: true
+    level: WARN
     min-level: ALL
+    category:
+      "de.paladinsinn":
+        level: INFO
+      "de.kaiserpfalzedv":
+        level: INFO
+  logging-manager:
+    enable: true
+    ui:
+      enable: true
 
   resteasy:
     problem:
@@ -97,8 +156,11 @@ quarkus:
     ui:
       enable: true
 
+
   micrometer:
     enabled: true
+    registry-enabled-default: true
+    binder-enabled-default: true
     binder:
       http-server:
         enabled: true
@@ -109,7 +171,6 @@ quarkus:
       system: true
       vertx:
         enabled: true
-    binder-enabled-default: true
     export:
       json:
         enabled: true
@@ -121,9 +182,8 @@ quarkus:
 
   smallrye-openapi:
     enable: true
-    path: /api/openapi
     operation-id-strategy: method
-    info: ${quarkus.application.name} API
+    info: ${quarkus.application.name} API ${quarkus.application.api-version}
     info-version: ${quarkus.application.version}
     info-description: @project.description@
     info-terms-of-service: Service provided as is without any warranty
@@ -136,22 +196,21 @@ quarkus:
   swagger-ui:
     enable: true
     always-include: true
-    path: /api/docs
 
-  oidc:
-    auth-server-url: ${OAUTH2_URL}
-    client-id: ${OAUTH2_CLIENT}
-    credentials:
-      secret: ${OAUTH2_SECRET}
-    tls:
-      verification: none
 
-  keycloak:
-    policy-enforcer:
-      enable: true
+  container-image:
+    name: @project.artifactId@
+    tag: @project.version@
+  openshift:
+    deployment-kind: deployment
 
-    devservices:
-      realm-path: quarkus-realm.json
+  devservices:
+    enabled: true
+  jaeger:
+    enabled: true
+  banner:
+    enabled: true
+
 
 "%dev":
   quarkus:
@@ -159,7 +218,7 @@ quarkus:
       db-kind: h2
       jdbc:
         ~: true
-        url: jdbc:h2:file:./target/db/delphi-council;USER=sa;PASSWORD=sa;MODE=MYSQL;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0
+        url: jdbc:h2:file:/Users/klenkes74/IdeaProjects/paladins-inn/delphi-council-is/target/db/delphi-council;USER=sa;PASSWORD=sa;MODE=MYSQL;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
         enable-metrics: true
       username: sa
       password: sa
@@ -176,15 +235,39 @@ quarkus:
         "de.paladinsinn":
           min-level: ALL
           level: DEBUG
+    oidc: &oidc-dev
+      enabled: false
+    keycloak: &keycloak-dev
+      policy-enforcer:
+        enable: false
+    security: &security-dev
+      users:
+        embedded:
+          enabled: true
+          plain-text: true
+          realm-name: ${quarkus.application.name}
+          users:
+            player: player
+            gm: gm
+            orga: orga
+            judge: judge
+            admin: admin
+            metrics: metrics
+          roles:
+            player: player
+            gm: player,gm
+            orga: player,gm,orga
+            judge: player,gm,orga,judge
+            admin: player,gm,orga,admin,metrics
+            metrics: metrics
 
 
 "%test":
   quarkus:
     datasource: *datasource-dev
     log: *log-dev
+    oidc: *oidc-dev
+    keycloak: *keycloak-dev
+    security: *security-dev
 
-
-application:
-  api:
-    version: "@api.version@"
 

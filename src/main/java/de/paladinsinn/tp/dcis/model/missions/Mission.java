@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
-import de.paladinsinn.tp.dcis.model.missionreports.MissionReport;
+import de.paladinsinn.tp.dcis.model.HasClearance;
+import de.paladinsinn.tp.dcis.model.HasId;
+import de.paladinsinn.tp.dcis.model.HasName;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.validation.constraints.NotNull;
-import de.paladinsinn.tp.dcis.model.*;
+import liquibase.repackaged.org.apache.commons.lang3.builder.CompareToBuilder;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 

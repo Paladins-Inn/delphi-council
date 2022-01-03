@@ -1,16 +1,32 @@
+/*
+ * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.paladinsinn.tp.dcis.files.services;
 
-import de.paladinsinn.tp.dcis.services.FileService;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
-import static io.restassured.RestAssured.when;
+import javax.validation.constraints.NotNull;
+
+import static io.restassured.RestAssured.given;
 
 /**
  * FileServiceTest --
@@ -23,7 +39,9 @@ import static io.restassured.RestAssured.when;
 public class FileServiceTest {
     @Test
     public void shouldReturnFullListWhenCalledWithoutParameters() {
-        when()
+        given()
+                .auth().basic("player", "player")
+        .when()
                 .get("/api/v1/files")
                 .prettyPeek()
         .then()

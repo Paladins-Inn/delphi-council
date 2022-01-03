@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ public class FileData implements HasData, Serializable, Cloneable {
     @Schema(description = "The image itself encoded in BASE64.")
     private byte[] data;
 
-    @Column(name = "FILE_MEDIA_TYPE", length = 100)
+    @Column(name = "FILE_MEDIATYPE", length = 100)
     @Schema(description = "The mediatype of the encoded file.")
     private String mediaType;
 

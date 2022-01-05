@@ -64,21 +64,25 @@ public class File extends AbstractEntity implements Comparable<File>, Cloneable 
     private FileData file;
 
 
+    @Transient
     @JsonIgnore
     public String getName() {
         return file.getName();
     }
 
+    @Transient
     @JsonIgnore
     public String getMediaType() {
         return file.getMediaType();
     }
 
+    @Transient
     @JsonIgnore
     public byte[] getData() {
         return file.getData();
     }
 
+    @Transient
     @JsonIgnore
     public OutputStream getFileStream() {
         return file.getDataStream();

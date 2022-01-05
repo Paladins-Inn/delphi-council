@@ -45,8 +45,7 @@ import java.util.Set;
 @Table(
         name = "MISSIONREPORTS",
         uniqueConstraints = {
-                @UniqueConstraint(name = "MISSIONREPORTS_ID_UK", columnNames = "ID"),
-                @UniqueConstraint(name = "MISSIONREPORTS_TITLE_UK", columnNames = "TITLE")
+                @UniqueConstraint(name = "MISSIONREPORTS_ID_UK", columnNames = "ID")
         }
 )
 @SuperBuilder(toBuilder = true, setterPrefix = "with")

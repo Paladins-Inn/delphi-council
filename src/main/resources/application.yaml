@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 quarkus:
   application:
     name: Delphi Council IS
@@ -83,44 +84,20 @@ quarkus:
   datasource:
     db-kind: mariadb
     jdbc:
-      ~: true
       url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
-      enable-metrics: true
-      transactions: xa
+      transactions: XA
+      transaction-isolation-level: REPEATABLE_READ
+      flush-on-close: true
+      detect-statement-leaks: true
     username: "${DB_USER:sa}"
     password: "${DB_PASSWORD:sa}"
-    devservices:
-      enabled: false
     health:
       enabled: true
     metrics:
       enabled: true
+      jdbc:
+        enable-metrics: true
 
-  hibernate-orm:
-    scripts:
-      generation: validate
-    jdbc:
-      timezone: UTC
-    dialect:
-      storage-engine: InnoDB
-    validate-in-dev-mode: true
-    second-level-caching-enabled: true
-    statistics: true
-    log-session-metrics: true
-    packages: de.paladinsinn,de.kaiserpfalzedv
-    metrics:
-      enabled: true
-    database:
-      generation:
-        ~: validate
-        create-schemas: false
-        halt-on-error: true
-    log:
-      bind-parameters: true
-      jdbc-warnings: true
-      format-sql: true
-      sql: true
-      queries-slower-than-ms: 100
   hibernate-envers:
     store-data-at-delete: true
 
@@ -143,7 +120,6 @@ quarkus:
     property-not-found-strategy: throw_exception
     remove-standalone-lines: false
     strict-rendering: true
-
   log:
     metrics:
       enabled: true
@@ -233,44 +209,14 @@ quarkus:
     datasource: &datasource-dev
       db-kind: h2
       jdbc:
-        ~: true
         url: jdbc:h2:file:./target/db/delphi-council;USER=sa;PASSWORD=sa;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
-        enable-metrics: true
       username: sa
       password: sa
-      metrics:
-        enabled: true
-        jdbc:
-          enable-metrics: true
-      devservices:
-        enabled: false
       health:
         enabled: true
-    hibernate-orm: &orm-dev
-      scripts:
-        generation: validate
-      jdbc:
-        timezone: UTC
-      dialect:
-        ~: H2
-      validate-in-dev-mode: true
-      second-level-caching-enabled: true
-      statistics: true
-      log-session-metrics: true
-      packages: de.paladinsinn,de.kaiserpfalzedv
       metrics:
         enabled: true
-      database:
-        generation:
-          ~: validate
-          create-schemas: false
-          halt-on-error: true
-      log:
-        bind-parameters: true
-        jdbc-warnings: true
-        format-sql: true
-        sql: true
-        queries-slower-than-ms: 100
+
     hibernate-envers: &envers-dev
       store-data-at-delete: true
 
@@ -318,7 +264,6 @@ quarkus:
 "%test":
   quarkus:
     datasource: *datasource-dev
-    hibernate-orm: *orm-dev
     hibernate-envers: *envers-dev
     log: *log-dev
     oidc: *oidc-dev

@@ -22,20 +22,23 @@ import de.paladinsinn.tp.dcis.model.About;
 import de.paladinsinn.tp.dcis.model.files.File;
 import de.paladinsinn.tp.dcis.model.files.FileResource;
 import io.quarkus.panache.common.Sort;
-import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.jboss.resteasy.annotations.cache.NoCache;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,7 +63,7 @@ public class FileService {
 
     @PostConstruct
     public void init() {
-        log.info("Started file service.");
+        log.info("Started file service. repository={}", repository);
     }
 
     @PreDestroy
@@ -73,36 +76,71 @@ public class FileService {
     )
     @GET
     @Path("/")
-    @Authenticated
+    @RolesAllowed({"player","gm","orga","judge","admin"})
     @NoCache
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "Ok found."),
+            @APIResponse(responseCode = "403", description = "Forbidden."),
+            @APIResponse(responseCode = "404", description = "Not found.")
+    })
     public List<FileResource> index(
             @Schema(
                     description = "Namespace to search for.",
+                    required = true,
                     defaultValue = About.NAMESPACE,
                     name = "nameSpace",
-                    example = "us",
+                    example = About.NAMESPACE,
                     maxLength = 50
             )
             @QueryParam("namespace") final String nameSpace,
             @Schema(
                     description = "MediaType to look for.",
+                    nullable = true,
                     name = "mediaType",
-                    example = "image/png"
+                    example = "image/png",
+                    maxLength = 100
             )
             @QueryParam("mediaType") final String mediaType,
+            @Schema(
+                    description = "The owner of the file.",
+                    nullable = true,
+                    name = "owner",
+                    example = "klenkes74",
+                    maxLength = 100
+            )
             @QueryParam("owner") final String owner,
-            @QueryParam("limit") final int limit,
-            @QueryParam("offset") final int offset,
-            @QueryParam("direction") final String direction,
+            @Schema(
+                    description = "Size of the page to return",
+                    nullable = true,
+                    example = "100",
+                    defaultValue = "100"
+            )
+            @QueryParam("size") final int size,
+            @Schema(
+                    description = "Which page to return (starting with page 1)",
+                    nullable = true,
+                    example = "1",
+                    defaultValue = "1"
+            )
+            @QueryParam("page") final int page,
+            @Schema(
+                    description = "The data sort rules.",
+                    nullable = true,
+                    minItems = 0,
+                    maxItems = 5,
+                    implementation = List.class,
+                    defaultValue = "[\"nameSpace\",\"owner\",\"file.name\"]",
+                    enumeration = {"nameSpace", "owner", "file.mimeType", "file.name"}
+            )
             @QueryParam("sort") List<String> sort
     ) {
         log.info(
-                "List files. namespace='{}', mediaType='{}', limit={}, offset={}, direction='{}', sort[]={}",
-                nameSpace, mediaType, limit, offset, direction, sort
+                "List files. namespace='{}', mediaType='{}', size={}, page={}, sort[]={}",
+                nameSpace, mediaType, size, page, sort
         );
 
         String owned = identity.getPrincipal().getName();
-        Sort order = calculateSort(sort, direction);
+        Sort order = calculateSort(sort);
 
         Stream<File> data = repository.streamAll(order).filter(d -> d.getOwner().equalsIgnoreCase(owned));
 
@@ -110,20 +148,18 @@ public class FileService {
             data = data.filter(d -> d.getOwner().equals(owner));
         }
 
-        log.debug("Found result set. count={}", data.count());
-
         return data.map(d -> FileResource.builder()
                         .withKind(FileResource.KIND)
                         .withApiVersion(FileResource.VERSION)
 
                         .withUid(d.getId())
-                        .withNamespace(d.getNameSpace())
+                        .withNameSpace(d.getNameSpace())
                         .withName(d.getName())
-                        .withGeneration((long) d.getVersion())
 
                         .withMetadata(
                                 Metadata.builder()
                                         .withCreated(d.getCreated())
+                                        .withGeneration(d.getVersion())
                                         .build()
                         )
                         .withSpec(d.getFile())
@@ -133,19 +169,67 @@ public class FileService {
     }
 
 
-    Sort calculateSort(@NotNull List<String> columns, final String direction) {
-        boolean ascending = "asc".equalsIgnoreCase(direction);
-
+    Sort calculateSort(@NotNull List<String> columns) {
         if (columns == null || columns.isEmpty()) {
             log.trace("No columns to sort by given. Setting default column order (namespace, owner, name)");
 
-            columns = List.of("nameSpace", "owner", "name");
+            columns = List.of("nameSpace", "owner", "file.name");
         }
 
-        log.debug("Setting sort order. direction='{}', columns={}", ascending, columns);
-        return ascending
-                ? Sort.ascending(columns.toArray(new String[0]))
-                : Sort.descending(columns.toArray(new String[0]));
+        log.debug("Setting sort order. columns={}", columns);
+        return Sort.ascending(columns.toArray(new String[0]));
 
+    }
+
+
+    @NoCache
+    @POST
+    @RolesAllowed({"player","gm","orga","admin"})
+    public FileResource create(
+            @QueryParam("nameSpace") final String nameSpace,
+            @NotNull final FileResource input
+    ) {
+        File.FileBuilder data = File.builder().withFile(input.getSpec());
+
+
+        File store = data.build();
+        repository.persistAndFlush(store);
+
+        return resource(store.getId());
+    }
+
+    @Path("/{id}")
+    @GET
+    @RolesAllowed({"player","gm","orga","judge","admin"})
+    public FileResource resource(
+            @Schema(
+                    description = "The ID of the file.",
+                    required = true,
+                    minLength = 36,
+                    maxLength = 36,
+                    example = "628a8172-2d9f-4f26-bd64-fac95ce7adc2"
+            )
+            @PathParam("id") @NotNull final UUID id
+    ) {
+        File data = repository.findById(id);
+
+        if (data == null) {
+            throw new NotFoundException("No file with ID '" + id + "' found.");
+        }
+
+        return FileResource.builder()
+                .withKind(FileResource.KIND)
+                .withApiVersion(FileResource.VERSION)
+                .withNameSpace(data.getNameSpace())
+                .withName(data.getName())
+                .withUid(data.getId())
+                .withMetadata(
+                        Metadata.builder()
+                                .withCreated(data.getCreated())
+                                .withGeneration(data.getVersion())
+                                .build()
+                )
+                .withSpec(data.getFile())
+                .build();
     }
 }

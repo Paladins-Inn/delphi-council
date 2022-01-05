@@ -239,6 +239,23 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-logging-json</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-validator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>javax.validation-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-agroal</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
@@ -246,16 +263,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-envers</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-validator</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>jakarta.validation</groupId>
-                    <artifactId>jakarta.validation-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -407,9 +414,6 @@
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
-                        <compileSourceRoots>
-                            <compileSourceRoot>${delombok.output}</compileSourceRoot>
-                        </compileSourceRoots>
                     </configuration>
                     <executions>
                         <execution>
@@ -420,9 +424,6 @@
                             <phase>test-compile</phase>
                             <configuration>
                                 <skip>${skipTests}</skip>
-                                <compileSourceRoots>
-                                    <compileSourceRoot>${delombok.test-output}</compileSourceRoot>
-                                </compileSourceRoots>
                             </configuration>
                         </execution>
                     </executions>

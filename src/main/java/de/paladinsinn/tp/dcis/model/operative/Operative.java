@@ -1,5 +1,5 @@
 /*
- * Copyright (c) &today.year Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2022 Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,14 @@ package de.paladinsinn.tp.dcis.model.operative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.kaiserpfalzedv.commons.core.api.HasName;
+import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedEntity;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
-import de.paladinsinn.tp.dcis.AbstractRevisionedEntity;
-import de.paladinsinn.tp.dcis.model.*;
+import de.paladinsinn.tp.dcis.model.HasAvatar;
+import de.paladinsinn.tp.dcis.model.HasClearance;
+import de.paladinsinn.tp.dcis.model.HasCosm;
+import de.paladinsinn.tp.dcis.model.HasToken;
 import de.paladinsinn.tp.dcis.model.files.FileData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;

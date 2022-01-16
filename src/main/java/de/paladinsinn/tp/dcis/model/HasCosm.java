@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2022 Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 
 package de.paladinsinn.tp.dcis.model;
 
+import de.kaiserpfalzedv.commons.core.api.HasId;
 import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
 
 /**

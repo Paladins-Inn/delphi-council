@@ -19,8 +19,9 @@ package de.paladinsinn.tp.dcis.model.operative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.kaiserpfalzedv.commons.core.api.HasName;
-import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedEntity;
+import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
+import de.kaiserpfalzedv.commons.core.resources.HasId;
+import de.kaiserpfalzedv.commons.core.resources.HasName;
 import de.paladinsinn.tp.dcis.model.HasOperative;
 import de.paladinsinn.tp.dcis.model.missions.SpecialMission;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -56,7 +57,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OperativeSpecialReport.OperativeSpecialReportBuilder.class)
-public class OperativeSpecialReport extends AbstractRevisionedEntity implements Comparable<OperativeSpecialReport>, HasName, HasOperative {
+public class OperativeSpecialReport extends AbstractRevisionedJPAEntity implements Comparable<OperativeSpecialReport>, HasName, HasId, HasOperative {
     @Column(name = "NOTES", length = 4000)
     private String notes;
 

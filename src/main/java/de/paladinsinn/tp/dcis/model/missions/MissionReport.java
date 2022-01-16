@@ -19,7 +19,7 @@ package de.paladinsinn.tp.dcis.model.missions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedEntity;
+import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
 import de.paladinsinn.tp.dcis.model.operative.OperativeReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -55,7 +55,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = MissionReport.MissionReportBuilder.class)
-public class MissionReport extends AbstractRevisionedEntity implements Comparable<MissionReport>, Cloneable {
+public class MissionReport extends AbstractRevisionedJPAEntity implements Comparable<MissionReport>, Cloneable {
     @ManyToOne(
             cascade = {CascadeType.REFRESH},
             fetch = FetchType.EAGER,

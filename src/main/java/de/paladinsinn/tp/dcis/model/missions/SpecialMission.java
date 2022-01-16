@@ -19,8 +19,8 @@ package de.paladinsinn.tp.dcis.model.missions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.kaiserpfalzedv.commons.core.api.HasId;
-import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedEntity;
+import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
+import de.kaiserpfalzedv.commons.core.resources.HasId;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.tp.dcis.model.HasClearance;
 import de.paladinsinn.tp.dcis.model.operative.OperativeSpecialReport;
@@ -60,7 +60,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = SpecialMission.SpecialMissionBuilder.class)
 @Slf4j
-public class SpecialMission extends AbstractRevisionedEntity implements HasId, HasClearance, Cloneable {
+public class SpecialMission extends AbstractRevisionedJPAEntity implements HasId, HasClearance, Cloneable {
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDCharType")
     @Column(name = "CODE", length = 36, nullable = false, updatable = false, unique = true)
     @Builder.Default

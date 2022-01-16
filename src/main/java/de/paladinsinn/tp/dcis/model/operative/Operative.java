@@ -19,15 +19,16 @@ package de.paladinsinn.tp.dcis.model.operative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.kaiserpfalzedv.commons.core.api.HasName;
-import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedEntity;
+import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
+import de.kaiserpfalzedv.commons.core.resources.HasId;
+import de.kaiserpfalzedv.commons.core.resources.HasName;
+import de.kaiserpfalzedv.commons.fileserver.jpa.JPAFileData;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
 import de.paladinsinn.tp.dcis.model.HasAvatar;
 import de.paladinsinn.tp.dcis.model.HasClearance;
 import de.paladinsinn.tp.dcis.model.HasCosm;
 import de.paladinsinn.tp.dcis.model.HasToken;
-import de.paladinsinn.tp.dcis.model.files.FileData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -55,7 +56,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Operative.OperativeBuilder.class)
-public class Operative extends AbstractRevisionedEntity implements HasName, HasCosm, HasClearance, HasAvatar, HasToken {
+public class Operative extends AbstractRevisionedJPAEntity implements HasName, HasId, HasCosm, HasClearance, HasAvatar, HasToken {
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited
     private String name;
@@ -114,19 +115,19 @@ public class Operative extends AbstractRevisionedEntity implements HasName, HasC
 
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name="AVATAR_FILENAME")),
-        @AttributeOverride(name = "mediaType", column = @Column(name="AVATAR_MEDIATYPE")),
-        @AttributeOverride(name = "data", column = @Column(name="AVATAR_DATA"))
+            @AttributeOverride(name = "name", column = @Column(name = "AVATAR_FILENAME")),
+            @AttributeOverride(name = "mediaType", column = @Column(name = "AVATAR_MEDIATYPE")),
+            @AttributeOverride(name = "data", column = @Column(name = "AVATAR_DATA"))
     })
-    private FileData avatar;
+    private JPAFileData avatar;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "name", column = @Column(name="TOKEN_FILENAME")),
-            @AttributeOverride(name = "mediaType", column = @Column(name="TOKEN_MEDIATYPE")),
-            @AttributeOverride(name = "data", column = @Column(name="TOKEN_DATA"))
+            @AttributeOverride(name = "name", column = @Column(name = "TOKEN_FILENAME")),
+            @AttributeOverride(name = "mediaType", column = @Column(name = "TOKEN_MEDIATYPE")),
+            @AttributeOverride(name = "data", column = @Column(name = "TOKEN_DATA"))
     })
-    private FileData token;
+    private JPAFileData token;
 
 
     /**

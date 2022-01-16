@@ -19,7 +19,7 @@ package de.paladinsinn.tp.dcis.model.operative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedEntity;
+import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.paladinsinn.tp.dcis.model.HasOperative;
 import de.paladinsinn.tp.dcis.model.missions.MissionReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -55,7 +55,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OperativeReport.OperativeReportBuilder.class)
-public class OperativeReport extends AbstractRevisionedEntity implements Comparable<OperativeReport>, HasOperative {
+public class OperativeReport extends AbstractRevisionedJPAEntity implements Comparable<OperativeReport>, HasOperative {
     @Column(name = "ACHIEVEMENTS", length = 4000)
     private String achievements;
 

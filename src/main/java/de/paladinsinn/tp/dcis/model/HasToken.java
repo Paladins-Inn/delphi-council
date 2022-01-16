@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2022 Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,8 @@
 
 package de.paladinsinn.tp.dcis.model;
 
-import de.paladinsinn.tp.dcis.model.files.FileData;
 
-import java.io.OutputStream;
+import de.kaiserpfalzedv.commons.core.files.FileData;
 
 /**
  * HasToken -- This resource has an token (avatar on a VTT).

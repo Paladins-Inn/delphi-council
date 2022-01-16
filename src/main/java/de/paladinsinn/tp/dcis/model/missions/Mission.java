@@ -19,9 +19,9 @@ package de.paladinsinn.tp.dcis.model.missions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.kaiserpfalzedv.commons.core.api.HasId;
-import de.kaiserpfalzedv.commons.core.api.HasName;
-import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedEntity;
+import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
+import de.kaiserpfalzedv.commons.core.resources.HasId;
+import de.kaiserpfalzedv.commons.core.resources.HasName;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.tp.dcis.model.HasClearance;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -55,7 +55,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = Mission.MissionBuilder.class)
 @Schema(description = "Delphi Council Mission")
-public class Mission extends AbstractRevisionedEntity implements Comparable<Mission>, HasId, HasName, HasClearance, Cloneable {
+public class Mission extends AbstractRevisionedJPAEntity implements Comparable<Mission>, HasId, HasName, HasClearance, Cloneable {
     @Column(name = "CODE", length = 20, nullable = false)
     @Audited
     @Schema(description = "Code of this mission.", maxLength = 20)

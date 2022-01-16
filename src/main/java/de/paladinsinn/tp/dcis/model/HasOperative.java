@@ -17,7 +17,7 @@
 
 package de.paladinsinn.tp.dcis.model;
 
-import de.kaiserpfalzedv.commons.core.api.HasId;
+import de.kaiserpfalzedv.commons.core.resources.HasId;
 import de.paladinsinn.tp.dcis.model.operative.Operative;
 
 /**

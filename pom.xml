@@ -116,7 +116,7 @@
         <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.version>2.6.1.Final</quarkus.platform.version>
-        <quarkus.version>2.6.1.Final</quarkus.version>
+        <quarkus.version>2.9.2.Final</quarkus.version>
 
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <quarkus-plugin.version>2.6.1.Final</quarkus-plugin.version>
@@ -176,7 +176,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.53j</version>
+            <version>1.53s</version>
         </dependency>
 
         <!-- BCrypt -->

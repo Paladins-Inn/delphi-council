@@ -176,7 +176,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.53j</version>
+            <version>1.53s</version>
         </dependency>
 
         <!-- BCrypt -->

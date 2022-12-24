@@ -1,0 +1,69 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="sequence" author="rlichti">
+        <createSequence sequenceName="hibernate_sequence"
+                        startValue="1"
+                        incrementBy="1"
+                        cacheSize="100"
+                        ordered="true"/>
+
+        <rollback>
+            <dropSequence sequenceName="hibernate_sequence"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="envers" author="rlichti">
+        <createTable tableName="REVINFO">
+            <column name="REV" type="INT" autoIncrement="true">
+                <constraints
+                        nullable="false"
+                        primaryKey="true" primaryKeyName="REVINFO_PK"
+                />
+            </column>
+
+            <column name="REVTSTMP" type="BIGINT"/>
+        </createTable>
+
+        <createTable tableName="REVUSER">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints
+                        nullable="false"
+                        primaryKey="true" primaryKeyName="REVUSER_PK"
+                />
+            </column>
+
+            <column name="timestamp" type="BIGINT"/>
+
+            <column name="USERNAME" type="varchar(20)"/>
+        </createTable>
+
+        <rollback>
+            <dropIndex tableName="REUSER" indexName="REVUSER_PK"/>
+            <dropTable tableName="REVUSER"/>
+
+            <dropIndex tableName="REVINFO" indexName="REVINFO_PK"/>
+            <dropTable tableName="REVINFO"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

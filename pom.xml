@@ -463,6 +463,20 @@
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
         </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-logging-json</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkiverse.loggingui</groupId>
+          <artifactId>quarkus-logging-ui</artifactId>
+          <version>0.1.0</version>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkiverse.logging.logback</groupId>
+          <artifactId>quarkus-logging-logback</artifactId>
+          <version>0.13.0</version>
+        </dependency>
 
 
         <!-- Quarkus Integration -->
@@ -536,12 +550,6 @@
       </activation>
 
       <dependencies>
-        <dependency>
-          <groupId>de.kaiserpfalz-edv.commons.test-support</groupId>
-          <artifactId>kp-core-testsupport</artifactId>
-          <scope>test</scope>
-        </dependency>
-
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-junit5</artifactId>
@@ -684,6 +692,14 @@
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-hibernate-envers</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-liquibase</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-jdbc-mariadb</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>

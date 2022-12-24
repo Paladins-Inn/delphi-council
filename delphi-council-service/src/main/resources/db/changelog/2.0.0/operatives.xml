@@ -1,0 +1,140 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="operatives" author="rlichti">
+        <createTable tableName="OPERATIVES">
+            <column name="ID" type="VARCHAR(36)">
+                <constraints nullable="false"
+                             unique="true" uniqueConstraintName="OPERATIVES_ID_UK"
+                             primaryKey="true" primaryKeyName="OPERATIVES_PK"
+                />
+            </column>
+            <column name="VERSION" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVISIONED" type="TIMESTAMP"/>
+
+            <column name="PLAYER" type="VARCHAR(100)" defaultValue="unknown">
+                <constraints nullable="false"/>
+            </column>
+
+
+            <column name="NAME" type="VARCHAR(100)">
+                <constraints nullable="false"
+                             unique="true" uniqueConstraintName="OPERATIVE_NAME_UK"
+                />
+            </column>
+            <column name="FIRST_NAME" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LAST_NAME" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="COSM" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="XP" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="CLEARANCE" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="AVATAR_DATA" type="longblob"/>
+            <column name="AVATAR_FILENAME" type="VARCHAR(100)"/>
+            <column name="AVATAR_MEDIATYPE" type="VARCHAR(100)"/>
+
+            <column name="TOKEN_DATA" type="longblob"/>
+            <column name="TOKEN_FILENAME" type="VARCHAR(100)"/>
+            <column name="TOKEN_MEDIATYPE" type="VARCHAR(100)"/>
+
+            <column name="CREATED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFIED" type="TIMESTAMP"/>
+            <column name="DELETED" type="TIMESTAMP"/>
+        </createTable>
+
+
+        <createTable tableName="OPERATIVES_AUD">
+            <column name="ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="INT" defaultValueSequenceNext="hibernate_sequence">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="REVTYPE" type="TINYINT"/>
+
+            <column name="PLAYER" type="VARCHAR(100)"/>
+            <column name="NAME" type="VARCHAR(100)"/>
+            <column name="LAST_NAME" type="VARCHAR(100)"/>
+            <column name="FIRST_NAME" type="VARCHAR(100)"/>
+            <column name="COSM" type="VARCHAR(20)"/>
+            <column name="XP" type="INT"/>
+            <column name="CLEARANCE" type="VARCHAR(20)"/>
+            <column name="DELETED" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex tableName="OPERATIVES" indexName="OPERATIVES_NAME_UK">
+            <column name="LAST_NAME"/>
+            <column name="FIRST_NAME"/>
+        </createIndex>
+
+        <createIndex tableName="OPERATIVES" indexName="OPERATIVES_COSM_IDX">
+            <column name="COSM"/>
+        </createIndex>
+
+        <createIndex tableName="OPERATIVES" indexName="OPERATIVES_CLEARANCE_IDX">
+            <column name="CLEARANCE"/>
+        </createIndex>
+
+        <createIndex tableName="OPERATIVES_AUD" indexName="OPERATIVES_AUD_PK">
+            <column name="ID"/>
+            <column name="REV"/>
+        </createIndex>
+
+        <addForeignKeyConstraint constraintName="OPERATIVES_AUD_REV_FK"
+                                 baseTableName="OPERATIVES_AUD"
+                                 baseColumnNames="REV"
+                                 referencedTableName="REVINFO"
+                                 referencedColumnNames="REV"/>
+
+        <rollback>
+            <dropIndex tableName="OPERATIVES_AUD" indexName="OPERATIVES_AUD_PK"/>
+            <dropTable tableName="OPERATIVES_AUD"/>
+
+            <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_PERSON_IDX"/>
+            <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_CLEARANCE_IDX"/>
+            <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_COSM_IDX"/>
+            <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_USERNAME_UK"/>
+            <dropIndex tableName="OPERATIVES" indexName="OPERATIVES_PK"/>
+            <dropTable tableName="OPERATIVES"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,193 @@
+<!--
+  ~ Copyright (c) 2021 Kaiserpfalz EDV-Service, Roland T. Lichti
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon-skull.png">
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="css/sr.css">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+
+    <script src="upload.js"/>
+
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <title>Torg Card Edit</title>
+
+    <script>
+        jQuery(document).ready(function () {
+            //DrawCard();
+        });
+
+    </script>
+</head>
+<body>
+
+<div class="block">
+    <table style="width:100%;">
+        <tr>
+            <td>
+                <canvas id="myCanvas" width="360" height="660" style="border:1px solid #C0C0C0;"
+                        ondrop="handleDropEvent(event)" ondragover="allowDrop(event)">
+                </canvas>
+                <div>Drop your card here (size 360 x 660 only)!</div>
+            </td>
+            <td>
+                <form>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="txtName">Name</label>
+                                <input type="text" class="form-control form-control-sm" id="txtName"
+                                       value="UHRWERK LÖWE">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtEinschuechtern">Einschüchtern</label>
+                                <input type="text" class="form-control form-control-sm" id="txtEinschuechtern"
+                                       value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtManoevrieren">Manövrieren</label>
+                                <input type="text" class="form-control form-control-sm" id="txtManoevrieren" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtVerspotten">Verspotten</label>
+                                <input type="text" class="form-control form-control-sm" id="txtVerspotten" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtTricksen">Tricksen</label>
+                                <input type="text" class="form-control form-control-sm" id="txtTricksen" value="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="txtNahkampf">Nahkampf</label>
+                                <input type="text" class="form-control form-control-sm" id="txtNahkampf" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtAusweichen">Ausweichen</label>
+                                <input type="text" class="form-control form-control-sm" id="txtAusweichen" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtWaffenlos">Waffenlos</label>
+                                <input type="text" class="form-control form-control-sm" id="txtWaffenlos" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtRobustheit">Robustheit</label>
+                                <input type="text" class="form-control form-control-sm" id="txtRobustheit" value="0">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="ofName">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofName" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="ofEinschuechtern">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofEinschuechtern"
+                                       value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="ofManoevrieren">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofManoevrieren" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="ofVerspotten">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofVerspotten" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="ofTricksen">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofTricksen" value="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ofNahkampf">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofNahkampf" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="ofAusweichen">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofAusweichen" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="ofWaffenlos">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofWaffenlos" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="ofRobustheit">Offset</label>
+                                <input type="number" class="form-control form-control-sm" id="ofRobustheit" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sizeRadioOptions" id="sizeCheckbox0"
+                                       value="0" checked>
+                                <label class="form-check-label" for="sizeCheckbox0">0</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sizeRadioOptions" id="sizeCheckbox2"
+                                       value="2">
+                                <label class="form-check-label" for="sizeCheckbox2">2</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sizeRadioOptions" id="sizeCheckbox4"
+                                       value="3">
+                                <label class="form-check-label" for="sizeCheckbox4">4</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+                <button onclick="DrawCard();">Draw</button>
+                <!--button onclick="to_image()">Draw to Image</button-->
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div style="display: none">
+    <img id="card" src="img/Threat%20Card%20Frame.png"/>
+    <img id="imgFrame" src="img/Threat%20Card%20Frame.png"/>
+    <img id="imgLarge2" src="img/Threat%20Card%20Large.png"/>
+    <img id="imgLarge4" src="img/Threat%20Card%20Large4.png"/>
+</div>
+
+
+</body>
+</html>

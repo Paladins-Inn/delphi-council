@@ -1,7 +1,0 @@
-html, body, #root {
-  height: 100%;
-}
-
-.pf-c-content small {
-  --pf-c-content--small--Color: red;
-}

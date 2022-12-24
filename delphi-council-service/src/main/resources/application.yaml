@@ -1,0 +1,43 @@
+---
+quarkus:
+  application:
+    name: dcis-backend
+    version: 1.0.0
+    ui-header: ${quarkus.application.name}/${quarkus.application.version}
+
+  kubernetes-config:
+    enabled: true
+
+  datasource:
+    jdbc:
+      tracing:
+        ~: true
+        enabled: true
+
+  log:
+    console:
+      format: "%d{HH:mm:ss} %-5p traceId=%X{traceId}, parentId=%X{parentId}, spanId=%X{spanId}, sampled=%X{sampled} [%c{2.}] (%t) %s%e%n"
+
+    jaeger:
+      enabled: false
+      metrics:
+        enabled: false
+      service-name: ${quarkus.application.name}
+      sampler-type: const
+      sampler-param: 1
+
+      generate-code:
+        grpc:
+          scan-for-imports: all
+
+
+dev-test-logging: &logging
+  console:
+    json: false
+"%dev":
+  quarkus:
+    log: *logging
+
+"%test":
+  quarkus:
+    log: *logging

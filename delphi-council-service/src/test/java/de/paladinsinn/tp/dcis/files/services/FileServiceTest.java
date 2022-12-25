@@ -17,14 +17,20 @@
 
 package de.paladinsinn.tp.dcis.files.services;
 
+import de.kaiserpfalzedv.testsupport.oidc.JsonWebTokenFromConfig;
 import de.paladinsinn.tp.dcis.services.FileService;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+
+import javax.inject.Inject;
 
 import static io.restassured.RestAssured.given;
 
@@ -38,7 +44,10 @@ import static io.restassured.RestAssured.given;
 @TestHTTPEndpoint(FileService.class)
 @Slf4j
 public class FileServiceTest {
+
     @Test
+    @Disabled
+    @TestSecurity(user = "player", roles = {"player"})
     public void shouldReturnFullListWhenCalledWithoutParameters() {
         given()
                 .auth().basic("player", "player")

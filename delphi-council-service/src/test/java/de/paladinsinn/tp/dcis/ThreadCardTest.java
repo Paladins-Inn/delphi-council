@@ -41,19 +41,19 @@ public class ThreadCardTest {
     @BeforeEach
     void setUpTestClass() {
         sut = ThreadCard.builder()
-                .withName("Testthreat")
+                .name("Testthreat")
 
-                .withIntimidation(10)
-                .withManeuver(10)
-                .withTaunt(10)
-                .withTrick(10)
+                .intimidation(10)
+                .maneuver(10)
+                .taunt(10)
+                .trick(10)
 
-                .withMelee(10)
-                .withUnarmedCombat(10)
-                .withDodge(10)
-                .withToughness(10).withArmor(0)
+                .melee(10)
+                .unarmedCombat(10)
+                .dodge(10)
+                .toughness(10).armor(0)
 
-                .withSize(SizeModifier.Large)
+                .size(SizeModifier.Large)
                 .build();
     }
 

@@ -16,9 +16,10 @@ import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
 import de.paladinsinn.torganized.core.operative.OperativeReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import liquibase.repackaged.org.apache.commons.lang3.builder.CompareToBuilder;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -41,13 +42,12 @@ import java.util.Set;
                 @UniqueConstraint(name = "MISSIONREPORTS_ID_UK", columnNames = "ID")
         }
 )
-@SuperBuilder(toBuilder = true, setterPrefix = "with")
+@Jacksonized
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = MissionReport.MissionReportBuilder.class)
 public class MissionReport extends AbstractRevisionedJPAEntity implements Comparable<MissionReport>, Cloneable {
     @ManyToOne(
             cascade = {CascadeType.REFRESH},

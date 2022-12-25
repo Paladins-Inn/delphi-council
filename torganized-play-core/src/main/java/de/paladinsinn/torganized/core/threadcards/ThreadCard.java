@@ -13,6 +13,7 @@ package de.paladinsinn.torganized.core.threadcards;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.*;
 
@@ -22,7 +23,8 @@ import javax.validation.constraints.*;
  * @since 2.0.0 2021-12-25
  */
 @RegisterForReflection
-@SuperBuilder(toBuilder = true, setterPrefix = "with")
+@Jacksonized
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)

@@ -12,6 +12,8 @@ package de.paladinsinn.torganized.core.operative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.kaiserpfalzedv.commons.core.files.FileData;
+import de.kaiserpfalzedv.commons.core.files.FileDescription;
 import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.kaiserpfalzedv.commons.core.resources.HasId;
 import de.kaiserpfalzedv.commons.core.resources.HasName;
@@ -25,6 +27,7 @@ import de.paladinsinn.torganized.core.common.HasToken;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -42,13 +45,12 @@ import java.util.Set;
                 @UniqueConstraint(name = "OPERATIVES_NAME_UK", columnNames = {"LAST_NAME", "FIRST_NAME"})
         }
 )
-@SuperBuilder(toBuilder = true, setterPrefix = "with")
+@Jacksonized
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = Operative.OperativeBuilder.class)
 public class Operative extends AbstractRevisionedJPAEntity implements HasName, HasId, HasCosm, HasClearance, HasAvatar, HasToken {
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited
@@ -166,6 +168,31 @@ public class Operative extends AbstractRevisionedJPAEntity implements HasName, H
 
             report.setOperative(null);
         }
+    }
+
+    @Transient
+    public FileData getAvatar() {
+        return createFileData(avatar);
+    }
+
+    @Transient
+    public FileData getToken() {
+        return createFileData(token);
+    }
+    @Transient
+    private FileData createFileData(JPAFileData data) {
+        return FileData.builder()
+                .file(FileDescription.builder()
+                        .name(data.getName())
+                        .mediaType(data.getMediaType())
+                        .data(data.getData())
+                        .build())
+                .preview(FileDescription.builder()
+                        .name(data.getName())
+                        .mediaType(data.getMediaType())
+                        .data(data.getData())
+                        .build())
+                .build();
     }
 
 

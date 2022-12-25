@@ -8,20 +8,17 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.torganized.core.common;
+package de.kaiserpfalzedv.testsupport.oidc;
 
-import de.kaiserpfalzedv.commons.core.resources.HasId;
-import de.paladinsinn.torganized.core.operative.Operative;
+import io.smallrye.config.ConfigMapping;
 
-/**
- * HasOperative --
- *
- * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.1.0  2021-04-18
- */
-public interface HasOperative extends HasId {
-    /**
-     * @return the operative of this object.
-     */
-    Operative getOperative();
+import java.util.Map;
+
+@ConfigMapping(prefix = "quarkus.security.users.embedded")
+public interface JwtApplicationConfig {
+    boolean enabled();
+    boolean plainText();
+    String realmName();
+    Map<String, String> users();
+    Map<String, String> roles();
 }

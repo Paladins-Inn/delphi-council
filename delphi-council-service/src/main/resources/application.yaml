@@ -102,8 +102,8 @@ quarkus:
     db-kind: mariadb
     jdbc:
       tracing:
-        ~: true
-        enabled: true
+        ~: false
+        enabled: false
       url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
       transactions: XA
       transaction-isolation-level: REPEATABLE_READ
@@ -207,6 +207,9 @@ quarkus:
 
 "%dev":
   quarkus:
+    http: &http-dev
+      auth:
+        basic: true
     datasource: &datasource-dev
       db-kind: h2
       jdbc:
@@ -221,19 +224,22 @@ quarkus:
     hibernate-envers: &envers-dev
       store-data-at-delete: true
 
+    liquibase: &liquibase-dev
+      migrate-at-start: true
+      change-log: db/changelog/db.changelog-dev.xml
 
     log: &log-dev
       console:
         json: false
         enable: true
-        format: "%d{HH:mm:ss} %-5p traceId=%X{traceId}, parentId=%X{parentId}, spanId=%X{spanId}, sampled=%X{sampled} [%c{2.}] (%t) %s%e%n"
+        format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
       level: INFO
       min-level: TRACE
       category:
         "de.kaiserpfalzedv":
-          level: DEBUG
+          level: TRACE
         "de.paladinsinn":
-          level: DEBUG
+          level: TRACE
         http-problem:
           level: INFO
     oidc: &oidc-dev
@@ -261,12 +267,16 @@ quarkus:
             judge: player,gm,orga,judge
             admin: player,gm,orga,admin,metrics
             metrics: metrics
+      auth:
+        enabled-in-dev-mode: true
 
 
 "%test":
   quarkus:
+    http: *http-dev
     datasource: *datasource-dev
     hibernate-envers: *envers-dev
+    liquibase: *liquibase-dev
     log: *log-dev
     oidc: *oidc-dev
     keycloak: *keycloak-dev

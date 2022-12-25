@@ -18,9 +18,9 @@ import de.kaiserpfalzedv.commons.core.resources.HasName;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.torganized.core.common.HasClearance;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import liquibase.repackaged.org.apache.commons.lang3.builder.CompareToBuilder;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 

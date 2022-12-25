@@ -20,6 +20,7 @@ import de.paladinsinn.torganized.core.operative.OperativeSpecialReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
 
@@ -45,13 +46,12 @@ import java.util.UUID;
                 @UniqueConstraint(name = "SPECIALMISSIONS_TITLE_UK", columnNames = "TITLE")
         }
 )
-@SuperBuilder(toBuilder = true, setterPrefix = "with")
+@Jacksonized
+@SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = SpecialMission.SpecialMissionBuilder.class)
 @Slf4j
 public class SpecialMission extends AbstractRevisionedJPAEntity implements HasId, HasClearance, Cloneable {
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDCharType")

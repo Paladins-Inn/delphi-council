@@ -19,7 +19,7 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="missions" author="rlichti">
         <comment>
             Adding information about missions and mission reports.
@@ -206,13 +206,7 @@
             <column name="REV"/>
         </createIndex>
 
-        <addForeignKeyConstraint constraintName="MISSIONREPORTS_OPERATIVES_AUD_REV_FK"
-                                 baseTableName="MISSIONREPORTS_OPERATIVES_AUD"
-                                 baseColumnNames="REV"
-                                 referencedTableName="REVINFO"
-                                 referencedColumnNames="REV"/>
-
-        <rollback>
+         <rollback>
             <dropIndex tableName="MISSIONREPORTS_AUD" indexName="MISSIONREPORTS_AUD_FK"/>
             <dropTable tableName="MISSIONREPORTS_AUD"/>
 
@@ -276,6 +270,12 @@
             <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
         </createTable>
+
+        <addForeignKeyConstraint constraintName="MISSIONREPORTS_OPERATIVES_AUD_REV_FK"
+                                 baseTableName="MISSIONREPORTS_OPERATIVES_AUD"
+                                 baseColumnNames="REV"
+                                 referencedTableName="REVINFO"
+                                 referencedColumnNames="REV"/>
 
 
         <createIndex tableName="MISSIONREPORTS_OPERATIVES" indexName="MISSIONREPORTS_OPERATIVES_UK">

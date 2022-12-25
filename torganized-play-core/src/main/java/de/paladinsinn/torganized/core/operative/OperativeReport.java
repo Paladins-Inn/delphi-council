@@ -16,12 +16,13 @@ import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.paladinsinn.torganized.core.common.HasOperative;
 import de.paladinsinn.torganized.core.missions.MissionReport;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import liquibase.repackaged.org.apache.commons.lang3.builder.CompareToBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -41,13 +42,12 @@ import javax.persistence.*;
                 @UniqueConstraint(name = "MISSIONREPORTS_OPERATIVES_UK", columnNames = {"MISSIONREPORT_ID", "OPERATIVE_ID"})
         }
 )
-@SuperBuilder(toBuilder = true, setterPrefix = "with")
+@Jacksonized
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = OperativeReport.OperativeReportBuilder.class)
 public class OperativeReport extends AbstractRevisionedJPAEntity implements Comparable<OperativeReport>, HasOperative {
     @Column(name = "ACHIEVEMENTS", length = 4000)
     private String achievements;

@@ -19,13 +19,11 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="base.xml" relativeToChangelogFile="true"/>
 
     <include file="operatives.xml" relativeToChangelogFile="true"/>
     <include file="missions.xml" relativeToChangelogFile="true"/>
     <include file="special_missions.xml" relativeToChangelogFile="true"/>
-
-    <include file="files.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

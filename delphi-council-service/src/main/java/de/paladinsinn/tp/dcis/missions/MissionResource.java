@@ -10,12 +10,17 @@
 
 package de.paladinsinn.tp.dcis.missions;
 
+import de.paladinsinn.torganized.core.common.UserRoles;
 import de.paladinsinn.torganized.core.missions.Mission;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.UUID;
 
+import static de.paladinsinn.torganized.core.common.UserRoles.gm;
+
 @RepositoryRestResource(path = "/api/v1/missions")
+@RolesAllowed({"orga","judge", "admin"})
 public interface MissionResource extends PagingAndSortingRepository<Mission, UUID> {
 }

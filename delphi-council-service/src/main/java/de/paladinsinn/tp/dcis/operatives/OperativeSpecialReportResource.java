@@ -10,12 +10,12 @@
 
 package de.paladinsinn.tp.dcis.operatives;
 
-import de.paladinsinn.torganized.core.operative.Operative;
+import de.paladinsinn.torganized.core.operative.OperativeSpecialReport;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.UUID;
 
-@RepositoryRestResource(path = "/api/v1/operatives")
-public interface OperativeResource extends PagingAndSortingRepository<Operative, UUID> {
+@RepositoryRestResource(path = "/api/v1/operatives/specialreports")
+public interface OperativeSpecialReportResource extends PagingAndSortingRepository<OperativeSpecialReport, UUID> {
 }

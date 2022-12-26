@@ -23,6 +23,7 @@
   <modules>
     <module>torganized-play-core</module>
     <module>delphi-council-service</module>
+    <module>delphi-council-client</module>
     <module>delphi-council-webui</module>
   </modules>
 
@@ -144,6 +145,21 @@
       <dependency>
         <groupId>de.paladins-inn.torganized</groupId>
         <artifactId>torganized-play-core</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>de.paladins-inn.torganized</groupId>
+        <artifactId>delphi-council-service</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>de.paladins-inn.torganized</groupId>
+        <artifactId>delphi-council-client</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>de.paladins-inn.torganized</groupId>
+        <artifactId>delphi-council-webui</artifactId>
         <version>1.0.0</version>
       </dependency>
     </dependencies>

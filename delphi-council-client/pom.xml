@@ -19,23 +19,13 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>delphi-council-webui</artifactId>
-    <name>PI :: Torganized Play :: Delphi Council WebUI</name>
+    <artifactId>delphi-council-client</artifactId>
+    <name>PI :: Torganized Play :: Delpi Council REST Client</name>
 
     <dependencies>
         <dependency>
             <groupId>de.paladins-inn.torganized</groupId>
             <artifactId>torganized-play-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>de.paladins-inn.torganized</groupId>
-            <artifactId>delphi-council-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.rjeschke</groupId>
-            <artifactId>txtmark</artifactId>
         </dependency>
     </dependencies>
 </project>

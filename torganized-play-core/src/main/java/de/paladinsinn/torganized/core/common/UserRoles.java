@@ -15,5 +15,5 @@ public enum UserRoles {
     gm,
     orga,
     judge,
-    admin;
+    admin
 }

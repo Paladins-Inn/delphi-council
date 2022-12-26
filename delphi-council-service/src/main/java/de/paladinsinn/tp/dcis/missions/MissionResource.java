@@ -10,17 +10,37 @@
 
 package de.paladinsinn.tp.dcis.missions;
 
-import de.paladinsinn.torganized.core.common.UserRoles;
 import de.paladinsinn.torganized.core.missions.Mission;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.annotation.Secured;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.UUID;
 
-import static de.paladinsinn.torganized.core.common.UserRoles.gm;
-
 @RepositoryRestResource(path = "/api/v1/missions")
-@RolesAllowed({"orga","judge", "admin"})
 public interface MissionResource extends PagingAndSortingRepository<Mission, UUID> {
+    @Override
+    @Secured({"orga","judge","admin"})
+    <S extends Mission> S save(S data);
+
+    @Override
+    @RolesAllowed({"orga","judge","admin"})
+    <S extends Mission> Iterable<S> saveAll(Iterable<S> data);
+
+    @Override
+    @RolesAllowed({"orga","judge","admin"})
+    void deleteById(UUID id);
+
+    @Override
+    @RolesAllowed({"orga","judge","admin"})
+    void delete(Mission data);
+
+    @Override
+    @RolesAllowed({"orga","judge","admin"})
+    void deleteAll(Iterable<? extends Mission> data);
+
+    @Override
+    @RolesAllowed("admin")
+    void deleteAll();
 }

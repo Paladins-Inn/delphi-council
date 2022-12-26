@@ -1,283 +1,39 @@
 ---
+api-server: &api
+  url: https://api.delphi-council.org/
+  scope: javax.inject.Singleton
+
+dev-api-server: &dev-api
+  url: http://localhost:8081/
+  scope: javax.inject.Singleton
+
+test-api-server: &test-api *dev-api
+
 quarkus:
-  application:
-    name: dcis-backend
-    version: 2.0.0
-    ui-header: ${quarkus.application.name}/${quarkus.application.version}
-    api-version: "v1"
-
-  kubernetes-config:
-    enabled: true
-
-  log:
-    metrics:
-      enabled: true
-    console:
-      enable: true
-      json: true
-      format: "%d{HH:mm:ss} %-5p traceId=%X{traceId}, parentId=%X{parentId}, spanId=%X{spanId}, sampled=%X{sampled} [%c{2.}] (%t) %s%e%n"
-    level: WARN
-    min-level: ALL
-    category:
-      "de.paladinsinn":
-        level: INFO
-      "de.kaiserpfalzedv":
-        level: INFO
-      http-problem:
-        level: INFO
-
-  logging-manager:
-    enable: true
-    ui:
-      enable: true
-
-    jaeger:
-      enabled: false
-      metrics:
-        enabled: false
-      service-name: ${quarkus.application.name}
-      sampler-type: const
-      sampler-param: 1
-
-  http:
-    insecure-requests: enabled
-    port: 8080
-    ssl-port: 8443
-    ssl:
-      protocols: TLSv1.3
-      sni: true
-
-    access-log:
-      enabled: true
-      log-to-file: false
-      exclude-pattern: "/q/.*"
-      pattern: combined
-
-    test-port: 8081
-    test-ssl-port: 8444
-    enable-compression: true
-    enable-decompression: true
-    record-request-start-time: true
-
-    body:
-      delete-uploaded-files-on-end: true
-      handle-file-uploads: true
-      preallocate-body-buffer: true
-      merge-form-attributes: true
-
-    auth:
-      realm: ${quarkus.application.name}
-      proactive: false
-      policy:
-        metrics:
-          roles-allowed: metrics
-      permission:
-        protected:
-          paths: /api/v1/*
-          policy: authenticated
-        metrics:
-          paths: /q/*
-          policy: metrics
-        sw-js:
-          paths: /sw.js
-          policy: permit
-    cors: true
-  oidc:
-    application-type: hybrid
-    auth-server-url: ${OAUTH2_URL}
-    client-id: ${OAUTH2_CLIENT}
-    credentials:
-      secret: ${OAUTH2_SECRET}
-    tls:
-      verification: none
-  keycloak:
-    policy-enforcer:
-      enable: true
-  security:
-    users:
-      embedded:
-        enabled: false
-
-  datasource:
-    db-kind: mariadb
-    jdbc:
-      tracing:
-        ~: false
-        enabled: false
-      url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
-      transactions: XA
-      transaction-isolation-level: REPEATABLE_READ
-      flush-on-close: true
-      detect-statement-leaks: true
-    username: "${DB_USER:sa}"
-    password: "${DB_PASSWORD:sa}"
-    health:
-      enabled: true
-    metrics:
-      enabled: true
-      jdbc:
-        enable-metrics: true
-
-  hibernate-envers:
-    store-data-at-delete: true
-
-  liquibase:
-    migrate-at-start: true
-    change-log: db/changelog/db.changelog-master.xml
-
-
-  mailer:
-    host: "${MAIL_HOST:smtp.kaiserpfalz-edv.de}"
-    port: "${MAIL_PORT:587}"
-    ssl: true
-    from: "${MAIL_FROM_NAME:Quin Sebastian} <${MAIL_FROM_ADDRESS:quinn.sebastian@delphi-council.org}>"
-    username: "${MAIL_USER:no}"
-    password: "${MAIL_PASSWORD:no}"
-    bounce-address: "${MAIL_BOUNCE_ADDRESS:tech@kaiserpfalz-edv.de}"
-    keep-alive: true
-
-  qute:
-    property-not-found-strategy: throw_exception
-    remove-standalone-lines: false
-    strict-rendering: true
-
-  resteasy:
-    problem:
-      include-mdc-properties: workflow-id,step-id,application,version,node
-
-  smallrye-health:
-    ui:
-      enable: true
-
-
-  micrometer:
-    enabled: true
-    registry-enabled-default: true
-    binder-enabled-default: true
-    binder:
-      http-server:
-        enabled: true
-      mp-metrics:
-        enabled: true
-      jvm: true
-      system: true
-      vertx:
-        enabled: true
-    export:
-      json:
-        enabled: true
-        path: /q/json-metrics
-      prometheus:
-        enabled: true
-        path: /q/metrics
-        default-registry: true
-
-  smallrye-openapi:
-    enable: true
-    operation-id-strategy: method
-    info: ${quarkus.application.name} API ${quarkus.application.api-version}
-    info-version: ${quarkus.application.version}
-    info-description: Software for managing Torganized Play in Germany.
-    info-terms-of-service: Service provided as is without any warranty
-    info-contact-email: info@paladins-inn.de
-    info-contact-name: Paladins Inn
-    info-contact-url: https://www.paladins-inn.de
-    info-license-name: GPL 3+
-    info-license-url: https://www.gnu.org/licenses/
-
-  swagger-ui:
-    enable: true
-    always-include: true
-
-
-  container-image:
-    name: delphi-council-service
-    tag: ${quarkus.application.version}
-  openshift:
-    deployment-kind: deployment
-
-  devservices:
-    enabled: false
-  jaeger:
-    enabled: true
-  banner:
-    enabled: true
-
-
+  rest-client:
+    mission-api: *api
+    mission-report-api: *api
+    special-mission-api: *api
+    operative-api: *api
+    operative-report-api: *api
+    operative-special-report-api: *api
 
 "%dev":
   quarkus:
-    http: &http-dev
-      auth:
-        basic: true
-    datasource: &datasource-dev
-      db-kind: h2
-      jdbc:
-        url: jdbc:h2:file:./target/db/delphi-council;USER=sa;PASSWORD=sa;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
-      username: sa
-      password: sa
-      health:
-        enabled: true
-      metrics:
-        enabled: true
-
-    hibernate-envers: &envers-dev
-      store-data-at-delete: true
-
-    liquibase: &liquibase-dev
-      migrate-at-start: true
-      change-log: db/changelog/db.changelog-dev.xml
-
-    log: &log-dev
-      console:
-        json: false
-        enable: true
-        format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
-      level: INFO
-      min-level: TRACE
-      category:
-        "de.kaiserpfalzedv":
-          level: TRACE
-        "de.paladinsinn":
-          level: TRACE
-        http-problem:
-          level: INFO
-    oidc: &oidc-dev
-      enabled: false
-    keycloak: &keycloak-dev
-      policy-enforcer:
-        enable: false
-    security: &security-dev
-      users:
-        embedded:
-          enabled: true
-          plain-text: true
-          realm-name: ${quarkus.application.name}
-          users:
-            player: player
-            gm: gm
-            orga: orga
-            judge: judge
-            admin: admin
-            metrics: metrics
-          roles:
-            player: player
-            gm: player,gm
-            orga: player,gm,orga
-            judge: player,gm,orga,judge
-            admin: player,gm,orga,admin,metrics
-            metrics: metrics
-      auth:
-        enabled-in-dev-mode: true
-
+    rest-client:
+      mission-api: *dev-api
+      mission-report-api: *dev-api
+      special-mission-api: *dev-api
+      operative-api: *dev-api
+      operative-report-api: *dev-api
+      operative-special-report-api: *dev-api
 
 "%test":
   quarkus:
-    http: *http-dev
-    datasource: *datasource-dev
-    hibernate-envers: *envers-dev
-    liquibase: *liquibase-dev
-    log: *log-dev
-    oidc: *oidc-dev
-    keycloak: *keycloak-dev
-    security: *security-dev
+    rest-client:
+      mission-api: *test-api
+      mission-report-api: *test-api
+      special-mission-api: *test-api
+      operative-api: *test-api
+      operative-report-api: *test-api
+      operative-special-report-api: *test-api

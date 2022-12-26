@@ -8,12 +8,18 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.torganized.core.common;
+package de.paladinsinn.tp.dcis.client.operatives;
 
-public enum Language {
-    DEU,
-    ENG,
-    FRA,
-    SPA,
-    NLD
-}
+import de.paladinsinn.torganized.core.operative.OperativeReport;
+import de.paladinsinn.tp.dcis.client.StandardClient;
+import io.quarkus.oidc.client.filter.OidcClientRequestFilter;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+import javax.ws.rs.Path;
+import java.util.UUID;
+
+@RegisterRestClient(configKey = "operative-report-api")
+@RegisterProvider(OidcClientRequestFilter.class)
+@Path("/api/v1/operatives/reports")
+public interface OperativeReportClient extends StandardClient<OperativeReport, UUID> {}

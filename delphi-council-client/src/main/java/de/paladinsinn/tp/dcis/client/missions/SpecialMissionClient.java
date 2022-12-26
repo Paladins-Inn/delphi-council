@@ -8,14 +8,18 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.operatives;
+package de.paladinsinn.tp.dcis.client.missions;
 
-import de.paladinsinn.torganized.core.operative.OperativeSpecialReport;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import de.paladinsinn.torganized.core.missions.SpecialMission;
+import de.paladinsinn.tp.dcis.client.StandardClient;
+import io.quarkus.oidc.client.filter.OidcClientRequestFilter;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import javax.ws.rs.Path;
 import java.util.UUID;
 
-@RepositoryRestResource(path = "/api/v1/operatives/specialreports")
-public interface OperativesSpecialReportResource extends PagingAndSortingRepository<OperativeSpecialReport, UUID> {
-}
+@RegisterRestClient(configKey = "special-mission-api")
+@RegisterProvider(OidcClientRequestFilter.class)
+@Path("/api/v1/missions/special")
+public interface SpecialMissionClient extends StandardClient<SpecialMission, UUID> {}

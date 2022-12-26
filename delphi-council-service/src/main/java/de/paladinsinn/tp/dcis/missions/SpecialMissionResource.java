@@ -14,8 +14,32 @@ import de.paladinsinn.torganized.core.missions.SpecialMission;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.UUID;
 
 @RepositoryRestResource(path = "/api/v1/missions/special")
 public interface SpecialMissionResource extends PagingAndSortingRepository<SpecialMission, UUID> {
+    @Override
+    @RolesAllowed({"gm","orga","judge","admin"})
+    <S extends SpecialMission> S save(S data);
+
+    @Override
+    @RolesAllowed({"gm","orga","judge","admin"})
+    <S extends SpecialMission> Iterable<S> saveAll(Iterable<S> data);
+
+    @Override
+    @RolesAllowed({"gm","orga","judge","admin"})
+    void deleteById(UUID id);
+
+    @Override
+    @RolesAllowed({"gm","orga","judge","admin"})
+    void delete(SpecialMission data);
+
+    @Override
+    @RolesAllowed({"gm","orga","judge","admin"})
+    void deleteAll(Iterable<? extends SpecialMission> data);
+
+    @Override
+    @RolesAllowed({"gm","orga","judge","admin"})
+    void deleteAll();
 }

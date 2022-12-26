@@ -8,17 +8,18 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.kaiserpfalzedv.testsupport.oidc;
+package de.paladinsinn.tp.dcis.client.missions;
 
-import io.smallrye.config.ConfigMapping;
+import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.client.StandardClient;
+import io.quarkus.oidc.client.filter.OidcClientRequestFilter;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import java.util.Map;
+import javax.ws.rs.*;
+import java.util.UUID;
 
-@ConfigMapping(prefix = "quarkus.security.users.embedded")
-public interface JwtApplicationConfig {
-    boolean enabled();
-    boolean plainText();
-    String realmName();
-    Map<String, String> users();
-    Map<String, String> roles();
-}
+@RegisterRestClient(configKey = "mission-api")
+@RegisterProvider(OidcClientRequestFilter.class)
+@Path("/api/v1/missions")
+public interface MissionClient extends StandardClient<Mission, UUID> {}

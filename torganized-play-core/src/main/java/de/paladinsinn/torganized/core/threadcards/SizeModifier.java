@@ -29,7 +29,7 @@ public enum SizeModifier {
 
     int modifier;
 
-    private SizeModifier(int modifier) {
+    SizeModifier(int modifier) {
         this.modifier = modifier;
     }
 }

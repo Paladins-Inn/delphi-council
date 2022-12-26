@@ -14,8 +14,31 @@ import de.paladinsinn.torganized.core.operative.Operative;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import java.util.UUID;
+import javax.annotation.security.RolesAllowed;import java.util.UUID;
 
 @RepositoryRestResource(path = "/api/v1/operatives")
 public interface OperativeResource extends PagingAndSortingRepository<Operative, UUID> {
+    @Override
+    @RolesAllowed({"player","gm","orga","judge","admin"})
+    <S extends Operative> S save(S data);
+
+    @Override
+    @RolesAllowed({"player","gm","orga","judge","admin"})
+    <S extends Operative> Iterable<S> saveAll(Iterable<S> data);
+
+    @Override
+    @RolesAllowed({"player","orga","judge","admin"})
+    void deleteById(UUID id);
+
+    @Override
+    @RolesAllowed({"player","orga","judge","admin"})
+    void delete(Operative data);
+
+    @Override
+    @RolesAllowed({"player","orga","judge","admin"})
+    void deleteAll(Iterable<? extends Operative> data);
+
+    @Override
+    @RolesAllowed({"admin","orga","judge","admin"})
+    void deleteAll();
 }

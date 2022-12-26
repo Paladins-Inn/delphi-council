@@ -40,7 +40,7 @@ import java.util.Set;
                 @UniqueConstraint(name = "MISSIONS_TITLE_UK", columnNames = "TITLE")
         }
 )
-@SuperBuilder(toBuilder = true, setterPrefix = "with")
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

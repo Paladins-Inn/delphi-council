@@ -8,12 +8,18 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.torganized.core.common;
+package de.paladinsinn.tp.dcis.client.missions;
 
-public enum Language {
-    DEU,
-    ENG,
-    FRA,
-    SPA,
-    NLD
-}
+import de.paladinsinn.torganized.core.missions.MissionReport;
+import de.paladinsinn.tp.dcis.client.StandardClient;
+import io.quarkus.oidc.client.filter.OidcClientRequestFilter;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+import javax.ws.rs.*;
+import java.util.UUID;
+
+@RegisterRestClient(configKey = "mission-report-api")
+@RegisterProvider(OidcClientRequestFilter.class)
+@Path("/api/v1/missions/reports")
+public interface MissionReportClient extends StandardClient<MissionReport, UUID> {}

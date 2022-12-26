@@ -683,7 +683,11 @@
       <dependencies>
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-hibernate-orm-panache</artifactId>
+          <artifactId>quarkus-hibernate-orm</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-spring-data-jpa-api</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -756,6 +760,11 @@
         </file>
       </activation>
       <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-spring-data-rest</artifactId>
+        </dependency>
+
         <!-- REST/Communication -->
         <dependency>
           <groupId>io.quarkus</groupId>

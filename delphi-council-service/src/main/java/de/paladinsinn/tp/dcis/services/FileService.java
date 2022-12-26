@@ -39,8 +39,8 @@ import java.util.Set;
 public class FileService {
     private de.kaiserpfalzedv.commons.fileserver.services.FileService service;
 
-    @Inject
-    JsonWebToken jwt;
+//    @Inject
+//    JsonWebToken jwt;
 
     @Schema(
                          description = "Index of all files."
@@ -67,8 +67,9 @@ public class FileService {
             @QueryParam("offset") final int offset,
             @QueryParam("sort") final List<String> sort
     ) {
-        log.debug("Loading files. jwt={}, securityContext={}", jwt, securityContext);
-        Optional<Set<String>> roles = jwt != null ? jwt.claim("roles") : Optional.empty();
+        log.debug("Loading files. jwt={}, securityContext={}", null, securityContext);
+//        Optional<Set<String>> roles = jwt != null ? jwt.claim("roles") : Optional.empty();
+        Optional<Set<String>> roles = Optional.empty();
 
         return service.index(nameSpace, mediaType, owner, limit, offset, sort, null, roles.orElse(Collections.emptySet()));
     }

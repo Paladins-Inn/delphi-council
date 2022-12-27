@@ -53,6 +53,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Slf4j
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class SpecialMission extends AbstractRevisionedJPAEntity implements HasId, HasClearance, Cloneable {
     @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDCharType")
     @Column(name = "CODE", length = 36, nullable = false, updatable = false, unique = true)

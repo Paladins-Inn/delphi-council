@@ -11,6 +11,7 @@
 package de.paladinsinn.tp.dcis.missions;
 
 import de.paladinsinn.torganized.core.missions.Mission;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.annotation.Secured;
@@ -18,6 +19,10 @@ import org.springframework.security.access.annotation.Secured;
 import javax.annotation.security.RolesAllowed;
 import java.util.UUID;
 
+@Schema(
+        name = "Missions",
+        description = "Mission Data CRUD Service"
+)
 @RepositoryRestResource(path = "/api/v1/missions")
 public interface MissionResource extends PagingAndSortingRepository<Mission, UUID> {
     @Override

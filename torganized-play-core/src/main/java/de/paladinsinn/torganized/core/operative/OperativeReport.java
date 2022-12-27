@@ -48,6 +48,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class OperativeReport extends AbstractRevisionedJPAEntity implements Comparable<OperativeReport>, HasOperative {
     @Column(name = "ACHIEVEMENTS", length = 4000)
     private String achievements;

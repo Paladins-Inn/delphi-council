@@ -1,7 +1,7 @@
 ---
 quarkus:
   application:
-    name: dcis-backend
+    name: dcis-ui
     version: 2.0.0
     ui-header: ${quarkus.application.name}/${quarkus.application.version}
     api-version: "v1"
@@ -14,8 +14,10 @@ quarkus:
       enabled: true
     console:
       enable: true
-      json: true
-      format: "%d{HH:mm:ss} %-5p traceId=%X{traceId}, parentId=%X{parentId}, spanId=%X{spanId}, sampled=%X{sampled} [%c{2.}] (%t) %s%e%n"
+      json:
+        ~: true
+        pretty-print: true
+        print-details: true
     level: WARN
     min-level: ALL
     category:
@@ -25,27 +27,26 @@ quarkus:
         level: INFO
       http-problem:
         level: INFO
+      "org.atmosphere":
+        level: WARN
 
   logging-manager:
     enable: true
     ui:
       enable: true
 
-    jaeger:
-      enabled: false
-      metrics:
-        enabled: false
-      service-name: ${quarkus.application.name}
-      sampler-type: const
-      sampler-param: 1
-
   http:
-    insecure-requests: enabled
+    insecure-requests: REDIRECT
     port: 8080
     ssl-port: 8443
     ssl:
       protocols: TLSv1.3
       sni: true
+      certificate:
+        key-files:
+          - /opt/app-root/config/tls/tls.key
+        files:
+          - /opt/app-root/config/tls/tls.crt
 
     access-log:
       enabled: true
@@ -53,8 +54,8 @@ quarkus:
       exclude-pattern: "/q/.*"
       pattern: combined
 
-    test-port: 8081
-    test-ssl-port: 8444
+    test-port: 9080
+    test-ssl-port: 9443
     enable-compression: true
     enable-decompression: true
     record-request-start-time: true
@@ -82,14 +83,15 @@ quarkus:
           paths: /sw.js
           policy: permit
     cors: true
+
   oidc:
-    application-type: hybrid
-    auth-server-url: ${OAUTH2_URL}
-    client-id: ${OAUTH2_CLIENT}
+    application-type: WEB_APP
+    auth-server-url: ${OIDC_URL}
+    client-id: ${OIDC_CLIENT}
     credentials:
-      secret: ${OAUTH2_SECRET}
+      secret: ${OIDC_SECRET}
     tls:
-      verification: none
+      verification: required
   keycloak:
     policy-enforcer:
       enable: true
@@ -101,9 +103,6 @@ quarkus:
   datasource:
     db-kind: mariadb
     jdbc:
-      tracing:
-        ~: true
-        enabled: true
       url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
       transactions: XA
       transaction-isolation-level: REPEATABLE_READ
@@ -174,7 +173,7 @@ quarkus:
 
   smallrye-openapi:
     enable: true
-    operation-id-strategy: method
+    operation-id-strategy: METHOD
     info: ${quarkus.application.name} API ${quarkus.application.api-version}
     info-version: ${quarkus.application.version}
     info-description: Software for managing Torganized Play in Germany.
@@ -194,12 +193,10 @@ quarkus:
     name: delphi-council-service
     tag: ${quarkus.application.version}
   openshift:
-    deployment-kind: deployment
+    deployment-kind: Deployment
 
   devservices:
     enabled: false
-  jaeger:
-    enabled: true
   banner:
     enabled: true
 
@@ -221,12 +218,11 @@ quarkus:
     hibernate-envers: &envers-dev
       store-data-at-delete: true
 
-
     log: &log-dev
       console:
         json: false
         enable: true
-        format: "%d{HH:mm:ss} %-5p traceId=%X{traceId}, parentId=%X{parentId}, spanId=%X{spanId}, sampled=%X{sampled} [%c{2.}] (%t) %s%e%n"
+        format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
       level: INFO
       min-level: TRACE
       category:
@@ -236,38 +232,34 @@ quarkus:
           level: DEBUG
         http-problem:
           level: INFO
-    oidc: &oidc-dev
-      enabled: false
-    keycloak: &keycloak-dev
-      policy-enforcer:
-        enable: false
-    security: &security-dev
-      users:
-        embedded:
-          enabled: true
-          plain-text: true
-          realm-name: ${quarkus.application.name}
-          users:
-            player: player
-            gm: gm
-            orga: orga
-            judge: judge
-            admin: admin
-            metrics: metrics
-          roles:
-            player: player
-            gm: player,gm
-            orga: player,gm,orga
-            judge: player,gm,orga,judge
-            admin: player,gm,orga,admin,metrics
-            metrics: metrics
 
+    http: &http-dev
+      insecure-requests: REDIRECT
+      port: 8080
+      ssl-port: 8443
+      ssl:
+        protocols: TLSv1.3
+        sni: true
+        certificate:
+          key-files:
+            - tls/tls.key
+          files:
+            - tls/tls.crt
+      auth:
+        basic: false
 
 "%test":
   quarkus:
     datasource: *datasource-dev
     hibernate-envers: *envers-dev
     log: *log-dev
-    oidc: *oidc-dev
-    keycloak: *keycloak-dev
-    security: *security-dev
+    http: *http-dev
+
+vaadin:
+  launch-browser: true
+  whitelisted-packages:
+    - com.vaadin
+    - org.vaadin
+    - dev.hilla
+    - de.paladinsinn.tp.dcis.ui
+

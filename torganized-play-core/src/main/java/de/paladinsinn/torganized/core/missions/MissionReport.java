@@ -48,6 +48,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class MissionReport extends AbstractRevisionedJPAEntity implements Comparable<MissionReport>, Cloneable {
     @ManyToOne(
             cascade = {CascadeType.REFRESH},

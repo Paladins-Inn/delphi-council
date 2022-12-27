@@ -7,7 +7,9 @@ dev-api-server: &dev-api
   url: http://localhost:8081/
   scope: javax.inject.Singleton
 
-test-api-server: &test-api *dev-api
+test-api-server: &test-api
+  url: http://localhost:8081/
+  scope: javax.inject.Singleton
 
 quarkus:
   rest-client:

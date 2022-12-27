@@ -12,6 +12,7 @@ package de.paladinsinn.tp.dcis.missions;
 
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.torganized.core.missions.MissionReport;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

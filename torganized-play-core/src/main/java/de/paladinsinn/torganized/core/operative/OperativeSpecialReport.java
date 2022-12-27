@@ -10,6 +10,7 @@
 
 package de.paladinsinn.torganized.core.operative;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.kaiserpfalzedv.commons.core.resources.HasId;
 import de.kaiserpfalzedv.commons.core.resources.HasName;
@@ -48,6 +49,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class OperativeSpecialReport extends AbstractRevisionedJPAEntity implements Comparable<OperativeSpecialReport>, HasName, HasId, HasOperative {
     @Column(name = "NOTES", length = 4000)
     private String notes;

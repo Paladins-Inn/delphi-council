@@ -46,7 +46,6 @@ import java.util.Set;
 @Getter
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonDeserialize(builder = Mission.MissionBuilder.class)
 @Schema(description = "Delphi Council Mission")
 public class Mission extends AbstractRevisionedJPAEntity implements Comparable<Mission>, HasId, HasName, HasClearance, Cloneable {
     @Column(name = "CODE", length = 20, nullable = false)

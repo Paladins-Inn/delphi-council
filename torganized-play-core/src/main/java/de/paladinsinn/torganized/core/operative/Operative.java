@@ -51,6 +51,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Operative extends AbstractRevisionedJPAEntity implements HasName, HasId, HasCosm, HasClearance, HasAvatar, HasToken {
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited

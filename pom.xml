@@ -44,12 +44,15 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
 
+    <file.encoding>UTF-8</file.encoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.15.1.Final</quarkus.platform.version>
+
+    <vaadin.version>23.3.1</vaadin.version>
 
     <compiler-plugin.version>3.10.1</compiler-plugin.version>
     <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
@@ -415,6 +418,7 @@
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
         <excludes>
+          <exclude>**/*.xcf</exclude>
           <exclude>**/*.webp</exclude>
           <exclude>**/*.docx</exclude>
           <exclude>**/*.xlsx</exclude>
@@ -426,13 +430,16 @@
           <exclude>**/*.gpg</exclude>
           <exclude>**/*.svg</exclude>
           <exclude>**/*.license</exclude>
-          <exclude>src/main/resources/static/*</exclude>
+          <exclude>**/*.key</exclude>
+          <exclude>**/*.crt</exclude>
+          <exclude>static/*</exclude>
         </excludes>
       </resource>
       <resource>
         <filtering>false</filtering>
         <directory>src/main/resources</directory>
         <includes>
+          <include>**/*.xcf</include>
           <include>**/*.webp</include>
           <include>**/*.docx</include>
           <include>**/*.xlsx</include>
@@ -444,6 +451,9 @@
           <include>**/*.gpg</include>
           <include>**/*.svg</include>
           <include>**/*.license</include>
+          <include>**/tls.key</include>
+          <include>**/tls.crt</include>
+          <include>static/*</include>
         </includes>
       </resource>
     </resources>
@@ -642,6 +652,7 @@
             <filtering>true</filtering>
             <directory>src/test/resources</directory>
             <excludes>
+              <exclude>**/*.xcf</exclude>
               <exclude>**/*.docx</exclude>
               <exclude>**/*.xlsx</exclude>
               <exclude>**/*.zip</exclude>
@@ -650,12 +661,15 @@
               <exclude>**/*.jpg</exclude>
               <exclude>**/*.gpg</exclude>
               <exclude>**/*.license</exclude>
+              <exclude>**/*.key</exclude>
+              <exclude>**/*.crt</exclude>
             </excludes>
           </testResource>
           <testResource>
             <filtering>false</filtering>
             <directory>src/test/resources</directory>
             <includes>
+              <include>**/*.xcf</include>
               <include>**/*.docx</include>
               <include>**/*.xlsx</include>
               <include>**/*.zip</include>
@@ -664,6 +678,8 @@
               <include>**/*.jpg</include>
               <include>**/*.gpg</include>
               <include>**/*.license</include>
+              <include>**/*.key</include>
+              <include>**/*.crt</include>
             </includes>
           </testResource>
         </testResources>
@@ -747,29 +763,16 @@
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-security-jpa</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
           <artifactId>quarkus-spring-web</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-spring-security</artifactId>
         </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-elytron-security-properties-file</artifactId>
-        </dependency>
 
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-test-security</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-test-oidc-server</artifactId>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -827,6 +830,60 @@
           <scope>test</scope>
         </dependency>
       </dependencies>
+    </profile>
+
+    <profile>
+      <id>qarkus-vaadin</id>
+      <activation>
+        <file>
+          <exists>.profile-vaadin</exists>
+        </file>
+      </activation>
+      <dependencyManagement>
+        <dependencies>
+          <!-- Vaadin Platform BOM -->
+          <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-bom</artifactId>
+            <type>pom</type>
+            <scope>import</scope>
+            <version>${vaadin.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <dependencies>
+        <!-- The Vaadin Quarkus extension -->
+        <dependency>
+          <groupId>com.vaadin</groupId>
+          <artifactId>vaadin-quarkus-extension</artifactId>
+          <version>${vaadin.version}</version>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <plugins>
+          <!-- For in-depth information on quarkus-maven-plugin
+               see https://quarkus.io/guides/maven-tooling#build-tool-maven -->
+          <plugin>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-maven-plugin</artifactId>
+            <version>${quarkus.version}</version>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <goals>
+                  <!-- Builds the Quarkus application -->
+                  <goal>build</goal>
+                  <!-- in these goals the Quarkus application bootstrap
+                       is initialized and re-used in the build goal -->
+                  <goal>generate-code</goal>
+                  <goal>generate-code-tests</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
 
@@ -1001,6 +1058,37 @@
       </build>
     </profile>
 
+    <profile>
+      <id>vaadin</id>
+
+      <activation>
+        <file>
+          <exists>./frontend/themes/</exists>
+        </file>
+      </activation>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <version>${vaadin.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-frontend</goal>
+                  <goal>build-frontend</goal>
+                </goals>
+                <phase>compile</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <productionMode>true</productionMode>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
     <profile>
       <id>helm</id>
@@ -1067,6 +1155,23 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-site-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <version>${vaadin.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-frontend</goal>
+                  <goal>build-frontend</goal>
+                </goals>
+                <phase>compile</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <productionMode>true</productionMode>
+            </configuration>
           </plugin>
         </plugins>
       </build>

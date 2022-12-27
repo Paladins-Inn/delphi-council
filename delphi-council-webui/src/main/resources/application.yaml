@@ -35,6 +35,10 @@ quarkus:
     ui:
       enable: true
 
+  hibernate-orm:
+    enabled: false
+
+
   http:
     insecure-requests: REDIRECT
     port: 8080
@@ -51,8 +55,14 @@ quarkus:
     access-log:
       enabled: true
       log-to-file: false
-      exclude-pattern: "/q/.*"
+      #exclude-pattern: "/q/.*"
       pattern: combined
+
+    proxy:
+      proxy-address-forwarding: true
+      allow-forwarded: false
+      enable-forwarded-host: true
+      forwarded-host-header: X-ORIGINAL-HOST
 
     test-port: 9080
     test-ssl-port: 9443
@@ -67,31 +77,53 @@ quarkus:
       merge-form-attributes: true
 
     auth:
-      realm: ${quarkus.application.name}
-      proactive: false
+      proactive: true
       policy:
         metrics:
           roles-allowed: metrics
       permission:
-        protected:
-          paths: /api/v1/*
-          policy: authenticated
         metrics:
           paths: /q/*
-          policy: metrics
+#          policy: metrics
+          policy: permit
         sw-js:
           paths: /sw.js
           policy: permit
+        protected:
+          paths: /*
+          policy: authenticated
+      basic: false
+      form:
+        enabled: false
     cors: true
 
   oidc:
-    application-type: WEB_APP
+    enabled: true
+    application-type: HYBRID
     auth-server-url: ${OIDC_URL}
     client-id: ${OIDC_CLIENT}
     credentials:
       secret: ${OIDC_SECRET}
-    tls:
-      verification: required
+    roles:
+      source: idtoken
+    authentication:
+      cookie-path: "/"
+      cookie-force-secure: true
+      cookie-domain: ${OIDC_COOKIE_DOMAIN:delphi-council.org}
+      add-openid-scope: true
+      scopes:
+        - phone
+        - email
+        - roles
+        - profile
+        - roles
+    logout:
+      path: "/logout"
+      post-logout-path: "/"
+      backchannel:
+        path: "/back-channel-logout"
+      frontchannel:
+        path: "/front-channel-logout"
   keycloak:
     policy-enforcer:
       enable: true
@@ -101,48 +133,7 @@ quarkus:
         enabled: false
 
   datasource:
-    db-kind: mariadb
-    jdbc:
-      url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
-      transactions: XA
-      transaction-isolation-level: REPEATABLE_READ
-      flush-on-close: true
-      detect-statement-leaks: true
-    username: "${DB_USER:sa}"
-    password: "${DB_PASSWORD:sa}"
-    health:
-      enabled: true
-    metrics:
-      enabled: true
-      jdbc:
-        enable-metrics: true
-
-  hibernate-envers:
-    store-data-at-delete: true
-
-  liquibase:
-    migrate-at-start: true
-    change-log: db/changelog/db.changelog-master.xml
-
-
-  mailer:
-    host: "${MAIL_HOST:smtp.kaiserpfalz-edv.de}"
-    port: "${MAIL_PORT:587}"
-    ssl: true
-    from: "${MAIL_FROM_NAME:Quin Sebastian} <${MAIL_FROM_ADDRESS:quinn.sebastian@delphi-council.org}>"
-    username: "${MAIL_USER:no}"
-    password: "${MAIL_PASSWORD:no}"
-    bounce-address: "${MAIL_BOUNCE_ADDRESS:tech@kaiserpfalz-edv.de}"
-    keep-alive: true
-
-  qute:
-    property-not-found-strategy: throw_exception
-    remove-standalone-lines: false
-    strict-rendering: true
-
-  resteasy:
-    problem:
-      include-mdc-properties: workflow-id,step-id,application,version,node
+    jdbc: false
 
   smallrye-health:
     ui:
@@ -171,26 +162,8 @@ quarkus:
         path: /q/metrics
         default-registry: true
 
-  smallrye-openapi:
-    enable: true
-    operation-id-strategy: METHOD
-    info: ${quarkus.application.name} API ${quarkus.application.api-version}
-    info-version: ${quarkus.application.version}
-    info-description: Software for managing Torganized Play in Germany.
-    info-terms-of-service: Service provided as is without any warranty
-    info-contact-email: info@paladins-inn.de
-    info-contact-name: Paladins Inn
-    info-contact-url: https://www.paladins-inn.de
-    info-license-name: GPL 3+
-    info-license-url: https://www.gnu.org/licenses/
-
-  swagger-ui:
-    enable: true
-    always-include: true
-
-
   container-image:
-    name: delphi-council-service
+    name: delphi-council-webui
     tag: ${quarkus.application.version}
   openshift:
     deployment-kind: Deployment
@@ -204,20 +177,6 @@ quarkus:
 
 "%dev":
   quarkus:
-    datasource: &datasource-dev
-      db-kind: h2
-      jdbc:
-        url: jdbc:h2:file:./target/db/delphi-council;USER=sa;PASSWORD=sa;PAGE_SIZE=512;TRACE_LEVEL_SYSTEM_OUT=0;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
-      username: sa
-      password: sa
-      health:
-        enabled: true
-      metrics:
-        enabled: true
-
-    hibernate-envers: &envers-dev
-      store-data-at-delete: true
-
     log: &log-dev
       console:
         json: false
@@ -247,13 +206,39 @@ quarkus:
             - tls/tls.crt
       auth:
         basic: false
+    oidc: &oidc-dev
+      enabled: true
+      application-type: HYBRID
+      auth-server-url: ${OIDC_URL}
+      client-id: ${OIDC_CLIENT}
+      credentials:
+        secret: ${OIDC_SECRET}
+      roles:
+        source: idtoken
+      authentication:
+        cookie-path: "/"
+        cookie-force-secure: true
+        cookie-domain: "localhost"
+        add-openid-scope: true
+        scopes:
+          - phone
+          - email
+          - roles
+          - profile
+          - roles
+      logout:
+        path: "/logout"
+        post-logout-path: "/"
+        backchannel:
+          path: "/back-channel-logout"
+        frontchannel:
+          path: "/front-channel-logout"
 
 "%test":
   quarkus:
-    datasource: *datasource-dev
-    hibernate-envers: *envers-dev
     log: *log-dev
     http: *http-dev
+    oidc: *oidc-dev
 
 vaadin:
   launch-browser: true

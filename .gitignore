@@ -27,6 +27,7 @@ nb-configuration.xml
 generated/
 vite.generated.ts
 /delphi-council-webui/frontend/index.html
+/delphi-council-webui/node_modules/
 
 # Temporary download
 dcis-vaadin/

@@ -27,6 +27,10 @@
             <groupId>de.paladins-inn.torganized</groupId>
             <artifactId>torganized-play-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-oidc-client-filter</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.github.rjeschke</groupId>

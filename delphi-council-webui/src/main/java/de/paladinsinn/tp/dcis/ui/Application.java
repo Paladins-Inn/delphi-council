@@ -14,9 +14,12 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.Theme;
+import com.vaadin.quarkus.QuarkusVaadinServlet;
+import lombok.NoArgsConstructor;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.servlet.annotation.WebServlet;
 
 /**
  * The entry point of the Spring Boot application.

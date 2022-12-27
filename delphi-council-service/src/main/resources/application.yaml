@@ -100,9 +100,37 @@ quarkus:
       secret: ${OIDC_SECRET}
     tls:
       verification: required
+  oidc:
+    enabled: true
+    application-type: HYBRID
+    auth-server-url: ${OIDC_URL}
+    client-id: ${OIDC_CLIENT}
+    credentials:
+      secret: ${OIDC_SECRET}
+    roles:
+      source: idtoken
+    authentication:
+      cookie-path: "/"
+      cookie-force-secure: true
+      cookie-domain: ${OIDC_COOKIE_DOMAIN:delphi-council.org}
+      add-openid-scope: true
+      scopes:
+        - phone
+        - email
+        - roles
+        - profile
+        - roles
+    logout:
+      path: "/logout"
+      post-logout-path: "/"
+      backchannel:
+        path: "/back-channel-logout"
+      frontchannel:
+        path: "/front-channel-logout"
   keycloak:
     policy-enforcer:
-      enable: true
+      enable:
+        true
 
   datasource:
     db-kind: mariadb
@@ -136,7 +164,7 @@ quarkus:
     host: "${MAIL_HOST:smtp.kaiserpfalz-edv.de}"
     port: "${MAIL_PORT:587}"
     ssl: true
-    from: "${MAIL_FROM_NAME:Quin Sebastian} <${MAIL_FROM_ADDRESS:quinn.sebastian@delphi-council.org}>"
+    from: "${MAIL_NAME:Quin Sebastian} <${MAIL_ADDRESS:quinn.sebastian@delphi-council.org}>"
     username: "${MAIL_USER:no}"
     password: "${MAIL_PASSWORD:no}"
     bounce-address: "${MAIL_BOUNCE_ADDRESS:tech@kaiserpfalz-edv.de}"

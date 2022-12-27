@@ -1,5 +1,6 @@
 package de.paladinsinn.tp.dcis.ui.views;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -11,8 +12,10 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Router;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -22,6 +25,7 @@ import de.paladinsinn.tp.dcis.ui.components.appnav.AppNav;
 import de.paladinsinn.tp.dcis.ui.components.appnav.AppNavItem;
 import de.paladinsinn.tp.dcis.ui.views.about.AboutView;
 import de.paladinsinn.tp.dcis.ui.views.helloworld.HelloWorldView;
+import io.quarkus.oidc.AccessTokenCredential;
 import io.quarkus.security.identity.SecurityIdentity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,19 +37,22 @@ import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
-@VaadinSessionScoped
-@VaadinServiceEnabled
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class MainLayout extends AppLayout implements RouterLayout {
 
     @Inject
     SecurityIdentity identity;
+
+    @Inject
+    JsonWebToken jwt;
 
     private H2 viewTitle;
 
@@ -117,7 +124,24 @@ public class MainLayout extends AppLayout implements RouterLayout {
         div.getElement().getStyle().set("align-items", "center");
         div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
         userName.add(div);
-        userName.getSubMenu().addItem("Sign out", e -> log.info("User logout"));
+        userName.getSubMenu().addItem("Roles", e -> {
+            log.info("Roles of logged in user. roles={}, claims={}, realm_access={}",
+                    identity.getRoles().stream().collect(Collectors.joining(", ")),
+                    jwt.getClaimNames().toString(),
+                    jwt.getClaim("roles")
+            );
+            Notification.show(
+                    "Roles: " +
+                            identity.getRoles().stream().collect(Collectors.joining(", "))
+
+            );
+        });
+        userName.getSubMenu().addItem("Sign out", e -> {
+            log.info("User logout");
+            Notification.show("User logout");
+            UI.getCurrent().getPage().setLocation("/logout");
+        });
+
 
         layout.add(userMenu);
 
@@ -126,6 +150,10 @@ public class MainLayout extends AppLayout implements RouterLayout {
 
     private String calculateLibravatar(final String email) {
         log.trace("Creating Libravatar link from email address. email='{}'", email);
+
+        if (email == null || email.isBlank()) {
+            return "";
+        }
 
         try {
             byte[] avatar = email.toLowerCase(Locale.ROOT).getBytes(StandardCharsets.UTF_8);

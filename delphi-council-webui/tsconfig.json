@@ -22,7 +22,7 @@
     "noUnusedParameters": false,
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
-    "baseUrl": "frontend",
+    "baseUrl": "./frontend",
     "paths": {
       "@vaadin/flow-frontend": ["generated/jar-resources"],
       "@vaadin/flow-frontend/*": ["generated/jar-resources/*"],
@@ -30,7 +30,7 @@
     }
   },
   "include": [
-    "frontend/**/*",
+    "../delphi-council-webui/frontend/**/*",
     "types.d.ts"
   ],
   "exclude": []

@@ -3,17 +3,43 @@ app:
   route: www.delphi-council.org
   image:
     repo: quay.io/klenkes74
-    name: @project.artifactId@
+    name: delphi-council-webui
     tag: @project.version@
     pullPolicy: Always
-  requests:
-    cpu: 1000m
-    memory: 2Gi
-  limits:
-    cpu: 1000m
-    memory: 2Gi
+  oidc:
+    client: dcis-ui
+    secret: hahaha
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+api:
+  route: api.delphi-council.org
+  image:
+    repo: quay.io/klenkes74
+    name: delphi-council-service
+    tag: @project.version@
+    pullPolicy: Always
+  oidc:
+    client: dcis-api
+    secret: hahaha
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+oidc:
+  url: https://sso.kaiserpfalz-edv.de/realms/delphi-council
 
 db:
+  local: false
   image:
     repo: docker-registry.default.svc:5000/openshift
     name: mariadb
@@ -26,7 +52,9 @@ db:
     cpu: 500m
     memory: 512Mi
   storagesize: 2Gi
-  name: dcis
+  host: mysql.loki.kaiserpfalz-edv.de
+  port: 3306
+  database: dcis
   rootpassword: changeme
   user: dcis
   password: changeme
@@ -38,5 +66,6 @@ mail:
   user:
     name: Quin Sebastian
     address: quin.sebastian@delphi-council.org
+    bounceaddress: support@paladins-inn.de
     user: clerk@delphi-council.org
     password: hahahaha

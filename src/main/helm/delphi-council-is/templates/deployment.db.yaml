@@ -1,3 +1,4 @@
+# FIXME 2022-12-27 rlichti Needs to be safegarded by .Values.db.local
 ---
 kind: Deployment
 apiVersion: apps/v1

@@ -12,28 +12,31 @@ package de.paladinsinn.tp.dcis.ui.components.i18n;
 
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
-import de.kaiserpfalzedv.commons.core.i18n.Translator;
-import lombok.RequiredArgsConstructor;
+import com.vaadin.quarkus.annotation.VaadinServiceScoped;
+import de.kaiserpfalzedv.commons.core.i18n.ResourceBundleTranslator;
+import io.quarkus.arc.Unremovable;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.List;
-import java.util.Locale;
+import javax.annotation.PostConstruct;
+import java.util.ResourceBundle;
 
+
+@Unremovable
 @VaadinServiceEnabled
-@ApplicationScoped
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class I18nProvider implements I18NProvider {
+@VaadinServiceScoped
+@Slf4j
+public class I18nTranslator extends ResourceBundleTranslator implements I18NProvider {
 
-    private final Translator i18n;
-
-    @Override
-    public List<Locale> getProvidedLocales() {
-        return i18n.getProvidedLocales();
+    public I18nTranslator() {
+        super("/messages/msg");
     }
 
-    @Override
-    public String getTranslation(String s, Locale locale, Object... objects) {
-        return i18n.getTranslation(s, locale, objects);
+    @PostConstruct
+    public void init() {
+        log.debug("Created I18N provider for Vaadin. i18n={}", this);
+
+        ResourceBundle test = ResourceBundle.getBundle("/META-INF/messages/msg");
+
+        log.trace("test,  bundle: bundle={}, application.title='{}'", test, test.getString("application.title"));
     }
 }

@@ -13,13 +13,11 @@ package de.paladinsinn.tp.dcis.ui.views.missions;
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicPresenterImpl;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,21 +27,22 @@ import java.util.UUID;
  * @since 2.0.0  2022-12-29
  */
 @Dependent
-@RequiredArgsConstructor(onConstructor = @__({@Inject, @RestClient}))
 @Slf4j
 public class MissionPresenter extends BasicPresenterImpl<Mission, MissionView> {
     @SuppressWarnings("LSPLocalInspectionTool")
-    private final MissionClient client;
+    @Inject
+    @RestClient
+    MissionClient client;
 
     @Override
     public void loadId(UUID id) {
-        List<Mission> data = client.retrieve("id=" + id.toString());
+        Mission data = client.retrieve(id);
 
-        if (data.size() != 1) {
+        if (data == null) {
             log.error("mission with ID '{}' not found!", id);
             return;
         }
 
-        setData(data.get(0));
+        setData(data);
     }
 }

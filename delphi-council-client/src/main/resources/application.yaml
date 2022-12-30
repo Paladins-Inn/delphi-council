@@ -4,11 +4,11 @@ api-server: &api
   scope: javax.inject.Singleton
 
 dev-api-server: &dev-api
-  url: http://localhost:8081/
+  url: https://localhost:8444/
   scope: javax.inject.Singleton
 
 test-api-server: &test-api
-  url: http://localhost:8081/
+  url: https://localhost:8444/
   scope: javax.inject.Singleton
 
 quarkus:
@@ -19,6 +19,11 @@ quarkus:
     operative-api: *api
     operative-report-api: *api
     operative-special-report-api: *api
+  oidc-client:
+    auth-server-url: ${OIDC_URL}
+    client-id: ${OIDC_CLIENT}
+    credentials:
+      secret: ${OIDC_SECRET}
 
 "%dev":
   quarkus:

@@ -12,14 +12,11 @@ package de.paladinsinn.tp.dcis.ui.views.missions;
 
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
-import de.paladinsinn.tp.dcis.ui.components.mvp.BasicPresenterImpl;
-import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
-import lombok.RequiredArgsConstructor;
+import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListPresenterImpl;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * MissionListPresenter -- Managed the view for lists of Missions.
@@ -28,10 +25,10 @@ import java.util.UUID;
  * @since 2.0.0  2022-12-29
  */
 @Dependent
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class MissionListPresenter extends BasicPresenterImpl<List<Mission>, MissionListView> {
-    private final MissionClient client;
-    private FrontendUser user;
+public class MissionListPresenter extends BasicListPresenterImpl<Mission, MissionListView> {
+    @Inject
+    @RestClient
+    MissionClient client;
 
     @Override
     public void loadData() throws UnsupportedOperationException {

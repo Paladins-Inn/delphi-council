@@ -31,7 +31,7 @@ public interface StandardClient<T extends Serializable, ID extends Serializable>
 
     @GET
     @Path("/")
-    List<T> retrieve(final String query);
+    List<? extends T> retrieve(final String query);
 
     @GET
     @Path("/")
@@ -41,6 +41,9 @@ public interface StandardClient<T extends Serializable, ID extends Serializable>
     @Path("/")
     List<T> retrieve(final String query, final int page, final int size, final Set<String> sort);
 
+    @GET
+    @Path("/{id}")
+    T retrieve(@PathParam("id") UUID id);
 
     @PUT
     @Path("/{id}")

@@ -12,14 +12,11 @@ package de.paladinsinn.tp.dcis.client.missions;
 
 import de.paladinsinn.torganized.core.missions.SpecialMission;
 import de.paladinsinn.tp.dcis.client.StandardClient;
-import io.quarkus.oidc.client.filter.OidcClientRequestFilter;
-import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.Path;
 import java.util.UUID;
 
 @RegisterRestClient(configKey = "special-mission-api")
-@RegisterProvider(OidcClientRequestFilter.class)
 @Path("/api/v1/missions/special")
 public interface SpecialMissionClient extends StandardClient<SpecialMission, UUID> {}

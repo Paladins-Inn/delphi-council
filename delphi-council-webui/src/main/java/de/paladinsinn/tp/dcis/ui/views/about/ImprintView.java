@@ -4,18 +4,16 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import de.paladinsinn.tp.dcis.ui.components.i18n.AutoPageTitle;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 
-@PageTitle("Impressum")
 @Route(value = "impressum", layout = MainLayout.class)
 @AnonymousAllowed
-public class ImpressumView extends VerticalLayout {
+public class ImprintView extends VerticalLayout implements AutoPageTitle {
 
-    public ImpressumView() {
+    public ImprintView() {
         setSizeFull();
         setSpacing(false);
 

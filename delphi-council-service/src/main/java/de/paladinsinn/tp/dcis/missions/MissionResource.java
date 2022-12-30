@@ -14,7 +14,6 @@ import de.paladinsinn.torganized.core.missions.Mission;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.security.access.annotation.Secured;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.UUID;

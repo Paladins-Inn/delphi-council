@@ -24,6 +24,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>flow-push</artifactId>
+            <version>23.3.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>de.paladins-inn.torganized</groupId>
             <artifactId>torganized-play-core</artifactId>
             <exclusions>
@@ -135,11 +141,6 @@
             <version>2.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.appreciated</groupId>
-            <artifactId>apexcharts</artifactId>
-            <version>23.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.vaadin.addons.pjp</groupId>
             <artifactId>QuestionnaireVaadin</artifactId>
             <version>1.0.0</version>
@@ -150,44 +151,14 @@
             <version>1.1.7</version>
         </dependency>
         <dependency>
-            <groupId>org.vaadin.addons.taefi</groupId>
-            <artifactId>toggle-button-group</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons.mygroup</groupId>
-            <artifactId>simpletimeline</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.vaadin.addons.mycompany</groupId>
             <artifactId>badge</artifactId>
             <version>2.2.0</version>
         </dependency>
         <dependency>
-            <groupId>com.flowingcode.vaadin.addons</groupId>
-            <artifactId>orgchart-addon</artifactId>
-            <version>4.2.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.vaadin.klaudeta</groupId>
             <artifactId>grid-pagination</artifactId>
             <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.wontlost</groupId>
-            <artifactId>ckeditor-vaadin</artifactId>
-            <version>3.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.gatanaso</groupId>
-            <artifactId>multiselect-combo-box-flow</artifactId>
-            <version>4.0.0-rc2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.olli</groupId>
-            <artifactId>file-download-wrapper</artifactId>
-            <version>5.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.mlottmann.VStepper</groupId>
@@ -205,19 +176,9 @@
             <version>2.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.vaadin.componentfactory</groupId>
-            <artifactId>enhanced-dialog</artifactId>
-            <version>23.1.2</version>
-        </dependency>
-        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-cookie-consent-flow</artifactId>
             <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons.componentfactory</groupId>
-            <artifactId>enhanced-date-time-picker</artifactId>
-            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.vaadin.stefan</groupId>
@@ -235,8 +196,8 @@
             <version>1.0.2</version>
         </dependency>
         <dependency>
-            <groupId>org.vaadin.addons.mekaso</groupId>
-            <artifactId>progress</artifactId>
+            <groupId>org.vaadin.addons.taefi</groupId>
+            <artifactId>toggle-button-group</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

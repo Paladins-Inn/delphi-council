@@ -9,6 +9,7 @@ app:
   oidc:
     client: dcis-ui
     secret: hahaha
+    cookie_domain: &cookie_domain delphi-council.org
   resources:
     requests:
       cpu: 1000m
@@ -27,6 +28,7 @@ api:
   oidc:
     client: dcis-api
     secret: hahaha
+    cookie_domain: *cookie_domain
   resources:
     requests:
       cpu: 1000m

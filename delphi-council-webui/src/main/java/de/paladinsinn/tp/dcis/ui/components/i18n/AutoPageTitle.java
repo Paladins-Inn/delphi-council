@@ -8,15 +8,15 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.client.operatives;
+package de.paladinsinn.tp.dcis.ui.components.i18n;
 
-import de.paladinsinn.torganized.core.operative.Operative;
-import de.paladinsinn.tp.dcis.client.StandardClient;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import com.vaadin.flow.router.HasDynamicTitle;
 
-import javax.ws.rs.Path;
-import java.util.UUID;
+public interface AutoPageTitle extends HasDynamicTitle {
+    @Override
+    default String getPageTitle() {
+        return getTranslation(getClass().getSimpleName());
+    }
 
-@RegisterRestClient(configKey = "operative-api")
-@Path("/api/v1/operatives")
-public interface OperativeClient extends StandardClient<Operative, UUID> {}
+    String getTranslation(final String key, final Object ...objects);
+}

@@ -47,7 +47,12 @@ public class MissionView extends BasicViewImpl<Mission> implements HasUrlParamet
 
     @Override
     protected void updateView() {
+        // FIXME 2022-12-30 rlichti This method needs to be implemented.
+    }
 
+    @Override
+    protected void readForm() {
+        // FIXME 2022-12-30 rlichti This method needs to be implemented.
     }
 
     @Override

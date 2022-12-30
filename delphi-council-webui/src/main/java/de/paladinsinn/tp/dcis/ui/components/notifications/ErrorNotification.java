@@ -21,12 +21,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 import de.kaiserpfalzedv.commons.core.text.MarkdownConverter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @VaadinServiceEnabled
 @Slf4j

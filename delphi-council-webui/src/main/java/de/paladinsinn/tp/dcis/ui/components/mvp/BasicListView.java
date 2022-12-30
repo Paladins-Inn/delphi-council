@@ -10,49 +10,37 @@
 
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
+import de.paladinsinn.tp.dcis.ui.components.i18n.AutoPageTitle;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 
-import java.util.UUID;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 /**
- * Basic Presenter -- Common API to every Presenter.
+ * Basic Presenter -- Common API to every View.
  *
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-public interface BasicPresenter<T, V extends BasicView> {
+public interface BasicListView<T> extends AutoPageTitle {
     /**
-     * Inserts the data for the view.
+     * The data to handle in the view.
      *
-     * @param data The data to be presented
+     * @param data The data to be displayed/edited
      */
-    public void setData(final T data);
+    void setData(Collection<T> data);
 
     /**
      * Retrieves the data from the view.
      *
      * @return The data from the view.
      */
-    public T getData();
+    Collection<T> getData();
 
     /**
-     * Resets the data in the view.
-     */
-    public void resetData();
-
-    /**
-     * Inserts the view this presenter works on.
+     * Updates the logged-in user.
      *
-     * @param view The basic view of this presenter.
+     * @param identity The logged-in user.
      */
-    public void setView(final V view);
-
-    /**
-     * Updates the logged in user.
-     *
-     * @param identity
-     */
-    public void setFrontendUser(final FrontendUser identity);
-
-    public void loadId(final UUID id) throws UnsupportedOperationException;
+    void setFrontendUser(@NotNull final FrontendUser identity);
 }

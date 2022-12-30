@@ -11,7 +11,6 @@
 package de.paladinsinn.torganized.core.operative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.paladinsinn.torganized.core.common.HasOperative;
 import de.paladinsinn.torganized.core.missions.MissionReport;

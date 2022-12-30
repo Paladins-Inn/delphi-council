@@ -14,6 +14,11 @@ import com.vaadin.flow.component.html.Div;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * BasicViewImpl -- Basis for the concrete views.
  *
@@ -23,35 +28,43 @@ import lombok.extern.slf4j.Slf4j;
  * @param <T> The data to be displayed
  */
 @Slf4j
-public abstract class BasicViewImpl<T> extends Div implements BasicView<T> {
-    protected T data;
+public abstract class BasicListViewImpl<T> extends Div implements BasicListView<T> {
+    protected final List<T> data = new ArrayList<>();
     protected FrontendUser user;
 
     @Override
-    public void setData(T data) {
-        log.trace("Updating data. data={}, view={}", data, this);
+    public void setData(Collection<T> data) {
+        this.data.clear();
 
-        this.data = data;
+        if (data != null) {
+            this.data.addAll(data);
+
+            log.trace("Data in view changed. data.count={}", this.data.size());
+        } else {
+            log.info("No data in view. data.count={}", this.data.size());
+        }
 
         updateView();
     }
 
     @Override
-    public T getData() {
+    public List<T> getData() {
         readForm();
 
         return data;
     }
 
     @Override
-    public void setFrontendUser(final FrontendUser identity) {
+    public void setFrontendUser(@NotNull final FrontendUser identity) {
         boolean update = false;
-        if (identity.getName().equals(user.getName())) {
+        if (user == null || identity.getName().equals(user.getName())) {
             log.trace("The user has changed. old={} new={}", this.user, identity);
             update = true;
         }
-        if (identity.getLocale() != user.getLocale()) {
-            log.trace("The locale has changed. old={}, new={}", this.user.getLocale(), identity.getLocale());
+        if (user == null || identity.getLocale() != user.getLocale()) {
+            if (user != null) {
+                log.trace("The locale has changed. old={}, new={}", this.user.getLocale(), identity.getLocale());
+            }
             update = true;
         }
 

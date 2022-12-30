@@ -12,7 +12,8 @@ package de.paladinsinn.tp.dcis.ui.components.mvp;
 
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 
-import java.util.UUID;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Basic Presenter -- Common API to every Presenter.
@@ -20,25 +21,29 @@ import java.util.UUID;
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-public interface BasicPresenter<T, V extends BasicView> {
+public interface BasicListPresenter<T, V extends BasicListView<T>> {
     /**
      * Inserts the data for the view.
      *
      * @param data The data to be presented
      */
-    public void setData(final T data);
+    public void setData(final Collection<T> data);
 
     /**
      * Retrieves the data from the view.
      *
      * @return The data from the view.
      */
-    public T getData();
+    public List<T> getData();
 
     /**
      * Resets the data in the view.
      */
-    public void resetData();
+    default void resetData() {
+        getView().setData(getData());
+    }
+
+    public BasicListView<T> getView();
 
     /**
      * Inserts the view this presenter works on.
@@ -54,5 +59,5 @@ public interface BasicPresenter<T, V extends BasicView> {
      */
     public void setFrontendUser(final FrontendUser identity);
 
-    public void loadId(final UUID id) throws UnsupportedOperationException;
+    public void loadData();
 }

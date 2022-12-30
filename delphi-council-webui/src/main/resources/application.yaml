@@ -5,6 +5,7 @@ quarkus:
     version: 2.0.0
     ui-header: ${quarkus.application.name}/${quarkus.application.version}
     api-version: "v1"
+  default-locale: "de"
 
   kubernetes-config:
     enabled: true
@@ -55,7 +56,7 @@ quarkus:
     access-log:
       enabled: true
       log-to-file: false
-      #exclude-pattern: "/q/.*"
+      exclude-pattern: "/(q|VAADIN)/.*"
       pattern: combined
 
     proxy:
@@ -97,6 +98,10 @@ quarkus:
         enabled: false
     cors: true
 
+  keycloak:
+    policy-enforcer:
+      enable: true
+
   oidc:
     enabled: true
     application-type: HYBRID
@@ -109,7 +114,7 @@ quarkus:
     authentication:
       cookie-path: "/"
       cookie-force-secure: true
-      cookie-domain: ${OIDC_COOKIE_DOMAIN:delphi-council.org}
+      cookie-domain: ${OIDC_COOKIE_DOMAIN}
       add-openid-scope: true
       scopes:
         - openid
@@ -125,9 +130,16 @@ quarkus:
         path: "/back-channel-logout"
       frontchannel:
         path: "/front-channel-logout"
-  keycloak:
-    policy-enforcer:
-      enable: true
+  oidc-client:
+    grant:
+      type: exchange
+  oidc-client-filter:
+    register-filter: true
+  oidc-token-propagation:
+    enabled: true
+    register-filter: true
+    exchange-token: false
+
   security:
     users:
       embedded:
@@ -182,9 +194,9 @@ quarkus:
       console:
         json: false
         enable: true
-        format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+        format: "%d{HH:mm:ss.SSS} %-5p [%c{2.}] (%t) %s%e%n"
       level: INFO
-      min-level: TRACE
+      min-level: ALL
       category:
         "de.kaiserpfalzedv":
           level: ALL
@@ -192,7 +204,11 @@ quarkus:
           level: ALL
         http-problem:
           level: INFO
+      "com.vaadin.quarkus":
+        level: TRACE
 
+    tls: &tls-dev
+      trust-all: true
     http: &http-dev
       insecure-requests: REDIRECT
       port: 8080
@@ -207,39 +223,13 @@ quarkus:
             - tls/tls.crt
       auth:
         basic: false
-    oidc: &oidc-dev
-      enabled: true
-      application-type: HYBRID
-      auth-server-url: ${OIDC_URL}
-      client-id: ${OIDC_CLIENT}
-      credentials:
-        secret: ${OIDC_SECRET}
-      roles:
-        source: idtoken
-      authentication:
-        cookie-path: "/"
-        cookie-force-secure: true
-        cookie-domain: "localhost"
-        add-openid-scope: true
-        scopes:
-          - phone
-          - email
-          - roles
-          - profile
-          - roles
-      logout:
-        path: "/logout"
-        post-logout-path: "/"
-        backchannel:
-          path: "/back-channel-logout"
-        frontchannel:
-          path: "/front-channel-logout"
+
 
 "%test":
   quarkus:
     log: *log-dev
     http: *http-dev
-    oidc: *oidc-dev
+    tls: *tls-dev
 
 imprint:
   represented: Name
@@ -273,4 +263,5 @@ vaadin:
     - org.vaadin
     - dev.hilla
     - de.paladinsinn.tp.dcis.ui
+    - com.github.appreciated.apexcharts
 

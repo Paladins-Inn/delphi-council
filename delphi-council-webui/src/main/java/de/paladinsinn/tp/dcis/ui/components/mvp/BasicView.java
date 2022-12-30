@@ -10,11 +10,8 @@
 
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
+import de.paladinsinn.tp.dcis.ui.components.i18n.AutoPageTitle;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
-import io.quarkus.security.identity.SecurityIdentity;
-
-import java.io.Serializable;
-import java.util.Locale;
 
 /**
  * Basic Presenter -- Common API to every View.
@@ -22,7 +19,7 @@ import java.util.Locale;
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-public interface BasicView<T> {
+public interface BasicView<T> extends AutoPageTitle {
     /**
      * The data to handle in the view.
      *

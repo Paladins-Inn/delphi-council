@@ -12,15 +12,12 @@ package de.paladinsinn.tp.dcis.ui;
 
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.Theme;
 import de.kaiserpfalzedv.commons.core.text.MarkdownConverter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebServlet;
 
 /**
  * The entry point of the Spring Boot application.
@@ -30,7 +27,6 @@ import javax.servlet.annotation.WebServlet;
  *
  */
 @ApplicationScoped
-@Push
 @Theme(value = "dcis")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 @NpmPackage(value = "@vaadin-component-factory/vcf-nav", version = "1.0.6")

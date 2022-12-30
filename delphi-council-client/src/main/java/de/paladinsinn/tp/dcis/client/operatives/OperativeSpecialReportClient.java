@@ -12,14 +12,11 @@ package de.paladinsinn.tp.dcis.client.operatives;
 
 import de.paladinsinn.torganized.core.operative.OperativeSpecialReport;
 import de.paladinsinn.tp.dcis.client.StandardClient;
-import io.quarkus.oidc.client.filter.OidcClientRequestFilter;
-import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.Path;
 import java.util.UUID;
 
 @RegisterRestClient(configKey = "operative-report-api")
-@RegisterProvider(OidcClientRequestFilter.class)
 @Path("/api/v1/operatives/reports")
 public interface OperativeSpecialReportClient extends StandardClient<OperativeSpecialReport, UUID> {}

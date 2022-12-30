@@ -4,11 +4,7 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
@@ -18,42 +14,32 @@ import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import de.kaiserpfalzedv.commons.core.libravatar.AvatarUri;
-import de.kaiserpfalzedv.commons.core.libravatar.LibravatarDefaultImage;
+import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.tp.dcis.ui.components.appnav.AppNav;
 import de.paladinsinn.tp.dcis.ui.components.appnav.AppNavItem;
 import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import de.paladinsinn.tp.dcis.ui.views.about.AboutView;
-import de.paladinsinn.tp.dcis.ui.views.helloworld.HelloWorldView;
-import io.quarkus.security.identity.SecurityIdentity;
+import de.paladinsinn.tp.dcis.ui.views.about.ImprintView;
+import de.paladinsinn.tp.dcis.ui.views.missions.MissionListView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.filefilter.NotFileFilter;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
+@UIScoped
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 @AnonymousAllowed
 public class MainLayout extends AppLayout implements RouterLayout {
 
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     FrontendUser user;
-
-    private final AboutView aboutView;
-    private final HelloWorldView helloWorldView;
 
     private H2 viewTitle;
 
@@ -93,18 +79,21 @@ public class MainLayout extends AppLayout implements RouterLayout {
         // For documentation, visit https://github.com/vaadin/vcf-nav#readme
         AppNav nav = new AppNav();
 
-        if (accessChecker.hasAccess(AboutView.class)) {
-            nav.addItem(new AppNavItem("About", AboutView.class, "la la-file"));
-        }
-
-        AppNavItem missions = new AppNavItem("Missions", AboutView.class, "la la-file");
-        missions.addItem(new AppNavItem("Open", AboutView.class, "la la-file"));
-        missions.addItem(new AppNavItem("Reports", AboutView.class, "la la-file"));
-        nav.addItem(missions);
-
-        nav.addItem(new AppNavItem("Storm Knights", AboutView.class, "la la-file"));
+        addViewToNavigation(nav, AboutView.class, "la la-file");
+        addViewToNavigation(nav, MissionListView.class, "la la-file");
+        addViewToNavigation(nav, ImprintView.class, "la la-file");
 
         return nav;
+    }
+
+    private void addViewToNavigation(AppNav nav, @SuppressWarnings("rawtypes") final Class view, @SuppressWarnings("SameParameterValue") final String icon) {
+        if (accessChecker.hasAccess(view)) {
+            //noinspection unchecked
+            nav.addItem(new AppNavItem(getTranslation(view.getSimpleName()), view, icon));
+        } else {
+            log.debug("User has no access to view. user='{}', roles={}, view={}",
+                    user.getName(), user.getRoles(), view.getSimpleName());
+        }
     }
 
     private Footer createFooter() {
@@ -131,11 +120,11 @@ public class MainLayout extends AppLayout implements RouterLayout {
         userName.add(div);
         userName.getSubMenu().addItem("Roles", e -> {
             log.info("Roles of logged in user. roles={}",
-                    user.getRoles().stream().collect(Collectors.joining(", "))
+                    String.join(", ", user.getRoles())
             );
             Notification.show(
                     "Roles: " +
-                            user.getRoles().stream().collect(Collectors.joining(", "))
+                            String.join(", ", user.getRoles())
 
             );
         });
@@ -143,15 +132,12 @@ public class MainLayout extends AppLayout implements RouterLayout {
             log.info("User logout. event={}", e);
             getUI().ifPresentOrElse(
                     ui -> ui.getPage().setLocation("/logout"),
-                    () -> {
-                        ErrorNotification.showMarkdown("User can't logout. There is no _UI_.");
-                    }
+                    () -> ErrorNotification.showMarkdown("User can't logout. There is no _UI_.")
             );
         });
 
-        userName.getSubMenu().getItems().forEach(e -> {
-            e.setId("usermenu");
-        });
+        //noinspection SpellCheckingInspection
+        userName.getSubMenu().getItems().forEach(e -> e.setId("usermenu"));
         layout.add(userMenu);
 
         return layout;

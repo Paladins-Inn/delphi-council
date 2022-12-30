@@ -8,15 +8,20 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.client.operatives;
+package de.paladinsinn.tp.dcis.client;
 
-import de.paladinsinn.torganized.core.operative.Operative;
-import de.paladinsinn.tp.dcis.client.StandardClient;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.Path;
-import java.util.UUID;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
 
-@RegisterRestClient(configKey = "operative-api")
-@Path("/api/v1/operatives")
-public interface OperativeClient extends StandardClient<Operative, UUID> {}
+@Provider
+@Slf4j
+public class LogRequestFilter implements ClientRequestFilter {
+    @Override
+    public void filter(final ClientRequestContext rc) throws IOException {
+        log.debug("Request headers. headers={}", rc.getHeaders());
+    }
+}

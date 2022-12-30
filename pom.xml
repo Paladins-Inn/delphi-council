@@ -907,6 +907,15 @@
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-rest-client-config</artifactId>
         </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-oidc-token-propagation</artifactId>
+        </dependency>
+
 
         <!-- testing -->
         <dependency>

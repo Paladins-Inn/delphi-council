@@ -67,12 +67,6 @@ public abstract class BasicPresenterImpl<T, V extends BasicView<T>> implements B
 
 
     @Override
-    public void loadData() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
     public void loadId(UUID id) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("List presenters don't load by id");
     }

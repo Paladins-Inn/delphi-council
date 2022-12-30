@@ -11,7 +11,6 @@
 package de.paladinsinn.torganized.core.operative;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.kaiserpfalzedv.commons.core.files.FileData;
 import de.kaiserpfalzedv.commons.core.files.FileDescription;
 import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;

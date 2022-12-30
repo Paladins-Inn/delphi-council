@@ -1,25 +1,17 @@
 package de.paladinsinn.tp.dcis.ui.views.helloworld;
 
-import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.quarkus.annotation.VaadinSessionScoped;
-import de.kaiserpfalzedv.commons.core.text.MarkdownConverter;
-import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
-import io.quarkus.security.identity.SecurityIdentity;
+import com.vaadin.quarkus.annotation.VaadinSessionScoped;
+import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 
 import javax.annotation.security.PermitAll;
-import javax.inject.Inject;
-import java.util.stream.Collectors;
 
 @VaadinSessionScoped
 @PageTitle("Hello World")

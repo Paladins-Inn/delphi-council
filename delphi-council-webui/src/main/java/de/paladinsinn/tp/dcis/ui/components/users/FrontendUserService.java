@@ -47,6 +47,8 @@ public class FrontendUserService {
     public void setSecurityIdentity(final SecurityIdentity identity) {
         log.debug("SecurityIdentity loaded into FrontendUserService. identity={}", identity);
         this.identity = identity;
+
+        log.trace("Credentials passed. credentials={}", identity.getCredentials());
     }
 
     @Inject

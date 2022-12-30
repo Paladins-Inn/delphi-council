@@ -10,20 +10,24 @@
 
 package de.paladinsinn.tp.dcis.ui.views.missions;
 
-import com.vaadin.flow.router.PageTitle;
+import com.github.appreciated.card.ClickableCard;
+import com.github.appreciated.card.action.ActionButton;
+import com.github.appreciated.card.action.Actions;
+import com.github.appreciated.card.label.PrimaryLabel;
+import com.github.appreciated.card.label.SecondaryLabel;
+import com.github.appreciated.card.label.TitleLabel;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.torganized.core.missions.Mission;
-import de.paladinsinn.tp.dcis.ui.components.Tile;
-import de.paladinsinn.tp.dcis.ui.components.mvp.BasicViewImpl;
+import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListViewImpl;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -35,11 +39,18 @@ import java.util.List;
 @Route(value = "/missions", layout = MainLayout.class)
 @UIScoped
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-public class MissionListView extends BasicViewImpl<List<Mission>> {
-    private final MissionListPresenter presenter;
+@Slf4j
+@PermitAll
+public class MissionListView extends BasicListViewImpl<Mission> {
+    private static final float MIN_WIDTH = 100f;
+    private static final float DEFAULT_WIDTH = 150f;
+    private static final float MAX_WIDTH = 200f;
 
-    @Builder.Default
-    private final ArrayList<Tile<Mission>> missions = new ArrayList<>();
+    private static final float MIN_HEIGHT = 150f;
+    private static final float DEFAULT_HEIGHT = 225f;
+    private static final float MAX_HEIGHT = 300f;
+
+    private final MissionListPresenter presenter;
 
     @PostConstruct
     public void initPresenter() {
@@ -47,9 +58,45 @@ public class MissionListView extends BasicViewImpl<List<Mission>> {
         presenter.loadData();
     }
 
-
     @Override
     protected void updateView() {
+        removeAll();
 
+        for (Mission m : data) {
+            add(generateNewCard(m));
+        }
+    }
+
+    @Override
+    protected void readForm() {
+        // nothing to do - this view is read-only.
+    }
+
+    private ClickableCard generateNewCard(Mission mission) {
+        ClickableCard result = new ClickableCard(
+                e -> {},
+                new TitleLabel(mission.getName()),
+                new PrimaryLabel(mission.getCode()),
+                new SecondaryLabel(mission.getDescription()),
+                new Actions(
+                        new ActionButton("Show", e -> log.debug("Show event. mission='{}'", mission.getId())),
+                        new ActionButton("Report", e-> log.debug("Report event. mission='{}'", mission.getId()))
+                )
+        );
+
+        setCardDimensions(result);
+        result.setId("mission-" + mission.getId());
+
+        return result;
+    }
+
+    private void setCardDimensions(ClickableCard card) {
+        card.setMinWidth(MIN_WIDTH, Unit.PIXELS);
+        card.setWidth(DEFAULT_WIDTH, Unit.PIXELS);
+        card.setMaxWidth(MAX_WIDTH, Unit.PIXELS);
+
+        card.setMinHeight(MIN_HEIGHT, Unit.PIXELS);
+        card.setHeight(DEFAULT_HEIGHT, Unit.PIXELS);
+        card.setMaxHeight(MAX_HEIGHT, Unit.PIXELS);
     }
 }

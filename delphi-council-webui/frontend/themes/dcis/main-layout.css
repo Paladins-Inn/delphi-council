@@ -40,7 +40,6 @@ vaadin-scroller[slot="drawer"][overflow~="top"] {
 }
 
 vaadin-scroller[slot="drawer"][overflow~="bottom"] {
-  border-bottom: 1px solid var(--lumo-contrast-10pct);
 }
 
 [slot="drawer"]:is(header, footer) {

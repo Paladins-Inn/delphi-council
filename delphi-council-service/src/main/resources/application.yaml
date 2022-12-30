@@ -115,6 +115,7 @@ quarkus:
       cookie-domain: ${OIDC_COOKIE_DOMAIN:delphi-council.org}
       add-openid-scope: true
       scopes:
+        - openid
         - phone
         - email
         - roles

@@ -112,6 +112,7 @@ quarkus:
       cookie-domain: ${OIDC_COOKIE_DOMAIN:delphi-council.org}
       add-openid-scope: true
       scopes:
+        - openid
         - phone
         - email
         - roles
@@ -186,9 +187,9 @@ quarkus:
       min-level: TRACE
       category:
         "de.kaiserpfalzedv":
-          level: DEBUG
+          level: ALL
         "de.paladinsinn":
-          level: DEBUG
+          level: ALL
         http-problem:
           level: INFO
 
@@ -239,6 +240,31 @@ quarkus:
     log: *log-dev
     http: *http-dev
     oidc: *oidc-dev
+
+imprint:
+  represented: Name
+  mstv: |-
+    Name
+    Street
+    Post Code and City
+    Country
+  rstv: |-
+    Name
+    Street
+    Post Code and City
+    Country
+  contact: |-
+    Telefon: number
+    Fax: number
+    E-Mail: email address
+  addition: |-
+    This product was created under license from Ulisses Spiel und Medien GmbH. 
+    Torg Eternity, its respective logos, as well as *Torg, Torg Eternity, Infiniverse, Possibility Wars, 
+    Storm Knight, Aysle, Cyberpapacy, Living Land, Nile Empire, Orrorsh, Pan-Pacfifica, Tharkold,* and 
+    their respective logos, are trademarks of Ulisses Spiel und Medien GmbH. 
+    
+    No part of this publication may be reproduced, stored in retrieval systems, or transmitted, in any 
+    form or by any means, without written consent from Ulisses Spiel und Medien GmbH.
 
 vaadin:
   launch-browser: true

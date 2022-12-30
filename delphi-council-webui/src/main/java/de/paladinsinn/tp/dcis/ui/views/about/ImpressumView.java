@@ -1,22 +1,21 @@
 package de.paladinsinn.tp.dcis.ui.views.about;
 
-import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.router.RouteAlias;
-import de.kaiserpfalzedv.commons.core.text.MarkdownConverter;
-import de.paladinsinn.tp.dcis.ui.components.MarkDownDiv;
-import de.paladinsinn.tp.dcis.ui.views.MainLayout;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 
-@PageTitle("About")
-@Route(value = "about", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
+@PageTitle("Impressum")
+@Route(value = "impressum", layout = MainLayout.class)
 @AnonymousAllowed
-public class AboutView extends VerticalLayout {
+public class ImpressumView extends VerticalLayout {
 
-    public AboutView() {
+    public ImpressumView() {
         setSizeFull();
         setSpacing(false);
 
@@ -24,8 +23,9 @@ public class AboutView extends VerticalLayout {
         img.setWidth("200px");
         add(img);
 
-        add(new H2("Delphi Council Information System"));
-        add(new MarkDownDiv("Test-String _mit_ **MarkDown**."));
+        add(new H2("Impressum"));
+        add(new Paragraph(""));
+        add(new Paragraph("It’s a place where you can grow your own UI 🤗"));
 
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);

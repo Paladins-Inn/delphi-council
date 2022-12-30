@@ -6,6 +6,8 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.dom.Element;
+import lombok.NoArgsConstructor;
+
 import java.util.Optional;
 
 /**
@@ -17,13 +19,8 @@ import java.util.Optional;
  */
 @JsModule("@vaadin-component-factory/vcf-nav")
 @Tag("vcf-nav")
+@NoArgsConstructor
 public class AppNav extends Component implements HasSize, HasStyle {
-
-    /**
-     * Creates a new menu without any label.
-     */
-    public AppNav() {
-    }
 
     /**
      * Creates a new menu with the given label.

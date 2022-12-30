@@ -10,13 +10,9 @@
 
 package de.paladinsinn.tp.dcis.client;
 
-import de.paladinsinn.torganized.core.missions.Mission;
-import io.quarkus.oidc.client.filter.OidcClientRequestFilter;
-import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-
 import javax.ws.rs.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,19 +27,19 @@ public interface StandardClient<T extends Serializable, ID extends Serializable>
 
     @GET
     @Path("/")
-    T retrieve();
+    List<T> retrieve();
 
     @GET
     @Path("/")
-    T retrieve(final String query);
+    List<T> retrieve(final String query);
 
     @GET
     @Path("/")
-    T retrieve(final String query, final int page, final int size);
+    List<T> retrieve(final String query, final int page, final int size);
 
     @GET
     @Path("/")
-    T retrieve(final String query, final int page, final int size, final Set<String> sort);
+    List<T> retrieve(final String query, final int page, final int size, final Set<String> sort);
 
 
     @PUT

@@ -26,7 +26,7 @@ import java.util.UUID;
 @RepositoryRestResource(path = "/api/v1/missions")
 public interface MissionResource extends PagingAndSortingRepository<Mission, UUID> {
     @Override
-    @Secured({"orga","judge","admin"})
+    @RolesAllowed({"orga","judge","admin"})
     <S extends Mission> S save(S data);
 
     @Override

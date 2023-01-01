@@ -131,14 +131,19 @@ quarkus:
       frontchannel:
         path: "/front-channel-logout"
   oidc-client:
-    grant:
-      type: exchange
-  oidc-client-filter:
-    register-filter: true
+    enabled: true
+    early-tokens-acquisition: false
+    auth-server-url: ${OIDC_URL}
+    client-id: ${OIDC_CLIENT}
+    credentials:
+      secret: ${OIDC_SECRET}
   oidc-token-propagation:
     enabled: true
-    register-filter: true
+    register-filter: false
     exchange-token: false
+  oidc-client-filter:
+    register-filter: false
+
 
   security:
     users:
@@ -205,6 +210,8 @@ quarkus:
         http-problem:
           level: INFO
       "com.vaadin.quarkus":
+        level: TRACE
+      "io.quarkus.oidc":
         level: TRACE
 
     tls: &tls-dev

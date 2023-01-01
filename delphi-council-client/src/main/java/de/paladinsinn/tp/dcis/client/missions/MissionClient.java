@@ -12,11 +12,14 @@ package de.paladinsinn.tp.dcis.client.missions;
 
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.client.StandardClient;
+import io.quarkus.oidc.token.propagation.AccessTokenRequestFilter;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.Path;
 import java.util.UUID;
 
 @RegisterRestClient(configKey = "mission-api")
+@RegisterProvider(AccessTokenRequestFilter.class)
 @Path("/api/v1/missions")
 public interface MissionClient extends StandardClient<Mission, UUID> {}

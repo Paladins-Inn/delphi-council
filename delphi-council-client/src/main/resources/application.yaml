@@ -19,11 +19,6 @@ quarkus:
     operative-api: *api
     operative-report-api: *api
     operative-special-report-api: *api
-  oidc-client:
-    auth-server-url: ${OIDC_URL}
-    client-id: ${OIDC_CLIENT}
-    credentials:
-      secret: ${OIDC_SECRET}
 
 "%dev":
   quarkus:

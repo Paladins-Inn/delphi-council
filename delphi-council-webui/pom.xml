@@ -198,7 +198,7 @@
         <dependency>
             <groupId>org.vaadin.addons.taefi</groupId>
             <artifactId>toggle-button-group</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 

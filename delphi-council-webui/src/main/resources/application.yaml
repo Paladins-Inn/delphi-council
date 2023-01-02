@@ -209,10 +209,10 @@ quarkus:
           level: ALL
         http-problem:
           level: INFO
-      "com.vaadin.quarkus":
-        level: TRACE
-      "io.quarkus.oidc":
-        level: TRACE
+        "io.quarkus.oidc.runtime.OidcProvider":
+          level: TRACE
+        "io.quarkus.oidc.runtime.OidcRecorder":
+          level: TRACE
 
     tls: &tls-dev
       trust-all: true

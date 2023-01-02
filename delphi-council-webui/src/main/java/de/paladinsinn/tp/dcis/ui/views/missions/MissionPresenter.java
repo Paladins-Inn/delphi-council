@@ -13,6 +13,7 @@ package de.paladinsinn.tp.dcis.ui.views.missions;
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicPresenterImpl;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -27,12 +28,15 @@ import java.util.UUID;
  * @since 2.0.0  2022-12-29
  */
 @Dependent
+@Data
 @Slf4j
 public class MissionPresenter extends BasicPresenterImpl<Mission, MissionView> {
     @SuppressWarnings("LSPLocalInspectionTool")
     @Inject
     @RestClient
     MissionClient client;
+
+    private MissionDataForm form;
 
     @Override
     public void loadId(UUID id) {

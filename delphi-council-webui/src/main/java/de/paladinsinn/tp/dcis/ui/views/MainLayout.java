@@ -1,9 +1,12 @@
 package de.paladinsinn.tp.dcis.ui.views;
 
+import com.vaadin.componentfactory.IdleNotification;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -52,6 +55,9 @@ public class MainLayout extends AppLayout implements RouterLayout {
         addDrawerContent();
         addHeaderContent();
 
+        log.info("Adding idle notification and cookie consent to UI. ui={}", UI.getCurrent());
+        UI.getCurrent().add(initiateIdleNotifications());
+        UI.getCurrent().add(cookieConsent());
     }
 
     private void addHeaderContent() {
@@ -152,5 +158,30 @@ public class MainLayout extends AppLayout implements RouterLayout {
     private String getCurrentPageTitle() {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value();
+    }
+
+    private IdleNotification initiateIdleNotifications() {
+        IdleNotification idleNotification = new IdleNotification();
+
+// No. of secs before timeout, at which point the notification is displayed
+        idleNotification.setSecondsBeforeNotification(90);
+        idleNotification.setMessage(
+                getTranslation("error.session_expiry.notification", IdleNotification.MessageFormatting.SECS_TO_TIMEOUT));
+        idleNotification.addExtendSessionButton(getTranslation("error.session_expiry.extension"));
+        idleNotification.addRedirectButton(getTranslation("buttons.logout.caption"), "logout");
+        idleNotification.addCloseButton();
+        idleNotification.setExtendSessionOnOutsideClick(false);
+
+        return idleNotification;
+    }
+
+    private CookieConsent cookieConsent() {
+        final String message = "We are using cookies to make your visit here awesome!";
+        final String dismissLabel = "Cool!";
+        final String learnMoreLabel = "Why?";
+        final String learnMoreLink = "https://vaadin.com/terms-of-service";
+        final CookieConsent.Position position = CookieConsent.Position.BOTTOM_RIGHT;
+
+        return new CookieConsent(message, dismissLabel, learnMoreLabel, learnMoreLink, position);
     }
 }

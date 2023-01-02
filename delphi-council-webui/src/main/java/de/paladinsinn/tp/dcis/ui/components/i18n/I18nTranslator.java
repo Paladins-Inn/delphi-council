@@ -15,28 +15,17 @@ import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
 import com.vaadin.quarkus.annotation.VaadinServiceScoped;
 import de.kaiserpfalzedv.commons.core.i18n.ResourceBundleTranslator;
 import io.quarkus.arc.Unremovable;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.PostConstruct;
-import java.util.ResourceBundle;
 
-
+@RegisterForReflection
 @Unremovable
 @VaadinServiceEnabled
 @VaadinServiceScoped
 @Slf4j
 public class I18nTranslator extends ResourceBundleTranslator implements I18NProvider {
-
     public I18nTranslator() {
         super("/messages/msg");
-    }
-
-    @PostConstruct
-    public void init() {
-        log.debug("Created I18N provider for Vaadin. i18n={}, classloader={}", this, getClass().getClassLoader());
-
-        ResourceBundle test = ResourceBundle.getBundle("/messages/msg");
-
-        log.trace("testbundle: bundle={}, classloader={}, application.title='{}'", test, test.getClass().getClassLoader(), test.getString("application.title"));
     }
 }

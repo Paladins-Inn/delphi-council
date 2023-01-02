@@ -39,14 +39,20 @@ import java.util.UUID;
 public class MissionView extends BasicViewImpl<Mission> implements HasUrlParameter<UUID> {
     private final MissionPresenter presenter;
 
+    private final MissionDataForm form;
+
     @PostConstruct
     public void initPresenter() {
         presenter.setView(this);
+        presenter.setForm(form);
     }
 
 
     @Override
     protected void updateView() {
+        remove(form);
+        add(form);
+        form.setData(getData());
         // FIXME 2022-12-30 rlichti This method needs to be implemented.
     }
 

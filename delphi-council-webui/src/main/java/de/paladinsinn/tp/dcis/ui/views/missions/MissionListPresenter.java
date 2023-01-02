@@ -13,6 +13,8 @@ package de.paladinsinn.tp.dcis.ui.views.missions;
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListPresenterImpl;
+import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.Dependent;
@@ -25,6 +27,7 @@ import javax.inject.Inject;
  * @since 2.0.0  2022-12-29
  */
 @Dependent
+@Slf4j
 public class MissionListPresenter extends BasicListPresenterImpl<Mission, MissionListView> {
     @Inject
     @RestClient
@@ -32,6 +35,11 @@ public class MissionListPresenter extends BasicListPresenterImpl<Mission, Missio
 
     @Override
     public void loadData() throws UnsupportedOperationException {
-        setData(client.retrieve());
+        try {
+            setData(client.retrieve());
+        } catch (RuntimeException e) {
+            log.error("Could not load data: " + e.getMessage(), e);
+            ErrorNotification.show(getView().getTranslation("error.mainfraim_unavailable"));
+        }
     }
 }

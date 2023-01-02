@@ -65,7 +65,7 @@ public class MainLayout extends AppLayout implements RouterLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("Delphi Council Information System");
+        H1 appName = new H1(getTranslation("application.title"));
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 

@@ -25,7 +25,7 @@
     <dependencies>
         <dependency>
             <groupId>de.paladins-inn.torganized</groupId>
-            <artifactId>torganized-play-core</artifactId>
+            <artifactId>delphi-council-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

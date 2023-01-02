@@ -33,10 +33,10 @@ public class I18nTranslator extends ResourceBundleTranslator implements I18NProv
 
     @PostConstruct
     public void init() {
-        log.debug("Created I18N provider for Vaadin. i18n={}", this);
+        log.debug("Created I18N provider for Vaadin. i18n={}, classloader={}", this, getClass().getClassLoader());
 
-        ResourceBundle test = ResourceBundle.getBundle("/META-INF/messages/msg");
+        ResourceBundle test = ResourceBundle.getBundle("/messages/msg");
 
-        log.trace("test,  bundle: bundle={}, application.title='{}'", test, test.getString("application.title"));
+        log.trace("testbundle: bundle={}, classloader={}, application.title='{}'", test, test.getClass().getClassLoader(), test.getString("application.title"));
     }
 }

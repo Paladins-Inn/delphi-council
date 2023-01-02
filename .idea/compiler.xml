@@ -9,14 +9,18 @@
         <outputRelativeToContentRoot value="true" />
         <module name="delphi-council-service" />
         <module name="delphi-council-client" />
-        <module name="torganized-play-core" />
         <module name="delphi-council-webui" />
+        <module name="delphi-council-core" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="torganized-play-core" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="delphi-council-client" options="-parameters" />
+      <module name="delphi-council-core" options="-parameters" />
       <module name="delphi-council-service" options="-parameters" />
       <module name="delphi-council-webui" options="-parameters" />
       <module name="torganized-play-core" options="-parameters" />

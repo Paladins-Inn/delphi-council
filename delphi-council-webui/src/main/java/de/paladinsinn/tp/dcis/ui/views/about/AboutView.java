@@ -24,7 +24,10 @@ public class AboutView extends VerticalLayout implements HasDynamicTitle {
         add(img);
 
         add(new H2(getTranslation("application.title")));
-        add(new MarkDownDiv(getTranslation("application.descriptions")));
+        MarkDownDiv description = new MarkDownDiv(getTranslation("application.description"));
+        description.getStyle().set("text-align", "left");
+
+        add(description);
 
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);

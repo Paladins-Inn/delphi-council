@@ -19,7 +19,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>torganized-play-core</artifactId>
+    <artifactId>delphi-council-core</artifactId>
     <name>PI :: Torganized Play :: Core Services</name>
 
     <dependencies>

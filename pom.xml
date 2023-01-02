@@ -21,7 +21,7 @@
   <name>PI :: Torganized Play :: Root</name>
 
   <modules>
-    <module>torganized-play-core</module>
+    <module>delphi-council-core</module>
     <module>delphi-council-service</module>
     <module>delphi-council-client</module>
     <module>delphi-council-webui</module>
@@ -147,7 +147,7 @@
 
       <dependency>
         <groupId>de.paladins-inn.torganized</groupId>
-        <artifactId>torganized-play-core</artifactId>
+        <artifactId>delphi-council-core</artifactId>
         <version>1.0.0</version>
       </dependency>
       <dependency>

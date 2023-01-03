@@ -3,11 +3,26 @@ quarkus:
   application:
     name: dcis-backend
     version: 2.0.0
-    ui-header: ${quarkus.application.name}/${quarkus.application.version}
     api-version: "v1"
+    ui-header: ${quarkus.application.name}/${quarkus.application.version}
 
-  kubernetes-config:
-    enabled: true
+
+  container-image:
+    build: false
+    push: false
+    builder: jib
+    registry: ${CONTAINER_REGISTRY:quay.io}
+    group: ${CONTAINER_GROUP:klenkes74}
+    image: ${quarkus.application.name}
+    tag: ${quarkus.application.version}
+    additional-tags:
+      - latest
+      - development
+    username: ${CONTAINER_USERNAME}
+    password: ${CONTAINER_PASSWORD}
+  openshift:
+    deployment-kind: deployment
+
 
   log:
     metrics:
@@ -93,20 +108,13 @@ quarkus:
     auth:
       enabled-in-dev-mode: true
   oidc:
-    application-type: service
+    application-type: hybrid
     auth-server-url: ${OIDC_URL}
     client-id: ${OIDC_CLIENT}
     credentials:
       secret: ${OIDC_SECRET}
     tls:
       verification: required
-  oidc:
-    enabled: true
-    application-type: HYBRID
-    auth-server-url: ${OIDC_URL}
-    client-id: ${OIDC_CLIENT}
-    credentials:
-      secret: ${OIDC_SECRET}
     roles:
       source: idtoken
     authentication:
@@ -224,12 +232,6 @@ quarkus:
     enable: true
     always-include: true
 
-
-  container-image:
-    name: delphi-council-service
-    tag: ${quarkus.application.version}
-  openshift:
-    deployment-kind: deployment
 
   devservices:
     enabled: false

@@ -21,6 +21,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -54,7 +55,7 @@ import java.util.UUID;
 @Slf4j
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class SpecialMission extends AbstractRevisionedJPAEntity implements HasId, HasClearance, Cloneable {
-    @org.hibernate.annotations.Type(type = "org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     @Column(name = "CODE", length = 36, nullable = false, updatable = false, unique = true)
     @Builder.Default
     private UUID code = UUID.randomUUID();

@@ -755,11 +755,15 @@
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-keycloak-authorization</artifactId>
+          <artifactId>quarkus-oidc</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-keycloak-admin-client</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-keycloak-authorization</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -791,6 +795,13 @@
           <artifactId>quarkus-spring-data-rest</artifactId>
         </dependency>
 
+        <!-- Security -->
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-oidc</artifactId>
+        </dependency>
+
+
         <!-- REST/Communication -->
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -811,6 +822,7 @@
             </exclusion>
           </exclusions>
         </dependency>
+
         <!-- Zalando Problem -->
         <dependency>
           <groupId>com.tietoevry.quarkus</groupId>
@@ -910,6 +922,17 @@
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+        </dependency>
+
+
+        <!-- Security -->
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-oidc-client</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-oidc-client-filter</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -1072,7 +1095,7 @@
 
       <activation>
         <file>
-          <exists>./frontend/themes/</exists>
+          <exists>.profile-vaadin</exists>
         </file>
       </activation>
 

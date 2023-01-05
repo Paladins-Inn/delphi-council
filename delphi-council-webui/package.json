@@ -137,7 +137,7 @@
     "lit-element": "^3.2.2",
     "lit-html": "2.4.0",
     "moment": "2.29.4",
-    "moment-timezone": "0.5.32",
+    "moment-timezone": "0.5.35",
     "proj4": "2.8.0"
   },
   "devDependencies": {
@@ -432,7 +432,7 @@
       "lit-element": "^3.2.2",
       "lit-html": "2.4.0",
       "moment": "2.29.4",
-      "moment-timezone": "0.5.32",
+      "moment-timezone": "0.5.35",
       "proj4": "2.8.0"
     },
     "devDependencies": {

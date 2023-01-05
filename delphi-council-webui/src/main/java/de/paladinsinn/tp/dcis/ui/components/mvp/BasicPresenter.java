@@ -48,6 +48,11 @@ public interface BasicPresenter<T, V extends BasicView> {
     public void setView(final V view);
 
     /**
+     * Reads the view this presenter works on.
+     */
+    public V getView();
+
+    /**
      * Updates the logged in user.
      *
      * @param identity

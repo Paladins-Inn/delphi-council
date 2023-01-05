@@ -122,6 +122,11 @@
 
         <!-- vaadin components -->
         <dependency>
+            <groupId>com.wontlost</groupId>
+            <artifactId>ckeditor-vaadin</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.appreciated</groupId>
             <artifactId>card</artifactId>
             <version>2.0.0</version>

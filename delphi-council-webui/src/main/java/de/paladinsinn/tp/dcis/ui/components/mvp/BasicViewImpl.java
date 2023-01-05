@@ -14,6 +14,8 @@ import com.vaadin.flow.component.html.Div;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * BasicViewImpl -- Basis for the concrete views.
  *
@@ -44,13 +46,13 @@ public abstract class BasicViewImpl<T> extends Div implements BasicView<T> {
     }
 
     @Override
-    public void setFrontendUser(final FrontendUser identity) {
+    public void setFrontendUser(@NotNull final FrontendUser identity) {
         boolean update = false;
-        if (identity.getName().equals(user.getName())) {
+        if (user != null && identity.getName().equals(user.getName())) {
             log.trace("The user has changed. old={} new={}", this.user, identity);
             update = true;
         }
-        if (identity.getLocale() != user.getLocale()) {
+        if (user != null && identity.getLocale() != user.getLocale()) {
             log.trace("The locale has changed. old={}, new={}", this.user.getLocale(), identity.getLocale());
             update = true;
         }

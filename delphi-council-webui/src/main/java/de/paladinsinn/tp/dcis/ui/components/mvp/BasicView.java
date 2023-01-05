@@ -13,6 +13,8 @@ package de.paladinsinn.tp.dcis.ui.components.mvp;
 import de.paladinsinn.tp.dcis.ui.components.i18n.AutoPageTitle;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Basic Presenter -- Common API to every View.
  *
@@ -39,5 +41,5 @@ public interface BasicView<T> extends AutoPageTitle {
      *
      * @param identity
      */
-    void setFrontendUser(final FrontendUser identity);
+    void setFrontendUser(@NotNull final FrontendUser identity);
 }

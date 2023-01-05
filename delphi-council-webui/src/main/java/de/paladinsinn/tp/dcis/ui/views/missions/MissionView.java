@@ -10,13 +10,15 @@
 
 package de.paladinsinn.tp.dcis.ui.views.missions;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicViewImpl;
-import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
+import de.paladinsinn.tp.dcis.ui.components.users.Roles;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,20 +64,37 @@ public class MissionView extends BasicViewImpl<Mission> implements HasUrlParamet
     }
 
     @Override
-    public void setParameter(final BeforeEvent event, final UUID id) {
+    public void setParameter(final BeforeEvent event, @OptionalParameter UUID id) {
         if (id == null) {
-            getUI().ifPresentOrElse(
-                    ui -> ui.getPage().setLocation("/missions"),
-                    () -> {
-                        log.error("View has no UI to do redirect. view={}", this);
-
-                        ErrorNotification.showMarkdown("This view needs an **ID** to display the data. Due to technical reasons the redirect to _/missions_ failed.");
-                    }
-            );
-
-            return;
+            redirectForNewMissionInput();
+        } else {
+            presenter.loadId(id);
         }
+    }
 
-        presenter.loadId(id);
+    private void redirectForNewMissionInput() {
+        if (user.isInRole(Roles.orga)) {
+            createNewDispatch();
+        } else {
+            createNewSpecialMission();
+        }
+    }
+
+    private void createNewDispatch() {
+        log.info("Open form for new mission. opening empty view.");
+        presenter.setData(Mission.builder()
+                .id(UUID.randomUUID())
+                .build()
+        );
+    }
+
+    private void createNewSpecialMission() {
+        if (user.isInRole(Roles.gm)) {
+            log.info("User is GM. Redirecting to Special Mission input form. user='{}', roles={}", user.getName(), user.getRoles());
+            UI.getCurrent().getPage().setLocation("/specialmission");
+        } else {
+            log.warn("User is not member of the orga and is no gm. Can't create a new mession. user='{}', roles={}", user.getName(), user.getRoles());
+            UI.getCurrent().getPage().setLocation("/missions");
+        }
     }
 }

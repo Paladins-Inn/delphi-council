@@ -11,14 +11,23 @@
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.util.UUID;
 
 @Slf4j
+@Data
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class BasicPresenterImpl<T, V extends BasicView<T>> implements BasicPresenter<T, V> {
+    @ToString.Include
+    @EqualsAndHashCode.Include
     protected T data;
+    @EqualsAndHashCode.Include
     protected V view;
     protected FrontendUser user;
 
@@ -53,6 +62,10 @@ public abstract class BasicPresenterImpl<T, V extends BasicView<T>> implements B
             view.setData(data);
         }
 
+        if (user != null) {
+            view.setFrontendUser(user);
+        }
+
         log.trace("Added view to presenter. view={}, presenter={}", view, this);
     }
 
@@ -60,7 +73,10 @@ public abstract class BasicPresenterImpl<T, V extends BasicView<T>> implements B
     @Override
     public void setFrontendUser(FrontendUser identity) {
         this.user = identity;
-        view.setFrontendUser(identity);
+
+        if (view != null) {
+            view.setFrontendUser(identity);
+        }
 
         log.trace("Changed identity in presenter. user={}, view={}, presenter={}", user, view, this);
     }

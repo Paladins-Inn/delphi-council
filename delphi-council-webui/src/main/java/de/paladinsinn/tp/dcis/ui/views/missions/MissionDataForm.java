@@ -18,6 +18,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -31,26 +33,64 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+
+/**
+ * MissionDataForm -- Displays the data for the mission in a a hopefully easy to use manner.
+ *
+ * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 2.0.0  2023-01-01
+ */
 @Dependent
 @AllArgsConstructor
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 @ToString(onlyExplicitlyIncluded = true)
-@Getter
-@Setter
+@Data
 @Slf4j
 public class MissionDataForm extends FormLayout {
     @ToString.Include
     private Mission data;
     private final FrontendUser user;
 
+    private TabSheet tabs;
+
+    private final MissionDataFormBaseData baseData;
+    private final MissionDataFormResultQuestionaire resultQuestionaire;
+    private final MissionDataFormResults results;
+
+    private final MissionDataFormDispatchedTeams dispatchedTeams;
+
     private final Binder<Mission> binder = new BeanValidationBinder<>(Mission.class);
 
     @PostConstruct
     public void init() {
         addClassName("mission-basedata");
-        binder.bindInstanceFields(this);
+        setResponsiveSteps(
+                new ResponsiveStep("200px", 1),
+                new ResponsiveStep("600px", 3)
+        );
 
-        add(createButtonsLayout());
+        Component buttonBar = createButtonsLayout();
+        tabs = createTabs();
+
+        add(tabs, 3);
+
+
+        add(save, delete, close);
+    }
+
+    private TabSheet createTabs() {
+        TabSheet result = new TabSheet();
+        result.setWidth("100%");
+        addTab(result, "mission.form.tab.basedata", baseData);
+        addTab(result, "mission.form.tab.results", results);
+        addTab(result, "mission.form.tab.questionaire", resultQuestionaire);
+        addTab(result, "mission.form.tab.dispatches", dispatchedTeams);
+
+        return result;
+    }
+
+    public void addTab(final TabSheet tabs, final String key, final Tab tab) {
+        tabs.add(getTranslation(key + ".caption"), tab);
     }
 
     public void setData(final Mission data) {
@@ -65,6 +105,13 @@ public class MissionDataForm extends FormLayout {
     private Button save, delete, close;
 
     private Component createButtonsLayout() {
+        save = new Button(getTranslation("buttons.save.caption"));
+        save.setTooltipText(getTranslation("buttons.save.help"));
+        delete = new Button(getTranslation("buttons.delete.caption"));
+        delete.setTooltipText(getTranslation("buttons.delete.help"));
+        close = new Button(getTranslation("buttons.cancel.caption"));
+        close.setTooltipText(getTranslation("buttons.cancel.help"));
+
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);

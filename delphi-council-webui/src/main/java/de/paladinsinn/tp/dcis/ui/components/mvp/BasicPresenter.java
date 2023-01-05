@@ -12,6 +12,8 @@ package de.paladinsinn.tp.dcis.ui.components.mvp;
 
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -20,13 +22,13 @@ import java.util.UUID;
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-public interface BasicPresenter<T, V extends BasicView> {
+public interface BasicPresenter<T extends Serializable> {
     /**
      * Inserts the data for the view.
      *
      * @param data The data to be presented
      */
-    public void setData(final T data);
+    public void setData(@NotNull final T data);
 
     /**
      * Retrieves the data from the view.
@@ -36,28 +38,32 @@ public interface BasicPresenter<T, V extends BasicView> {
     public T getData();
 
     /**
-     * Resets the data in the view.
-     */
-    public void resetData();
-
-    /**
      * Inserts the view this presenter works on.
      *
      * @param view The basic view of this presenter.
      */
-    public void setView(final V view);
+    public <V extends BasicView<T>> void setView(@NotNull final V view);
 
     /**
      * Reads the view this presenter works on.
      */
-    public V getView();
+    public <V extends BasicView<T>> V getView();
+
+    public <F extends BasicDataForm<T>> void setForm(@NotNull final F form);
+
+    public <F extends BasicDataForm<T>> F getForm();
 
     /**
      * Updates the logged in user.
      *
      * @param identity
      */
-    public void setFrontendUser(final FrontendUser identity);
+    public void setFrontendUser(@NotNull final FrontendUser identity);
 
-    public void loadId(final UUID id) throws UnsupportedOperationException;
+    public void loadId(@NotNull final UUID id) throws UnsupportedOperationException;
+
+    public void save();
+    public void delete();
+    public void reset();
+    public void close();
 }

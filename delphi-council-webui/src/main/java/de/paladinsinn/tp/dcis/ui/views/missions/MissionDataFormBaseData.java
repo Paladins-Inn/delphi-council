@@ -14,10 +14,13 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.textfield.TextField;
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicTab;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  * MissionDataFormBaseData -- The basic data to any mission.
@@ -27,16 +30,26 @@ import javax.enterprise.context.Dependent;
  */
 @Dependent
 @ToString(onlyExplicitlyIncluded = true)
+@Getter
+@Setter
 @Slf4j
 public class MissionDataFormBaseData extends BasicTab<Mission> {
-    public MissionDataFormBaseData(final MissionPresenter presenter) {
-        super(presenter);
-    }
+    private static final String I18N_KEY = "mission.form.tab.basedata";
 
     private TextField code;
-    private TextField id;
+    private TextField missionId;
     private TextField name;
 
     private Image image;
 
+    @Inject
+    public MissionDataFormBaseData(final MissionPresenter presenter) {
+        super(presenter);
+    }
+
+
+    @Override
+    public String getI18nKey() {
+        return I18N_KEY;
+    }
 }

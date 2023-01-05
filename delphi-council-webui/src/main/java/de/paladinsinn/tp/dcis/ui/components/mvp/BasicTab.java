@@ -25,20 +25,22 @@ import java.io.Serializable;
 @ToString
 @Data
 @Slf4j
-public class BasicTab<T extends Serializable> extends Tab {
+public abstract class BasicTab<T extends Serializable> extends Tab {
     protected final BasicView<T> view;
 
-    protected final BasicPresenter<T, ? extends BasicView<T>> presenter;
+    protected final BasicPresenter<T> presenter;
 
     protected final FormLayout layout = new FormLayout();
 
-    public BasicTab(final BasicPresenter<T, ? extends BasicView<T>> presenter) {
+    public BasicTab(final BasicPresenter<T> presenter) {
         this.presenter = presenter;
         this.view = presenter.getView();
 
         setUpLayout();
         add(layout);
     }
+
+    public abstract String getI18nKey();
 
     private void setUpLayout() {
         layout.setResponsiveSteps(

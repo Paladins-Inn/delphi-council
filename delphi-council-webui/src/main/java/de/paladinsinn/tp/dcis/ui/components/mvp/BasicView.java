@@ -29,12 +29,6 @@ public interface BasicView<T> extends AutoPageTitle {
      */
     void setData(T data);
 
-    /**
-     * Retrieves the data from the view.
-     *
-     * @return The data from the view.
-     */
-    T getData();
 
     /**
      * Updates the logged in user.

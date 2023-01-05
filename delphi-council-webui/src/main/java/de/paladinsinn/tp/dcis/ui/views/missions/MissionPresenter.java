@@ -10,19 +10,21 @@
 
 package de.paladinsinn.tp.dcis.ui.views.missions;
 
-import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicPresenterImpl;
-import lombok.Data;
+import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.UUID;
 
@@ -32,30 +34,18 @@ import java.util.UUID;
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-@Dependent
-@Data
+@UIScoped
+@Getter
+@Setter
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Slf4j
-public class MissionPresenter extends BasicPresenterImpl<Mission, MissionView> {
-    @SuppressWarnings("LSPLocalInspectionTool")
+public class MissionPresenter extends BasicPresenterImpl<Mission> {
     @Inject
     @RestClient
+    @SuppressWarnings("LSPLocalInspectionTool")
     MissionClient client;
 
-    @ToString.Include
-    @EqualsAndHashCode.Include
-    private MissionDataForm form;
-    private MissionDataSaveListener saveListener;
-    private MissionDataDeleteListener deleteListener;
-    private MissionDataCloseListener closeListener;
-
-    @PostConstruct
-    public void init() {
-        saveListener = new MissionDataSaveListener();
-        deleteListener = new MissionDataDeleteListener();
-        closeListener = new MissionDataCloseListener();
-    }
 
     @Override
     public void loadId(UUID id) {
@@ -69,52 +59,55 @@ public class MissionPresenter extends BasicPresenterImpl<Mission, MissionView> {
         setData(data);
     }
 
-    public void setForm(MissionDataForm form) {
-        if (this.form != null && !this.form.equals(form)) {
-            log.error("Can't unregister old form listeners. form.old={}, form.new={}", this.form, form);
+    @Override
+    public void save() {
+        if (data == null) {
+            ErrorNotification.show(getView().getTranslation("input.data.saved.failed", "(null)", "(null)", "No data given!"));
+            return;
         }
 
-        this.form = form;
+        if (data.getCode() != null) {
+            data = form.getData();
 
-        registerForm(form);
-    }
-
-    private void registerForm(MissionDataForm form) {
-        form.addListener(MissionDataForm.SaveEvent.class, saveListener);
-        form.addListener(MissionDataForm.DeleteEvent.class, deleteListener);
-        form.addListener(MissionDataForm.CloseEvent.class, closeListener);
-    }
-
-    public class MissionDataSaveListener implements ComponentEventListener<MissionDataForm.SaveEvent> {
-        @Override
-        public void onComponentEvent(final MissionDataForm.SaveEvent event) {
-            // FIXME 2023-01-05 klenkes Implement this method
-            log.trace(
-                    "mission data save event. form={}, event={}, data.new={}, data.old={}",
-                    form, event, form.getData(), getData()
-            );
+            client.update(data.getId(), data);
+        } else {
+            data = form.getData();
+            client.create(data);
         }
+        log.info("Data saved. mission='{}', code='{}'", data.getId(), data.getCode());
+        Notification.show(getView().getTranslation("input.data.saved.success", data.getName(), data.getCode()));
+
+        returnToMissionsList();
     }
 
-    public class MissionDataDeleteListener implements ComponentEventListener<MissionDataForm.DeleteEvent> {
-        @Override
-        public void onComponentEvent(final MissionDataForm.DeleteEvent event) {
-            // FIXME 2023-01-05 klenkes Implement this method
-            log.trace(
-                    "mission data delete event. form={}, event={}, data.new={}, data.old={}",
-                    form, event, form.getData(), getData()
-            );
+    @Override
+    public void delete() {
+        data = form.getData();
+
+        if (data != null) {
+            // TODO 2023-01-05 klenkes Implement a configuration rquestor for deleting the existing data.
+
+            log.info("Deleting mission data. mission='{}', code='{}'", data.getId(), data.getCode());
+
+            client.delete(data.getId());
+            log.info("Deleted mission data. mission='{}', code='{}'", data.getId(), data.getCode());
+            Notification.show(getView().getTranslation("input.data.deleted.success", data.getName(), data.getCode()));
         }
+
+        returnToMissionsList();
     }
 
-    public class MissionDataCloseListener implements ComponentEventListener<MissionDataForm.CloseEvent> {
-        @Override
-        public void onComponentEvent(final MissionDataForm.CloseEvent event) {
-            // TODO 2023-01-05 klenkes Implement check to save modified data.
+    @Override
+    public void close() {
+        log.info("Closing mission editor without saving the data.");
+        // TODO 2023-01-05 klenkes Implement a confirmation requestor for loosing changes (if there are changes)
+        returnToMissionsList();
+    }
 
-            UI.getCurrent().getPage().setLocation("/missions");
-
-            log.trace("redirected to mission list.");
-        }
+    private void returnToMissionsList() {
+        ((Component)view).getUI().ifPresentOrElse(
+                ui -> ui.navigate("/missions"),
+                () -> UI.getCurrent().navigate("/missions")
+        );
     }
 }

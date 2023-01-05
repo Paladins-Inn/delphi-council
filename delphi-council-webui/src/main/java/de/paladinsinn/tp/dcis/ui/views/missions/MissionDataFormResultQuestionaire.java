@@ -10,14 +10,15 @@
 
 package de.paladinsinn.tp.dcis.ui.views.missions;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.tabs.Tab;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.ui.components.mvp.BasicTab;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  * MissionDataFormBaseData -- The basic data to any mission.
@@ -26,9 +27,20 @@ import javax.enterprise.context.Dependent;
  * @since 2.0.0  2023-01-05
  */
 @Dependent
-@AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-@Data
+@Getter
+@Setter
 @Slf4j
-public class MissionDataFormResultQuestionaire extends Tab {
+public class MissionDataFormResultQuestionaire extends BasicTab<Mission> {
+    private static final String I18N_KEY = "mission.form.tab.questionnaire";
+
+    @Inject
+    public MissionDataFormResultQuestionaire(MissionPresenter presenter) {
+        super(presenter);
+    }
+
+    @Override
+    public String getI18nKey() {
+        return I18N_KEY;
+    }
 }

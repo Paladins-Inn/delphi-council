@@ -16,6 +16,8 @@ import de.kaiserpfalzedv.commons.core.resources.HasId;
 import de.kaiserpfalzedv.commons.core.resources.HasName;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.torganized.core.common.HasClearance;
+import de.paladinsinn.torganized.core.common.HasCode;
+import de.paladinsinn.torganized.core.common.HasDisplayNames;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -25,6 +27,7 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,7 +49,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @Schema(description = "Delphi Council Mission")
-public class Mission extends AbstractRevisionedJPAEntity implements Comparable<Mission>, HasId, HasName, HasClearance, Cloneable {
+public class Mission extends AbstractRevisionedJPAEntity implements Comparable<Mission>, HasId, HasName, HasCode, HasDisplayNames, HasClearance, Cloneable, Serializable {
     @Column(name = "CODE", length = 20, nullable = false)
     @Audited
     @Schema(description = "Code of this mission.", maxLength = 20)

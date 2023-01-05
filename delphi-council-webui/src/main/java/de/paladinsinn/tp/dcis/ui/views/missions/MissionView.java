@@ -20,11 +20,8 @@ import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicViewImpl;
 import de.paladinsinn.tp.dcis.ui.components.users.Roles;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.util.UUID;
 
 
@@ -36,30 +33,20 @@ import java.util.UUID;
  */
 @Route(value = "/mission", layout = MainLayout.class)
 @UIScoped
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
 @Slf4j
 public class MissionView extends BasicViewImpl<Mission> implements HasUrlParameter<UUID> {
-    private final MissionPresenter presenter;
 
-    private final MissionDataForm form;
-
-    @PostConstruct
-    public void initPresenter() {
-        presenter.setView(this);
-        presenter.setForm(form);
+    public MissionView(final MissionPresenter presenter, final MissionDataForm form) {
+        super(presenter, form);
     }
-
 
     @Override
     protected void updateView() {
         remove(form);
-        add(form);
-        form.setData(getData());
-        // FIXME 2022-12-30 rlichti This method needs to be implemented.
-    }
 
-    @Override
-    protected void readForm() {
+        form.setData(data);
+
+        add(form);
         // FIXME 2022-12-30 rlichti This method needs to be implemented.
     }
 
@@ -90,11 +77,23 @@ public class MissionView extends BasicViewImpl<Mission> implements HasUrlParamet
 
     private void createNewSpecialMission() {
         if (user.isInRole(Roles.gm)) {
-            log.info("User is GM. Redirecting to Special Mission input form. user='{}', roles={}", user.getName(), user.getRoles());
+            log.info("User is GM. Redirecting to Special Mission input form. user='{}', roles={}",
+                    user.getName(), user.getRoles());
             UI.getCurrent().getPage().setLocation("/specialmission");
         } else {
-            log.warn("User is not member of the orga and is no gm. Can't create a new mession. user='{}', roles={}", user.getName(), user.getRoles());
+            log.warn("User is not member of the orga and is no gm. Can't create a new mession. user='{}', roles={}",
+                    user.getName(), user.getRoles());
             UI.getCurrent().getPage().setLocation("/missions");
+        }
+    }
+
+    @Override
+    public String getPageTitle() {
+        if (getData() != null) {
+            return getTranslation("mission.editor.caption", getData().getShortName(), form.getTabTitle());
+        } else {
+            return getTranslation("mission.editor.caption", getTranslation("mission.unregistered"),
+                    form.getTabTitle());
         }
     }
 }

@@ -31,13 +31,14 @@ import java.util.Set;
  * @since 2.0.0  2022-12-29
  */
 @SuperBuilder(toBuilder = true)
-@ToString(callSuper = true, doNotUseGetters = true)
+@ToString(onlyExplicitlyIncluded = true, doNotUseGetters = true)
 @EqualsAndHashCode(doNotUseGetters = true, onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @Getter
 @Jacksonized
 public class FrontendUser implements Serializable {
     /** The name of the user. */
+    @ToString.Include
     @EqualsAndHashCode.Include
     private final String name;
 
@@ -48,9 +49,11 @@ public class FrontendUser implements Serializable {
     private final String avatar;
 
     /** The locale of this user. */
+    @ToString.Include
     private final Locale locale;
 
     /** This set contains all roles of this user. */
+    @ToString.Include
     @Builder.Default
     private final Set<String> roles = new HashSet<>();
 

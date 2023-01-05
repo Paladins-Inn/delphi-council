@@ -17,61 +17,90 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.UUID;
 
-@Slf4j
 @Data
 @ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public abstract class BasicPresenterImpl<T, V extends BasicView<T>> implements BasicPresenter<T, V> {
+@EqualsAndHashCode
+@Slf4j
+public abstract class BasicPresenterImpl<T extends Serializable> implements BasicPresenter<T> {
+
     @ToString.Include
-    @EqualsAndHashCode.Include
     protected T data;
-    @EqualsAndHashCode.Include
-    protected V view;
+
+    @ToString.Include
+    protected  BasicView<T> view;
+
+    @ToString.Include
+    protected BasicDataForm<T> form;
+
+    @ToString.Include
     protected FrontendUser user;
 
+
     @Override
-    public void setData(T data) {
+    abstract public void loadId(@NotNull UUID id);
+
+    abstract public void save();
+    abstract public void delete();
+
+    @SuppressWarnings("ConstantConditions")
+    public void reset() {
+        if (data == null) {
+            log.debug("Can't reset data in view since there is no data. presenter={}, view={}, data={}", this, view, data);
+            return;
+        }
+
+        if (view != null) {
+            view.setData(data);
+
+            log.trace("Data reset in view. presenter={}, view={}, data={}", this, view, data);
+        } else {
+            log.debug("Can't reset data in view since there is no view. presenter={}, view={}, data={}", this, view, data);
+        }
+
+    }
+    abstract public void close();
+
+    @Override
+    public void setData(@NotNull T data) {
         this.data = data;
-        view.setData(data);
+        log.trace("Data reset in presenter. presenter={}, data={}", this, data);
 
-        log.trace("Data in view changed. view={}, data={}", view, data);
+        reset();
     }
 
     @Override
-    public T getData() {
-        this.data = view.getData();
-
-        log.trace("Data loaded from view. view={}, data={}", view, data);
-        return data;
-    }
-
-    @Override
-    public void resetData() {
-        view.setData(data);
-
-        log.trace("Data reset in view. view={}, data={}", view, data);
-    }
-
-    @Override
-    public void setView(V view) {
+    public <V extends BasicView<T>> void setView(@NotNull V view) {
         this.view = view;
 
         if (data != null) {
-            view.setData(data);
+            reset();
         }
 
         if (user != null) {
             view.setFrontendUser(user);
         }
 
-        log.trace("Added view to presenter. view={}, presenter={}", view, this);
+        log.trace("Added view to presenter. presenter={}, view={}, form={}", this, this.view, form);
+    }
+
+    @Override
+    public <F extends BasicDataForm<T>> void setForm(@NotNull F form) {
+        this.form = form;
+
+        if (data != null) {
+            form.setData(data);
+        }
+
+        log.trace("Added form to presenter. presenter={}, view={}, form={}", this, view, this.form);
     }
 
     @Inject
     @Override
-    public void setFrontendUser(FrontendUser identity) {
+    public void setFrontendUser(@NotNull FrontendUser identity) {
         this.user = identity;
 
         if (view != null) {
@@ -79,11 +108,5 @@ public abstract class BasicPresenterImpl<T, V extends BasicView<T>> implements B
         }
 
         log.trace("Changed identity in presenter. user={}, view={}, presenter={}", user, view, this);
-    }
-
-
-    @Override
-    public void loadId(UUID id) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("List presenters don't load by id");
     }
 }

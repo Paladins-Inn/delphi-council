@@ -1,21 +1,24 @@
 package de.paladinsinn.tp.dcis.ui.views;
 
 import com.vaadin.componentfactory.IdleNotification;
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.cookieconsent.CookieConsent;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.tp.dcis.ui.components.appnav.AppNav;
@@ -47,6 +50,8 @@ public class MainLayout extends AppLayout implements RouterLayout {
     private H2 viewTitle;
 
     private final AccessAnnotationChecker accessChecker;
+
+    private Registration busRegistration;
 
 
     @PostConstruct
@@ -155,9 +160,29 @@ public class MainLayout extends AppLayout implements RouterLayout {
         viewTitle.setText(getCurrentPageTitle());
     }
 
+    /**
+     * Reads the title to display. Either retrieves the title from {@link HasDynamicTitle} (when the view does implement
+     * that interface). Otherwise the annotated {@link PageTitle} is used. If even that fails, the
+     * {@link Class#getSimpleName()} will be fead into the {@link #getTranslation(Object, Object...)} method as key and
+     * the result is displayed as PageTitle.
+     *
+     * @return The pagetitle to be displayed.
+     */
     private String getCurrentPageTitle() {
-        PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
-        return title == null ? "" : title.value();
+        String result;
+
+        if (HasDynamicTitle.class.isAssignableFrom(getContent().getClass())) {
+            result = ((HasDynamicTitle)getContent()).getPageTitle();
+        } else {
+            PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
+            if (title != null) {
+                result = title.value();
+            } else {
+                result = getTranslation(getContent().getClass().getSimpleName());
+            }
+        }
+
+        return result;
     }
 
     private IdleNotification initiateIdleNotifications() {
@@ -183,5 +208,40 @@ public class MainLayout extends AppLayout implements RouterLayout {
         final CookieConsent.Position position = CookieConsent.Position.BOTTOM_RIGHT;
 
         return new CookieConsent(message, dismissLabel, learnMoreLabel, learnMoreLink, position);
+    }
+
+
+    @Override
+    protected void onAttach(AttachEvent event) {
+        super.onAttach(event);
+
+        ComponentUtil.addListener(
+                event.getUI(),
+                PageTitleUpdateEvent.class,
+                e -> {
+                    String title = getCurrentPageTitle();
+                    viewTitle.setText(title);
+                    UI.getCurrent().getPage().setTitle(title);
+                }
+        );
+    }
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+        super.onDetach(event);
+
+        busRegistration.remove();
+    }
+
+    /**
+     * PageTitleUpdateEvent -- This event triggers a reload of the PageTitle in the MainLayout.
+     *
+     * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
+     * @since 2.0.0  2023-01-05
+     */
+    public static class PageTitleUpdateEvent extends ComponentEvent<FormLayout> {
+        public PageTitleUpdateEvent(FormLayout source, boolean fromClient) {
+            super(source, fromClient);
+        }
     }
 }

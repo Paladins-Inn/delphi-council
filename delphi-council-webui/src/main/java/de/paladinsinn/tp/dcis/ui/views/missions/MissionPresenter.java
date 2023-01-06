@@ -14,7 +14,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.quarkus.annotation.UIScoped;
-import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.model.Mission;
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicPresenterImpl;
 import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;

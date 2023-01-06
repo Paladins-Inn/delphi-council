@@ -10,41 +10,76 @@
 
 package de.paladinsinn.tp.dcis.missions;
 
-import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.model.jpa.Mission;
+import de.paladinsinn.tp.dcis.model.lists.BasicData;
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
+import de.paladinsinn.tp.dcis.model.meta.Paging;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
-import javax.annotation.security.RolesAllowed;
-import java.util.UUID;
+import javax.annotation.security.PermitAll;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.stream.Collectors;
 
 @Schema(
         name = "Missions",
         description = "Mission Data CRUD Service"
 )
-@RepositoryRestResource(path = "/api/v1/missions")
-public interface MissionResource extends PagingAndSortingRepository<Mission, UUID> {
-    @Override
-    @RolesAllowed({"orga","judge","admin"})
-    <S extends Mission> S save(S data);
+@ApplicationScoped
+@Path("/api/v1/mission")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+@PermitAll
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@Slf4j
+public class MissionResource {
+    private static final int DEFAULT_START = 0;
+    private static final int DEFAULT_SIZE = 20;
 
-    @Override
-    @RolesAllowed({"orga","judge","admin"})
-    <S extends Mission> Iterable<S> saveAll(Iterable<S> data);
+    private final MissionRepository repository;
 
-    @Override
-    @RolesAllowed({"orga","judge","admin"})
-    void deleteById(UUID id);
+    @GET
+    public BasicList index(
+            @QueryParam("start") int start,
+            @QueryParam("size") int size
+    ) {
+        start = start != 0 ? start : DEFAULT_START;
+        size = size != 0 ? size : DEFAULT_SIZE;
 
-    @Override
-    @RolesAllowed({"orga","judge","admin"})
-    void delete(Mission data);
+        Page<Mission> raw = repository.findAll(PageRequest.of(start * size, size));
 
-    @Override
-    @RolesAllowed({"orga","judge","admin"})
-    void deleteAll(Iterable<? extends Mission> data);
+        log.debug("missions loaded. count={}, total={}, ", raw.getNumber(), raw.getTotalElements());
 
-    @Override
-    @RolesAllowed("admin")
-    void deleteAll();
+
+        return BasicList.builder()
+                .kind("mission")
+                .page(Paging.builder()
+                        .start(start)
+                        .count(raw.getNumber())
+                        .size(size)
+                        .total(raw.getTotalElements())
+                        .build())
+                .data(raw.get().map(this::mapMission).collect(Collectors.toList()))
+                .build();
+    }
+
+    private BasicData mapMission(Mission orig) {
+        return BasicData.builder()
+                .id(orig.getId())
+                .created(orig.getCreated())
+                .modified(orig.getModified())
+
+                .code(orig.getCode())
+                .name(orig.getName())
+                .description(orig.getDescription())
+                .url(orig.getImage())
+
+                .build();
+    }
 }

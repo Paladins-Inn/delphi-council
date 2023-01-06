@@ -7,9 +7,6 @@ quarkus:
     api-version: "v1"
   default-locale: "de"
 
-  kubernetes-config:
-    enabled: true
-
   log:
     metrics:
       enabled: true
@@ -36,8 +33,12 @@ quarkus:
     ui:
       enable: true
 
+  datasource:
+    jdbc: false
+
   hibernate-orm:
-    enabled: false
+    enabled: true
+    active: false
 
 
   http:
@@ -98,10 +99,6 @@ quarkus:
         enabled: false
     cors: true
 
-  keycloak:
-    policy-enforcer:
-      enable: true
-
   oidc:
     enabled: true
     application-type: HYBRID
@@ -144,14 +141,6 @@ quarkus:
   oidc-client-filter:
     register-filter: false
 
-
-  security:
-    users:
-      embedded:
-        enabled: false
-
-  datasource:
-    jdbc: false
 
   smallrye-health:
     ui:
@@ -199,7 +188,7 @@ quarkus:
       console:
         json: false
         enable: true
-        format: "%d{HH:mm:ss.SSS} %-5p [%c{2.}] (%t) %s%e%n"
+        format: "%d{HH:mm:ss.SSS} %-5p [%c{2.}] (%t) [%X{user}] %s%e%n"
       level: INFO
       min-level: ALL
       category:
@@ -209,9 +198,7 @@ quarkus:
           level: ALL
         http-problem:
           level: INFO
-        "io.quarkus.oidc.runtime.OidcProvider":
-          level: TRACE
-        "io.quarkus.oidc.runtime.OidcRecorder":
+        "io.quarkus.oidc":
           level: TRACE
 
     tls: &tls-dev
@@ -238,30 +225,33 @@ quarkus:
     http: *http-dev
     tls: *tls-dev
 
-imprint:
-  represented: Name
-  mstv: |-
-    Name
-    Street
-    Post Code and City
-    Country
-  rstv: |-
-    Name
-    Street
-    Post Code and City
-    Country
-  contact: |-
-    Telefon: number
-    Fax: number
-    E-Mail: email address
-  addition: |-
-    This product was created under license from Ulisses Spiel und Medien GmbH. 
-    Torg Eternity, its respective logos, as well as *Torg, Torg Eternity, Infiniverse, Possibility Wars, 
-    Storm Knight, Aysle, Cyberpapacy, Living Land, Nile Empire, Orrorsh, Pan-Pacfifica, Tharkold,* and 
-    their respective logos, are trademarks of Ulisses Spiel und Medien GmbH. 
-    
-    No part of this publication may be reproduced, stored in retrieval systems, or transmitted, in any 
-    form or by any means, without written consent from Ulisses Spiel und Medien GmbH.
+
+delphi-council:
+  imprint:
+    represented: Name
+    mstv: |-
+      Name
+      Street
+      Post Code and City
+      Country
+    rstv: |-
+      Name
+      Street
+      Post Code and City
+      Country
+    contact: |-
+      Telefon: number
+      Fax: number
+      E-Mail: email address
+    addition: |-
+      This product was created under license from Ulisses Spiel und Medien GmbH. 
+      Torg Eternity, its respective logos, as well as *Torg, Torg Eternity, Infiniverse, Possibility Wars, 
+      Storm Knight, Aysle, Cyberpapacy, Living Land, Nile Empire, Orrorsh, Pan-Pacfifica, Tharkold,* and 
+      their respective logos, are trademarks of Ulisses Spiel und Medien GmbH. 
+      
+      No part of this publication may be reproduced, stored in retrieval systems, or transmitted, in any 
+      form or by any means, without written consent from Ulisses Spiel und Medien GmbH.
+
 
 vaadin:
   launch-browser: true
@@ -272,4 +262,3 @@ vaadin:
     - de.paladinsinn.tp.dcis.ui
     - com.github.appreciated.apexcharts
     - com.wontlost
-

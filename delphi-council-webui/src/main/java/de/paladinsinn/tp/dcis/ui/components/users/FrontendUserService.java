@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.slf4j.MDC;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
@@ -47,6 +48,8 @@ public class FrontendUserService {
     public void setSecurityIdentity(final SecurityIdentity identity) {
         log.debug("SecurityIdentity loaded into FrontendUserService. identity={}", identity);
         this.identity = identity;
+
+        MDC.put("user", identity.getPrincipal().getName());
 
         log.trace("Credentials passed. credentials={}", identity.getCredentials());
     }

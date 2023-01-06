@@ -14,7 +14,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.quarkus.annotation.UIScoped;
-import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.model.Mission;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicDataForm;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import lombok.Getter;

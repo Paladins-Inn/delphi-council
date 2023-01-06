@@ -19,7 +19,7 @@ import com.github.appreciated.card.label.TitleLabel;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.UIScoped;
-import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.model.lists.BasicData;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListViewImpl;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ import javax.inject.Inject;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 @Slf4j
 @PermitAll
-public class MissionListView extends BasicListViewImpl<Mission> {
+public class MissionListView extends BasicListViewImpl {
     private static final float MIN_WIDTH = 100f;
     private static final float DEFAULT_WIDTH = 150f;
     private static final float MAX_WIDTH = 200f;
@@ -62,8 +62,14 @@ public class MissionListView extends BasicListViewImpl<Mission> {
     protected void updateView() {
         removeAll();
 
-        for (Mission m : data) {
-            add(generateNewCard(m));
+        if (data != null) {
+            log.debug("Generating the display of data. presenter={}, view={}, data={}", presenter, this, data);
+
+            for (BasicData m : data.getData()) {
+                add(generateNewCard(m));
+            }
+        } else {
+            log.info("No data to display. presenter={}, view={}", presenter, this);
         }
     }
 
@@ -72,7 +78,7 @@ public class MissionListView extends BasicListViewImpl<Mission> {
         // nothing to do - this view is read-only.
     }
 
-    private ClickableCard generateNewCard(Mission mission) {
+    private ClickableCard generateNewCard(BasicData mission) {
         ClickableCard result = new ClickableCard(
                 e -> {},
                 new TitleLabel(mission.getName()),

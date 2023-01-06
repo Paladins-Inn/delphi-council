@@ -12,7 +12,7 @@ package de.paladinsinn.tp.dcis.ui.views.missions;
 
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.textfield.TextField;
-import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.model.Mission;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicTab;
 import lombok.Getter;
 import lombok.Setter;

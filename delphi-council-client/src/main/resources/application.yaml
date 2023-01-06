@@ -12,3 +12,7 @@ quarkus:
     operative-api: *dc_data
     operative-report-api: *dc_data
     operative-special-report-api: *dc_data
+
+  datasource:
+    devservices:
+      enabled: tru

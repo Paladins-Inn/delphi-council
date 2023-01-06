@@ -10,13 +10,13 @@
 
 package de.paladinsinn.tp.dcis.client;
 
+import de.paladinsinn.tp.dcis.model.components.Persisted;
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
+
 import javax.ws.rs.*;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-public interface StandardClient<T extends Serializable, ID extends Serializable> {
+public interface StandardClient<T extends Persisted> {
     @POST
     @Path("/")
     T create(final T data);
@@ -27,19 +27,15 @@ public interface StandardClient<T extends Serializable, ID extends Serializable>
 
     @GET
     @Path("/")
-    List<T> retrieve();
+    BasicList retrieve(@QueryParam("start") long start, @QueryParam("size") long size);
 
     @GET
     @Path("/")
-    List<? extends T> retrieve(final String query);
+    BasicList retrieve(@QueryParam("query") final String query);
 
     @GET
     @Path("/")
-    List<T> retrieve(final String query, final int page, final int size);
-
-    @GET
-    @Path("/")
-    List<T> retrieve(final String query, final int page, final int size, final Set<String> sort);
+    BasicList retrieve(@QueryParam("query")final String query, @QueryParam("start") final int start, @QueryParam("size") final int size);
 
     @GET
     @Path("/{id}")
@@ -47,10 +43,10 @@ public interface StandardClient<T extends Serializable, ID extends Serializable>
 
     @PUT
     @Path("/{id}")
-    T update(@PathParam("id") final ID id, final T data);
+    T update(@PathParam("id") final UUID id, final T data);
 
 
     @DELETE
     @Path("/{id}")
-    void delete(@PathParam("id") final ID id);
+    void delete(@PathParam("id") final UUID id);
 }

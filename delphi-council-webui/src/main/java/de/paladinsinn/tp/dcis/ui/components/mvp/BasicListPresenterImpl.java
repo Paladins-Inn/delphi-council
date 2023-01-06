@@ -10,29 +10,26 @@
 
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @Slf4j
-public abstract class BasicListPresenterImpl<T, V extends BasicListView<T>> implements BasicListPresenter<T, V> {
-    protected List<T> data = new ArrayList<>();
+public abstract class BasicListPresenterImpl<V extends BasicListView> implements BasicListPresenter<V> {
+    protected BasicList data;
     protected V view;
     protected FrontendUser user;
 
     @Override
-    public void setData(final Collection<T> data) {
-        this.data.clear();
-
+    public void setData(final BasicList data) {
         if (data != null) {
-            this.data.addAll(data);
-            log.trace("data in presenter changed. data.count={}", this.data.size());
+            this.data = data;
+            log.trace("data in presenter changed. data.count={}", data.getPage().getCount());
         } else {
-            log.info("No data set in presenter. data.count={}", this.data.size());
+            this.data = null;
+            log.info("No data set in presenter.");
         }
 
         if (view != null) {
@@ -41,9 +38,8 @@ public abstract class BasicListPresenterImpl<T, V extends BasicListView<T>> impl
     }
 
     @Override
-    public List<T> getData() {
-        this.data.clear();
-        this.data.addAll(view.getData());
+    public BasicList getData() {
+        this.data = view.getData();
 
         return data;
     }
@@ -62,7 +58,7 @@ public abstract class BasicListPresenterImpl<T, V extends BasicListView<T>> impl
         if (data != null) {
             view.setData(data);
 
-            log.trace("Added data to view. view={}, presenter={}, data.size={}", view, this, data.size());
+            log.trace("Added data to view. view={}, presenter={}, data={}", view, this, data);
         }
 
         if (user != null) {

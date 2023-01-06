@@ -16,7 +16,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.UIScoped;
-import de.paladinsinn.torganized.core.missions.Mission;
+import de.paladinsinn.tp.dcis.model.Mission;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicViewImpl;
 import de.paladinsinn.tp.dcis.ui.components.users.Roles;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
@@ -69,7 +69,7 @@ public class MissionView extends BasicViewImpl<Mission> implements HasUrlParamet
 
     private void createNewDispatch() {
         log.info("Open form for new mission. opening empty view.");
-        presenter.setData(Mission.builder()
+        presenter.setData(de.paladinsinn.tp.dcis.model.client.Mission.builder()
                 .id(UUID.randomUUID())
                 .build()
         );

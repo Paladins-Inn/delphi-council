@@ -15,116 +15,40 @@
     <parent>
         <artifactId>torganized-play</artifactId>
         <groupId>de.paladins-inn.torganized</groupId>
-        <version>1.0.0</version>
+        <version>2.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>delphi-council-webui</artifactId>
     <name>PI :: Torganized Play :: Delphi Council WebUI</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>flow-push</artifactId>
-            <version>23.3.2</version>
-        </dependency>
+    <properties>
+        <vaadin.version>23.3.2</vaadin.version>
+    </properties>
 
+    <dependencies>
         <dependency>
             <groupId>de.paladins-inn.torganized</groupId>
             <artifactId>delphi-council-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-liquibase</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-hibernate-envers</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-hibernate-orm-panache</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-db2</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-h2</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-mariadb</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-mssql</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-oracle</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-postgresql</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>de.paladins-inn.torganized</groupId>
             <artifactId>delphi-council-client</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-liquibase</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-hibernate-envers</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-hibernate-orm-panache</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-db2</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-h2</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-mariadb</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-mssql</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-oracle</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-jdbc-postgresql</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.rjeschke</groupId>
-            <artifactId>txtmark</artifactId>
-        </dependency>
 
         <!-- vaadin components -->
         <dependency>
-            <groupId>com.wontlost</groupId>
-            <artifactId>ckeditor-vaadin</artifactId>
-            <version>3.2.0</version>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-quarkus-extension</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>flow-push</artifactId>
+            <version>23.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.appreciated</groupId>
@@ -147,56 +71,30 @@
             <version>2.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.vaadin.addons.mycompany</groupId>
-            <artifactId>badge</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.klaudeta</groupId>
-            <artifactId>grid-pagination</artifactId>
-            <version>3.0.0</version>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-cookie-consent-flow</artifactId>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>com.mlottmann.VStepper</groupId>
             <artifactId>VStepper</artifactId>
             <version>1.0.9</version>
         </dependency>
-        <dependency>
-            <groupId>de.jfancy</groupId>
-            <artifactId>star-rating</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons.maxime</groupId>
-            <artifactId>markdown-area</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-cookie-consent-flow</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.stefan</groupId>
-            <artifactId>fullcalendar2</artifactId>
-            <version>4.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.stefan</groupId>
-            <artifactId>fullcalendar2-scheduler</artifactId>
-            <version>4.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons.stefan</groupId>
-            <artifactId>clipboard</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons.taefi</groupId>
-            <artifactId>toggle-button-group</artifactId>
-            <version>1.0.1</version>
-        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Vaadin Platform BOM -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${vaadin.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 
     <repositories>
         <repository>
@@ -204,4 +102,26 @@
             <url>https://maven.vaadin.com/vaadin-addons</url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-frontend</goal>
+                            <goal>build-frontend</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <productionMode>true</productionMode>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

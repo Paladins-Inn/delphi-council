@@ -20,8 +20,6 @@ quarkus:
       - development
     username: ${CONTAINER_USERNAME}
     password: ${CONTAINER_PASSWORD}
-  openshift:
-    deployment-kind: deployment
 
 
   log:
@@ -40,19 +38,14 @@ quarkus:
         level: INFO
       http-problem:
         level: INFO
+      liquibase:
+        level: WARN
 
   logging-manager:
     enable: true
     ui:
       enable: true
 
-    jaeger:
-      enabled: false
-      metrics:
-        enabled: false
-      service-name: ${quarkus.application.name}
-      sampler-type: const
-      sampler-param: 1
 
   http:
     insecure-requests: enabled
@@ -136,30 +129,29 @@ quarkus:
         path: "/back-channel-logout"
       frontchannel:
         path: "/front-channel-logout"
-  keycloak:
-    policy-enforcer:
-      enable:
-        true
 
   datasource:
-    db-kind: mariadb
-    jdbc:
-      tracing:
-        ~: false
-        enabled: false
-      url: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
-      transactions: XA
-      transaction-isolation-level: REPEATABLE_READ
-      flush-on-close: true
-      detect-statement-leaks: true
     username: "${DB_USER:sa}"
     password: "${DB_PASSWORD:sa}"
+    db-kind: mariadb
+    jdbc:
+      url: "jdbc:tracing:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
+      driver: io.opentracing.contrib.jdbc.TracingDriver
+      tracing: true
+      flush-on-close: true
+      detect-statement-leaks: true
+      transactions: enabled
+      transaction-isolation-level: repeatable_read
+      transaction-requirement: warn
     health:
       enabled: true
     metrics:
       enabled: true
-      jdbc:
-        enable-metrics: true
+
+  hibernate-orm:
+    enabled: true
+    active: true
+    dialect: org.hibernate.dialect.MariaDB103Dialect
 
   hibernate-envers:
     store-data-at-delete: true
@@ -171,7 +163,7 @@ quarkus:
 
   mailer:
     host: "${MAIL_HOST:smtp.kaiserpfalz-edv.de}"
-    port: "${MAIL_PORT:587}"
+    port: ${MAIL_PORT:587}
     ssl: true
     from: "${MAIL_NAME:Quin Sebastian} <${MAIL_ADDRESS:quinn.sebastian@delphi-council.org}>"
     username: "${MAIL_USER:no}"
@@ -215,10 +207,13 @@ quarkus:
         path: /q/metrics
         default-registry: true
 
+
+  banner:
+    enabled: true
+
   smallrye-openapi:
     enable: true
     operation-id-strategy: method
-    info: ${quarkus.application.name} API ${quarkus.application.api-version}
     info-version: ${quarkus.application.version}
     info-description: Software for managing Torganized Play in Germany.
     info-terms-of-service: Service provided as is without any warranty
@@ -235,10 +230,6 @@ quarkus:
 
   devservices:
     enabled: false
-  jaeger:
-    enabled: true
-  banner:
-    enabled: true
 
 
 
@@ -280,7 +271,7 @@ quarkus:
         enable: true
         format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
       level: INFO
-      min-level: TRACE
+      min-level: ALL
       category:
         "de.kaiserpfalzedv":
           level: TRACE
@@ -288,11 +279,8 @@ quarkus:
           level: TRACE
         http-problem:
           level: INFO
-
-    security: &security-dev
-      auth:
-        basic: false
-        enabled-in-dev-mode: true
+        io.quarkus.oidc:
+          level: TRACE
 
 
 "%test":
@@ -302,4 +290,3 @@ quarkus:
     hibernate-envers: *envers-dev
     liquibase: *liquibase-dev
     log: *log-dev
-    security: *security-dev

@@ -65,14 +65,6 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="AVATAR_DATA" type="longblob"/>
-            <column name="AVATAR_FILENAME" type="VARCHAR(100)"/>
-            <column name="AVATAR_MEDIATYPE" type="VARCHAR(100)"/>
-
-            <column name="TOKEN_DATA" type="longblob"/>
-            <column name="TOKEN_FILENAME" type="VARCHAR(100)"/>
-            <column name="TOKEN_MEDIATYPE" type="VARCHAR(100)"/>
-
             <column name="CREATED" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>

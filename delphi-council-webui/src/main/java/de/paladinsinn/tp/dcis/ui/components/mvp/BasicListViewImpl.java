@@ -11,44 +11,39 @@
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
 import com.vaadin.flow.component.html.Div;
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * BasicViewImpl -- Basis for the concrete views.
  *
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-30
- *
- * @param <T> The data to be displayed
  */
 @Slf4j
-public abstract class BasicListViewImpl<T> extends Div implements BasicListView<T> {
-    protected final List<T> data = new ArrayList<>();
+public abstract class BasicListViewImpl extends Div implements BasicListView {
+    protected BasicList data;
     protected FrontendUser user;
 
     @Override
-    public void setData(Collection<T> data) {
-        this.data.clear();
-
+    public void setData(BasicList data) {
         if (data != null) {
-            this.data.addAll(data);
+            this.data = data;
 
-            log.trace("Data in view changed. data.count={}", this.data.size());
+            log.trace("Data in view changed. data.count={}", this.data.getPage().getCount());
         } else {
-            log.info("No data in view. data.count={}", this.data.size());
+            this.data = null;
+            log.info("No data in view.");
         }
 
         updateView();
     }
 
     @Override
-    public List<T> getData() {
+    public BasicList getData() {
         readForm();
 
         return data;

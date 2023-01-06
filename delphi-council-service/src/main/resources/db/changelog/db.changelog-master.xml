@@ -22,5 +22,4 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="2.0.0/changeLog.xml" relativeToChangelogFile="true"/>
-    <include file="/db/changelog/db.commons-fileserver.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

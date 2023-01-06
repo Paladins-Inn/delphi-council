@@ -1,3 +1,0 @@
-ID,VERSION,NAMESPACE,NAME,OWNER,GRP,PERMISSIONS,FILE_NAME,FILE_MEDIATYPE,CREATED,MODIFIED,FILE_DATA
-a52715e7-074b-4368-9de9-67736e01b2f6,0,torganized-play,player,rlichti@kaiserpfalz-edv.de,gm,644,files.xml,text/plain,2021-03-13T07:35:00.001,2021-03-13T07:35:00.002,./files.xml
-39062d79-e1a9-437a-b1b4-7dc783bd9eb4,0,torganized-play,files,rlichti@kaiserpfalz-edv.de,gm,644,files.csv,text/plain,2021-03-13T07:35:00.001,2021-03-13T07:35:00.002,./files.csv

@@ -22,6 +22,5 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="20221225-001" author="rlichti">
-        <loadData schemaName="FILESTORE" tableName="FILES" file="files.csv" relativeToChangelogFile="true"/>
     </changeSet>
 </databaseChangeLog>

@@ -10,10 +10,8 @@
 
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Basic Presenter -- Common API to every Presenter.
@@ -21,20 +19,20 @@ import java.util.List;
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-public interface BasicListPresenter<T, V extends BasicListView<T>> {
+public interface BasicListPresenter<V extends BasicListView> {
     /**
      * Inserts the data for the view.
      *
      * @param data The data to be presented
      */
-    public void setData(final Collection<T> data);
+    public void setData(final BasicList data);
 
     /**
      * Retrieves the data from the view.
      *
      * @return The data from the view.
      */
-    public List<T> getData();
+    public BasicList getData();
 
     /**
      * Resets the data in the view.
@@ -43,7 +41,7 @@ public interface BasicListPresenter<T, V extends BasicListView<T>> {
         getView().setData(getData());
     }
 
-    public BasicListView<T> getView();
+    public BasicListView getView();
 
     /**
      * Inserts the view this presenter works on.

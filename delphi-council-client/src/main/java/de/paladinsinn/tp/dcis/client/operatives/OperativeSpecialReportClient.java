@@ -10,13 +10,15 @@
 
 package de.paladinsinn.tp.dcis.client.operatives;
 
-import de.paladinsinn.torganized.core.operative.OperativeSpecialReport;
 import de.paladinsinn.tp.dcis.client.StandardClient;
+import de.paladinsinn.tp.dcis.model.client.OperativeSpecialReport;
+import io.quarkus.oidc.token.propagation.AccessTokenRequestFilter;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.Path;
-import java.util.UUID;
 
 @RegisterRestClient(configKey = "operative-report-api")
+@RegisterProvider(AccessTokenRequestFilter.class)
 @Path("/api/v1/operatives/reports")
-public interface OperativeSpecialReportClient extends StandardClient<OperativeSpecialReport, UUID> {}
+public interface OperativeSpecialReportClient extends StandardClient<OperativeSpecialReport> {}

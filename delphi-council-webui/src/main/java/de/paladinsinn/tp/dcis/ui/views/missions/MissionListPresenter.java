@@ -10,7 +10,6 @@
 
 package de.paladinsinn.tp.dcis.ui.views.missions;
 
-import de.paladinsinn.torganized.core.missions.Mission;
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListPresenterImpl;
 import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
@@ -28,7 +27,7 @@ import javax.inject.Inject;
  */
 @Dependent
 @Slf4j
-public class MissionListPresenter extends BasicListPresenterImpl<Mission, MissionListView> {
+public class MissionListPresenter extends BasicListPresenterImpl<MissionListView> {
     @Inject
     @RestClient
     MissionClient client;
@@ -36,7 +35,7 @@ public class MissionListPresenter extends BasicListPresenterImpl<Mission, Missio
     @Override
     public void loadData() throws UnsupportedOperationException {
         try {
-            setData(client.retrieve());
+            setData(client.retrieve(0, 50));
         } catch (RuntimeException e) {
             log.error("Could not load data: " + e.getMessage(), e);
             ErrorNotification.show(getView().getTranslation("error.mainfraim_unavailable"));

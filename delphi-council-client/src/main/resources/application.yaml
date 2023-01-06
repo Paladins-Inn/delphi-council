@@ -1,41 +1,14 @@
 ---
-api-server: &api
-  url: https://api.delphi-council.org/
-  scope: javax.inject.Singleton
-
-dev-api-server: &dev-api
-  url: https://localhost:8444/
-  scope: javax.inject.Singleton
-
-test-api-server: &test-api
-  url: https://localhost:8444/
-  scope: javax.inject.Singleton
+delphi-council:
+  data-store: &dc_data
+    url: ${DC_STORE_API}
+    scope: javax.inject.Singleton
 
 quarkus:
   rest-client:
-    mission-api: *api
-    mission-report-api: *api
-    special-mission-api: *api
-    operative-api: *api
-    operative-report-api: *api
-    operative-special-report-api: *api
-
-"%dev":
-  quarkus:
-    rest-client:
-      mission-api: *dev-api
-      mission-report-api: *dev-api
-      special-mission-api: *dev-api
-      operative-api: *dev-api
-      operative-report-api: *dev-api
-      operative-special-report-api: *dev-api
-
-"%test":
-  quarkus:
-    rest-client:
-      mission-api: *test-api
-      mission-report-api: *test-api
-      special-mission-api: *test-api
-      operative-api: *test-api
-      operative-report-api: *test-api
-      operative-special-report-api: *test-api
+    mission-api: *dc_data
+    mission-report-api: *dc_data
+    special-mission-api: *dc_data
+    operative-api: *dc_data
+    operative-report-api: *dc_data
+    operative-special-report-api: *dc_data

@@ -11,6 +11,9 @@
   <artifactId>delphi-council-service</artifactId>
   <name>PI :: Torganized Play :: Delpi Council Services</name>
 
+  <properties>
+    <debug.port>5006</debug.port>
+  </properties>
 
   <dependencies>
     <dependency>

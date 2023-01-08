@@ -11,8 +11,6 @@
 package de.paladinsinn.tp.dcis.model.jpa;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.commons.core.files.FileData;
-import de.kaiserpfalzedv.commons.core.files.FileDescription;
 import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
@@ -23,8 +21,9 @@ import lombok.extern.jackson.Jacksonized;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import javax.ws.rs.core.MediaType;
-import java.nio.charset.StandardCharsets;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
 
 @RegisterForReflection
@@ -44,34 +43,55 @@ import java.time.OffsetDateTime;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Operative extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.Operative {
-    @Column(name = "CODE", length = 100, nullable = false)
+    @Column(name = "CODE", length = 50, nullable = false)
     @Audited
+    @NotNull
+    @Size(min=1, max=50)
     private String code;
 
     @Column(name = "NAME", length = 100, nullable = false)
     @Audited
+    @NotNull
+    @Size(min=1, max=100)
     private String name;
 
     @Column(name = "LAST_NAME", length = 100, nullable = false)
     @Audited
+    @NotNull
+    @Size(min=1, max=100)
     private String lastName;
 
     @Column(name = "FIRST_NAME", length = 100, nullable = false)
     @Audited
+    @NotNull
+    @Size(min=1, max=100)
     private String firstName;
 
     @Column(name = "COSM", length = 50, nullable = false)
     @Enumerated(EnumType.STRING)
     @Audited
+    @NotNull
+    @Size(min=1, max=50)
     private Cosm cosm;
 
     @Column(name = "CLEARANCE", length = 50, nullable = false)
     @Enumerated(EnumType.STRING)
     @Audited
+    @NotNull
+    @Size(min=1, max=50)
     private Clearance clearance;
+
+    @Column(name = "AVATAR")
+    @Size(min = 0, max = 255)
+    private String avatar;
+
+    @Column(name = "TOKEN")
+    @Size(min = 0, max = 255)
+    private String token;
 
     @Column(name = "XP", nullable = false)
     @Audited
+    @Min(0)
     private int xp;
 
     @Column(name = "MONEY", nullable = false)
@@ -81,6 +101,7 @@ public class Operative extends AbstractRevisionedJPAEntity implements de.paladin
     @Audited
     @Setter
     @Column(name = "PLAYER", length = 100, nullable = false)
+    @Size(min = 1, max = 100)
     private String player;
 
 
@@ -92,40 +113,6 @@ public class Operative extends AbstractRevisionedJPAEntity implements de.paladin
     @PreUpdate
     public void preUpdate() {
         clearance = Clearance.valueOf(xp);
-    }
-
-    // TODO 2023-01-06 klenkes Implement the Avatar handling.
-    @Override
-    public FileData getAvatar() {
-        return FileData.builder()
-                .file(FileDescription.builder()
-                        .name(name + "-avatar")
-                        .data("".getBytes(StandardCharsets.UTF_8))
-                        .mediaType(MediaType.TEXT_PLAIN)
-                        .build())
-                .preview(FileDescription.builder()
-                        .name(name + "-avatar")
-                        .data("".getBytes(StandardCharsets.UTF_8))
-                        .mediaType(MediaType.TEXT_PLAIN)
-                        .build())
-                .build();
-    }
-
-    // TODO 2023-01-06 klenkes Implement the Token handling.
-    @Override
-    public FileData getToken() {
-        return FileData.builder()
-                .file(FileDescription.builder()
-                        .name(name + "-token")
-                        .data("".getBytes(StandardCharsets.UTF_8))
-                        .mediaType(MediaType.TEXT_PLAIN)
-                        .build())
-                .preview(FileDescription.builder()
-                        .name(name + "-token")
-                        .data("".getBytes(StandardCharsets.UTF_8))
-                        .mediaType(MediaType.TEXT_PLAIN)
-                        .build())
-                .build();
     }
 
 
@@ -143,6 +130,8 @@ public class Operative extends AbstractRevisionedJPAEntity implements de.paladin
 
                 .code(orig.getCode())
                 .name(orig.getName())
+                .avatar(orig.getAvatar())
+                .token(orig.getToken())
 
                 .lastName(orig.getLastName())
                 .firstName(orig.getFirstName())
@@ -155,7 +144,6 @@ public class Operative extends AbstractRevisionedJPAEntity implements de.paladin
                 .player(orig.getPlayer())
                 .deleted(orig.getDeleted())
 
-                // TODO 2023-01-06 klenkes Needs to copy the avatar and token, too (as soon as they are implemented).
                 .build();
     }
 

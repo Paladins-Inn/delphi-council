@@ -40,6 +40,11 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="CODE" type="VARCHAR(50)">
+                <constraints nullable="false"
+                             unique="true" uniqueConstraintName="OPERATIVES_CODE_UK"
+                />
+            </column>
 
             <column name="NAME" type="VARCHAR(100)">
                 <constraints nullable="false"
@@ -57,13 +62,21 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="CLEARANCE" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
             <column name="XP" type="INT" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="CLEARANCE" type="VARCHAR(20)">
+            <column name="MONEY" type="INT" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="AVATAR" type="VARCHAR(255)"/>
+
+            <column name="TOKEN" type="VARCHAR(255)"/>
 
             <column name="CREATED" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -84,12 +97,16 @@
             <column name="REVTYPE" type="TINYINT"/>
 
             <column name="PLAYER" type="VARCHAR(100)"/>
+            <column name="CODE" type="VARCHAR(50)"/>
             <column name="NAME" type="VARCHAR(100)"/>
             <column name="LAST_NAME" type="VARCHAR(100)"/>
             <column name="FIRST_NAME" type="VARCHAR(100)"/>
             <column name="COSM" type="VARCHAR(20)"/>
-            <column name="XP" type="INT"/>
             <column name="CLEARANCE" type="VARCHAR(20)"/>
+            <column name="XP" type="INT"/>
+            <column name="MONEY" type="INT"/>
+            <column name="AVATAR" type="VARCHAR(255)"/>
+            <column name="TOKEN" type="VARCHAR(255)"/>
             <column name="DELETED" type="TIMESTAMP"/>
         </createTable>
 

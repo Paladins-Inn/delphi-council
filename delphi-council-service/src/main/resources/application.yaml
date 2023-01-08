@@ -290,3 +290,8 @@ quarkus:
     hibernate-envers: *envers-dev
     liquibase: *liquibase-dev
     log: *log-dev
+
+kp-commons:
+  rest:
+    logging-filter:
+      enabled: false

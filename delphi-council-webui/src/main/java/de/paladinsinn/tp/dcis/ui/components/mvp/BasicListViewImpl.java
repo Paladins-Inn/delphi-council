@@ -29,7 +29,7 @@ public abstract class BasicListViewImpl extends Div implements BasicListView {
     protected FrontendUser user;
 
     @Override
-    public void setData(BasicList data) {
+    public void setData(final BasicList data) {
         if (data != null) {
             this.data = data;
 
@@ -44,8 +44,6 @@ public abstract class BasicListViewImpl extends Div implements BasicListView {
 
     @Override
     public BasicList getData() {
-        readForm();
-
         return data;
     }
 
@@ -75,9 +73,4 @@ public abstract class BasicListViewImpl extends Div implements BasicListView {
      * Updates the locale or user on the view. Needs to change all labels, ... on the view.
      */
     protected abstract void updateView();
-
-    /**
-     * Reads the data from the form.
-     */
-    protected abstract void readForm();
 }

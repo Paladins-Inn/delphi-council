@@ -35,6 +35,7 @@
     <skip.source>false</skip.source>
     <skip.site>false</skip.site>
     <skipITs>true</skipITs>
+    <debug.port>5004</debug.port>
 
     <delombok.output>${project.build.directory}/delombok</delombok.output>
 
@@ -66,7 +67,7 @@
     <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
   </properties>
 
-  <inceptionYear>2022</inceptionYear>
+  <inceptionYear>2020</inceptionYear>
 
   <licenses>
     <license>
@@ -123,14 +124,14 @@
       <dependency>
         <groupId>de.kaiserpfalz-edv.commons</groupId>
         <artifactId>kp-commons-bom</artifactId>
-        <version>2.2.0</version>
+        <version>3.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>de.kaiserpfalz-edv.rpg</groupId>
         <artifactId>kp-rpg-bom</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -175,6 +176,13 @@
         <groupId>de.paladins-inn.torganized</groupId>
         <artifactId>delphi-council-webui</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.11</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -483,8 +491,9 @@
           <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-hibernate-validator</artifactId>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
+          <scope>provided</scope>
         </dependency>
 
 
@@ -492,59 +501,33 @@
         <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-logging-json</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkiverse.logging.logback</groupId>
-          <artifactId>quarkus-logging-logback</artifactId>
-          <version>0.13.0</version>
-          <scope>provided</scope>
-        </dependency>
-
-
-        <!-- Quarkus Integration -->
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-config-yaml</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>io.smallrye</groupId>
-          <artifactId>jandex</artifactId>
-        </dependency>
-
-
-        <!-- Caching -->
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-cache</artifactId>
+          <version>1.7.36</version>
         </dependency>
 
 
         <!-- openapi/swagger -->
         <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-swagger-ui</artifactId>
+          <groupId>io.smallrye</groupId>
+          <artifactId>smallrye-open-api-core</artifactId>
           <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
 
 
         <!-- JSon/XML handling -->
         <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-jackson</artifactId>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-jdk8</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.fasterxml.jackson.module</groupId>
+          <artifactId>jackson-module-parameter-names</artifactId>
+          <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -595,17 +578,11 @@
         <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
+          <version>1.7.36</version>
         </dependency>
         <dependency>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-core</artifactId>
-          <version>2.19.0</version>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-slf4j-impl</artifactId>
-          <version>2.19.0</version>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -645,6 +622,7 @@
               </classpathDependencyExcludes>
               <systemPropertyVariables>
                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <debug>${debug.port}</debug>
                 <!--suppress UnresolvedMavenProperty -->
                 <maven.home>${maven.home}</maven.home>
               </systemPropertyVariables>
@@ -701,6 +679,13 @@
         </file>
       </activation>
 
+      <dependencies>
+        <dependency>
+          <groupId>io.smallrye</groupId>
+          <artifactId>jandex</artifactId>
+        </dependency>
+      </dependencies>
+
       <build>
         <plugins>
           <plugin>
@@ -731,8 +716,7 @@
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-spring-data-jpa-api</artifactId>
-          <scope>provided</scope>
+          <artifactId>quarkus-spring-data-jpa</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -774,16 +758,6 @@
           <artifactId>quarkus-smallrye-jwt</artifactId>
           <scope>provided</scope>
         </dependency>
-<!--
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-spring-web</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-spring-security</artifactId>
-        </dependency>
--->
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-test-security</artifactId>
@@ -800,11 +774,6 @@
         </file>
       </activation>
       <dependencies>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-spring-data-rest</artifactId>
-        </dependency>
-
         <!-- Security -->
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -815,12 +784,9 @@
         <!-- REST/Communication -->
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-resteasy-jackson</artifactId>
+          <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
         </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-resteasy-multipart</artifactId>
-        </dependency>
+
         <!-- Resilience pattern -->
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -867,15 +833,7 @@
       <dependencies>
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-rest-client</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-rest-client-jackson</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-rest-client-config</artifactId>
+          <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
@@ -923,12 +881,12 @@
           <artifactId>quarkus-logging-json</artifactId>
           <scope>provided</scope>
         </dependency>
+
         <dependency>
-          <groupId>io.quarkiverse.loggingmanager</groupId>
-          <artifactId>quarkus-logging-manager</artifactId>
-          <version>2.1.4</version>
-          <scope>provided</scope>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
         </dependency>
+
 
         <!-- API / Health -->
         <dependency>
@@ -969,6 +927,16 @@
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-core</artifactId>
+        </dependency>
+
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-cache</artifactId>
+        </dependency>
+
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-jackson</artifactId>
         </dependency>
       </dependencies>
 
@@ -1023,10 +991,6 @@
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-hibernate-envers</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-spring-data-jpa-api</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>

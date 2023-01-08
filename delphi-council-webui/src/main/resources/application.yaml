@@ -17,7 +17,7 @@ quarkus:
         pretty-print: true
         print-details: true
     level: WARN
-    min-level: ALL
+    min-level: TRACE
     category:
       "de.paladinsinn":
         level: INFO
@@ -32,14 +32,6 @@ quarkus:
     enable: true
     ui:
       enable: true
-
-  datasource:
-    jdbc: false
-
-  hibernate-orm:
-    enabled: true
-    active: false
-
 
   http:
     insecure-requests: REDIRECT
@@ -78,6 +70,7 @@ quarkus:
       preallocate-body-buffer: true
       merge-form-attributes: true
 
+
     auth:
       proactive: true
       policy:
@@ -98,6 +91,11 @@ quarkus:
       form:
         enabled: false
     cors: true
+
+  rest-client:
+    logging:
+      scope: all
+      body-limit: 1024
 
   oidc:
     enabled: true
@@ -198,8 +196,8 @@ quarkus:
           level: ALL
         http-problem:
           level: INFO
-        "io.quarkus.oidc":
-          level: TRACE
+        "org.jboss.resteasy":
+          level: DEBUG
 
     tls: &tls-dev
       trust-all: true
@@ -217,6 +215,11 @@ quarkus:
             - tls/tls.crt
       auth:
         basic: false
+
+    rest-client:
+      logging:
+        scope: request-response
+        body-limit: 1024
 
 
 "%test":

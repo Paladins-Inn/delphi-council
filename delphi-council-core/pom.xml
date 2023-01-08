@@ -20,14 +20,9 @@
     </parent>
 
     <artifactId>delphi-council-core</artifactId>
-    <name>PI :: Torganized Play :: Core Services</name>
+    <name>PI :: Torganized Play :: Core</name>
 
     <dependencies>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>de.kaiserpfalz-edv.rpg</groupId>
             <artifactId>kp-rpg-torg</artifactId>

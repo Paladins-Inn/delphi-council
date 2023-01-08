@@ -11,9 +11,9 @@
 package de.paladinsinn.tp.dcis.missions;
 
 import de.paladinsinn.tp.dcis.model.jpa.Mission;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface MissionRepository extends PagingAndSortingRepository<Mission, UUID> {
+public interface MissionRepository extends JpaRepository<Mission, UUID> {
 }

@@ -24,6 +24,8 @@
     <include file="base.xml" relativeToChangelogFile="true"/>
 
     <include file="operatives.xml" relativeToChangelogFile="true"/>
+
     <include file="missions.xml" relativeToChangelogFile="true"/>
+
     <include file="special_missions.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

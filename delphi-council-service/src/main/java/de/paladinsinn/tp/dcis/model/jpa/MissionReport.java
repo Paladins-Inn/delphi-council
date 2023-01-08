@@ -59,11 +59,9 @@ public class MissionReport extends AbstractRevisionedJPAEntity implements de.pal
             nullable = false,
             foreignKey = @ForeignKey(name = "REPORTS_MISSIONS_FK")
     )
-    @Setter
     private Mission mission;
 
     @Audited
-    @Setter
     @Column(name = "GAME_MASTER", length = 100, nullable = false)
     private String gameMaster;
 

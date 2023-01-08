@@ -27,20 +27,5 @@
             <groupId>de.paladins-inn.torganized</groupId>
             <artifactId>delphi-council-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-envers</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-mariadb</artifactId>
-            <scope>compile,provided</scope>
-        </dependency>
     </dependencies>
 </project>

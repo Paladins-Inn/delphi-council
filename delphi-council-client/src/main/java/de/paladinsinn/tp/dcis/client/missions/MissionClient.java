@@ -3,22 +3,99 @@
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUMission ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.paladinsinn.tp.dcis.client.missions;
 
-import de.paladinsinn.tp.dcis.client.StandardClient;
 import de.paladinsinn.tp.dcis.model.Mission;
+import de.paladinsinn.tp.dcis.model.Outcome;
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import io.quarkus.oidc.token.propagation.AccessTokenRequestFilter;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.UUID;
 
 @RegisterRestClient(configKey = "mission-api")
-@RegisterProvider(AccessTokenRequestFilter.class)
+@RegisterProvider(value = AccessTokenRequestFilter.class, priority = 5000)
 @Path("/api/v1/missions")
-public interface MissionClient extends StandardClient<Mission> {}
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public interface MissionClient {
+    @POST
+    @Path("/")
+    Mission create(final Mission data);
+
+    /**
+     * Retrieves a page of data specified by the first element and the size of page.
+     *
+     * @param start the first element to retrieve.
+     * @param size the size of the page to retrieve.
+     * @return A list containing the paging data and the elements retrieved in standard format.
+     */
+    @GET
+    @Path("/")
+    BasicList retrieve(
+            @QueryParam("start") long start,
+            @QueryParam("size") long size
+    );
+
+    /**
+     * Retrieves all elements of the type.
+     * @return A list containing all elements of the store of this type.
+     */
+    @GET
+    @Path("/")
+    BasicList retrieve();
+
+    @GET
+    @Path("/{id}")
+    Mission retrieve(@PathParam("id") UUID id);
+
+
+    @GET
+    @Path("/gm/{id}")
+    BasicList retrieveByGM(@PathParam("id") final String gm, @QueryParam("start") final int start, @QueryParam("size") final int size);
+
+    @GET
+    @Path("/operative/{id}")
+    BasicList retrieveByOperative(@PathParam("id") final String gm, @QueryParam("start") final int start, @QueryParam("size") final int size);
+
+    @PUT
+    @Path("/{mission}/operative/{operative}")
+    void addOperative(
+            @PathParam("mission") final UUID mission,
+            @PathParam("operative") final UUID operative,
+            Outcome outcome
+    );
+
+    @POST
+    @Path("/{mission}/operative/{operative}")
+    void updateOperative(
+            @PathParam("mission") final UUID mission,
+            @PathParam("operative") final UUID operative,
+            Outcome outcome
+    );
+
+
+    @DELETE
+    @Path("/{mission}/operative/{operative}")
+    void removeOperative(
+            @PathParam("mission") final UUID mission,
+            @PathParam("operative") final UUID operative
+    );
+
+    @PUT
+    @Path("/{id}")
+    Mission update(@PathParam("id") final UUID id, final Mission data);
+
+
+    @DELETE
+    @Path("/{id}")
+    void delete(@PathParam("id") final UUID id);
+}

@@ -24,14 +24,10 @@
 
     <properties>
         <vaadin.version>23.3.2</vaadin.version>
+        <debug.port>5005</debug.port>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>de.paladins-inn.torganized</groupId>
-            <artifactId>delphi-council-core</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>de.paladins-inn.torganized</groupId>
             <artifactId>delphi-council-client</artifactId>

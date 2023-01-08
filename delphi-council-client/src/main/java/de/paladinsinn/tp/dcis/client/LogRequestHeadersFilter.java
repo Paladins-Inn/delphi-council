@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @Provider
 @Slf4j
-public class LogRequestFilter implements ClientRequestFilter {
+public class LogRequestHeadersFilter implements ClientRequestFilter {
     @Override
     public void filter(final ClientRequestContext rc) throws IOException {
         log.debug("Request headers. headers={}", rc.getHeaders());

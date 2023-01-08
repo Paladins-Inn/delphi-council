@@ -34,13 +34,6 @@ public interface BasicListPresenter<V extends BasicListView> {
      */
     public BasicList getData();
 
-    /**
-     * Resets the data in the view.
-     */
-    default void resetData() {
-        getView().setData(getData());
-    }
-
     public BasicListView getView();
 
     /**

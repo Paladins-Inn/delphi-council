@@ -18,56 +18,38 @@ import javax.inject.Inject;
 
 @Slf4j
 public abstract class BasicListPresenterImpl<V extends BasicListView> implements BasicListPresenter<V> {
-    protected BasicList data;
     protected V view;
     protected FrontendUser user;
 
     @Override
     public void setData(final BasicList data) {
-        if (data != null) {
-            this.data = data;
-            log.trace("data in presenter changed. data.count={}", data.getPage().getCount());
-        } else {
-            this.data = null;
-            log.info("No data set in presenter.");
+        if (view == null) {
+            throw new IllegalStateException("No view set for presenter. Can't set data yet. presenter=" + this);
         }
 
-        if (view != null) {
-            view.setData(this.data);
-        }
+        view.setData(data);
     }
 
     @Override
     public BasicList getData() {
-        this.data = view.getData();
+        if (view == null) {
+            throw new IllegalStateException("No view set for presenter. Can't retrieve data yet. presenter=" + this);
+        }
 
-        return data;
+        return view.getData();
     }
 
-    @Override
-    public void resetData() {
-        view.setData(data);
-
-        log.trace("Data reset in view. view={}, data={}", view, data);
-    }
 
     @Override
     public void setView(V view) {
+        log.debug("Presenter recieved view. presenter={}, view={}", this, view);
         this.view = view;
 
-        if (data != null) {
-            view.setData(data);
+        view.setFrontendUser(user);
 
-            log.trace("Added data to view. view={}, presenter={}, data={}", view, this, data);
+        if (view.getData() == null) {
+            loadData();
         }
-
-        if (user != null) {
-            view.setFrontendUser(user);
-
-            log.trace("Added user to view. view={}, presenter={}, user={}", view, this, user);
-        }
-
-        log.debug("Configured view. view={}, presenter={}", view, this);
     }
 
     @Override

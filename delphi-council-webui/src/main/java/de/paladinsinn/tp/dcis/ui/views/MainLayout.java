@@ -18,7 +18,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.tp.dcis.ui.components.appnav.AppNav;
@@ -50,8 +49,6 @@ public class MainLayout extends AppLayout implements RouterLayout {
     private H2 viewTitle;
 
     private final AccessAnnotationChecker accessChecker;
-
-    private Registration busRegistration;
 
 
     @PostConstruct
@@ -229,8 +226,6 @@ public class MainLayout extends AppLayout implements RouterLayout {
     @Override
     protected void onDetach(DetachEvent event) {
         super.onDetach(event);
-
-        busRegistration.remove();
     }
 
     /**

@@ -10,8 +10,6 @@
 
 package de.paladinsinn.tp.dcis.model.components;
 
-import de.kaiserpfalzedv.commons.core.files.FileData;
-
 /**
  * HasAvatar -- This resource has an avatar.
  *
@@ -19,5 +17,5 @@ import de.kaiserpfalzedv.commons.core.files.FileData;
  * @since 0.1.0  2021-04-07
  */
 public interface HasAvatar {
-    FileData getAvatar();
+    String getAvatar();
 }

@@ -11,8 +11,6 @@
 package de.paladinsinn.tp.dcis.model.components;
 
 
-import de.kaiserpfalzedv.commons.core.files.FileData;
-
 /**
  * HasToken -- This resource has an token (avatar on a VTT).
  *
@@ -20,5 +18,5 @@ import de.kaiserpfalzedv.commons.core.files.FileData;
  * @since 0.1.0  2021-04-07
  */
 public interface HasToken {
-    FileData getToken();
+    String getToken();
 }

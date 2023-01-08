@@ -10,15 +10,38 @@
 
 package de.paladinsinn.tp.dcis.client.operatives;
 
-import de.paladinsinn.tp.dcis.client.StandardClient;
-import de.paladinsinn.tp.dcis.model.client.OperativeReport;
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import io.quarkus.oidc.token.propagation.AccessTokenRequestFilter;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 @RegisterRestClient(configKey = "operative-report-api")
-@RegisterProvider(AccessTokenRequestFilter.class)
+@RegisterProvider(value = AccessTokenRequestFilter.class, priority = 5000)
 @Path("/api/v1/operatives/reports")
-public interface OperativeReportClient extends StandardClient<OperativeReport> {}
+public interface OperativeReportClient {
+    /**
+     * Retrieves a page of data specified by the first element and the size of page.
+     *
+     * @param start the first element to retrieve.
+     * @param size the size of the page to retrieve.
+     * @return A list containing the paging data and the elements retrieved in standard format.
+     */
+    @GET
+    @Path("/")
+    BasicList retrieve(
+            @QueryParam("start") long start,
+            @QueryParam("size") long size
+    );
+
+    /**
+     * Retrieves all elements of the type.
+     * @return A list containing all elements of the store of this type.
+     */
+    @GET
+    @Path("/")
+    BasicList retrieve();
+}

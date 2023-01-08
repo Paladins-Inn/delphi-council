@@ -55,7 +55,6 @@ public class MissionListView extends BasicListViewImpl {
     @PostConstruct
     public void initPresenter() {
         presenter.setView(this);
-        presenter.loadData();
     }
 
     @Override
@@ -73,10 +72,6 @@ public class MissionListView extends BasicListViewImpl {
         }
     }
 
-    @Override
-    protected void readForm() {
-        // nothing to do - this view is read-only.
-    }
 
     private ClickableCard generateNewCard(BasicData mission) {
         ClickableCard result = new ClickableCard(

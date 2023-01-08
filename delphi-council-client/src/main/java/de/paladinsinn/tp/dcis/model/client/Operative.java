@@ -11,7 +11,6 @@
 package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.commons.core.files.FileData;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.Cosm;
 import lombok.*;
@@ -46,9 +45,9 @@ public class Operative extends PersistedImpl implements de.paladinsinn.tp.dcis.m
 
     private String firstName;
 
-    private FileData avatar;
+    private String avatar;
 
-    private FileData token;
+    private String token;
 
     private Cosm cosm;
 
@@ -85,12 +84,13 @@ public class Operative extends PersistedImpl implements de.paladinsinn.tp.dcis.m
                 .xp(orig.getXp())
 
                 .money(orig.getMoney())
-                .avatar(orig.getAvatar().clone())
-                .token(orig.getToken().clone())
+                .avatar(orig.getAvatar())
+                .token(orig.getToken())
                 .build();
     }
 
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @SneakyThrows
     @Override
     public Operative clone() {

@@ -11,6 +11,7 @@
 package de.paladinsinn.tp.dcis.ui.views.missions;
 
 import de.paladinsinn.tp.dcis.client.missions.MissionClient;
+import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListPresenterImpl;
 import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,10 @@ public class MissionListPresenter extends BasicListPresenterImpl<MissionListView
     @Override
     public void loadData() throws UnsupportedOperationException {
         try {
-            setData(client.retrieve(0, 50));
+            BasicList data = client.retrieve();
+            log.trace("Retrieved mission data. data={}", data);
+
+            setData(data);
         } catch (RuntimeException e) {
             log.error("Could not load data: " + e.getMessage(), e);
             ErrorNotification.show(getView().getTranslation("error.mainfraim_unavailable"));

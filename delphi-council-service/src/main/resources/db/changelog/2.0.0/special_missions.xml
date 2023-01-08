@@ -40,7 +40,7 @@
             <column name="REVISIONED" type="TIMESTAMP"/>
 
 
-            <column name="CODE" type="VARCHAR(36)">
+            <column name="CODE" type="VARCHAR(50)">
                 <constraints nullable="false"
                              unique="true" uniqueConstraintName="SPECIALMISSIONS_CODE_UK"/>
             </column>
@@ -76,6 +76,8 @@
                 <constraints nullable="false"/>
             </column>
 
+            <column name="OBJECTIVES_MET" type="VARCHAR(20)"/>
+            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
 
 
@@ -103,6 +105,8 @@
             <column name="PAYMENT" type="INT"/>
             <column name="XP" type="INT"/>
             <column name="MISSION_DATE" type="DATE"/>
+            <column name="OBJECTIVES_MET" type="VARCHAR(20)"/>
+            <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
         </createTable>
 

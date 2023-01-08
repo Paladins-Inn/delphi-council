@@ -23,6 +23,7 @@
       <module name="delphi-council-core" options="-parameters" />
       <module name="delphi-council-service" options="-parameters" />
       <module name="delphi-council-webui" options="-parameters" />
+      <module name="torganized-play" options="-parameters" />
       <module name="torganized-play-core" options="-parameters" />
       <module name="torganized-service" options="" />
     </option>

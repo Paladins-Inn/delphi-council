@@ -83,10 +83,10 @@
             <column name="IMAGE" type="VARCHAR(100)"/>
             <column name="PUBLICATION" type="VARCHAR(100)"/>
 
-            <column name="CREATED" type="TIMESTAMP">
+            <column name="CREATED" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="MODIFIED" type="TIMESTAMP"/>
+            <column name="MODIFIED" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
         <createTable tableName="MISSIONS_AUD">
             <column name="ID" type="VARCHAR(36)">
@@ -172,10 +172,10 @@
             <column name="ACHIEVEMENTS" type="VARCHAR(4000)"/>
             <column name="NOTES" type="VARCHAR(4000)"/>
 
-            <column name="CREATED" type="TIMESTAMP">
+            <column name="CREATED" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="MODIFIED" type="TIMESTAMP"/>
+            <column name="MODIFIED" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
             <column name="DELETED" type="TIMESTAMP"/>
         </createTable>
         <createTable tableName="MISSIONREPORTS_AUD">
@@ -231,9 +231,9 @@
             <column name="REVID" type="INT" defaultValueSequenceNext="hibernate_sequence">
                 <constraints nullable="false"/>
             </column>
-            <column name="REVISIONED" type="TIMESTAMP"/>
+            <column name="REVISIONED" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
-            <column name="CREATED" type="TIMESTAMP">
+            <column name="CREATED" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="MODIFIED" type="TIMESTAMP"/>
@@ -287,5 +287,9 @@
             <dropTable tableName="MISSIONREPORTS_OPERATIVES_AUD"/>
             <dropTable tableName="MISSIONREPORTS_OPERATIVES"/>
         </rollback>
+    </changeSet>
+
+    <changeSet id="missions-data" author="rlichti">
+        <loadData tableName="missions" file="missions.csv" separator=";" relativeToChangelogFile="true"/>
     </changeSet>
 </databaseChangeLog>

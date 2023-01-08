@@ -19,9 +19,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +53,7 @@ public class BasicList implements HasKind, Serializable {
     private Paging page;
 
     @Builder.Default
-    @Schema(description = "The data itself", required = true)
+    @NotNull
+    @Schema(description = "The data itself", required = true, minItems = 0, maxItems = 2147483647)
     final List<BasicData> data = new ArrayList<>();
 }

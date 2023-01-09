@@ -236,6 +236,7 @@ quarkus:
 "%dev":
   quarkus:
     http: &http-dev
+      insecure-requests: redirect
       port: 8081
       ssl-port: 8444
       ssl:
@@ -246,6 +247,8 @@ quarkus:
             - tls/tls.key
           files:
             - tls/tls.crt
+      auth:
+        basic: false
 
     datasource: &datasource-dev
       db-kind: h2
@@ -282,6 +285,11 @@ quarkus:
         io.quarkus.oidc:
           level: TRACE
 
+    opentelemetry: &opentelemetry-dev
+      tracer:
+        enabled: false
+      enabled: false
+
 
 "%test":
   quarkus:
@@ -290,6 +298,7 @@ quarkus:
     hibernate-envers: *envers-dev
     liquibase: *liquibase-dev
     log: *log-dev
+    opentelemetry: *opentelemetry-dev
 
 kp-commons:
   rest:

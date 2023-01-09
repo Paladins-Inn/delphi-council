@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022. Roland T. Lichti
+ * Copyright (c) 2022-2023. Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -10,10 +10,13 @@
 
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
+import de.paladinsinn.tp.dcis.ui.components.i18n.HasLocale;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
+import de.paladinsinn.tp.dcis.ui.components.users.HasUser;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -22,7 +25,7 @@ import java.util.UUID;
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-public interface BasicPresenter<T extends Serializable> {
+public interface BasicPresenter<T extends Serializable> extends HasUser, HasLocale {
     /**
      * Inserts the data for the view.
      *
@@ -59,6 +62,10 @@ public interface BasicPresenter<T extends Serializable> {
      * @param identity
      */
     public void setFrontendUser(@NotNull final FrontendUser identity);
+
+    default Locale getLocale() {
+        return getUser().getLocale();
+    }
 
     public void loadId(@NotNull final UUID id) throws UnsupportedOperationException;
 

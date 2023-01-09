@@ -11,8 +11,6 @@
 package de.paladinsinn.tp.dcis.ui.views.dispatchlist;
 
 import com.github.appreciated.card.ClickableCard;
-import com.github.appreciated.card.action.ActionButton;
-import com.github.appreciated.card.action.Actions;
 import com.github.appreciated.card.label.PrimaryLabel;
 import com.github.appreciated.card.label.SecondaryLabel;
 import com.github.appreciated.card.label.TitleLabel;
@@ -31,7 +29,7 @@ import javax.inject.Inject;
 
 
 /**
- * MissionListView -- Displays lists of missions.
+ * DispatchnListView -- Displays lists of dispatches.
  *
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
@@ -73,20 +71,16 @@ public class DispatchListView extends BasicListViewImpl {
     }
 
 
-    private ClickableCard generateNewCard(BasicData mission) {
+    private ClickableCard generateNewCard(BasicData dispatch) {
         ClickableCard result = new ClickableCard(
                 e -> {},
-                new TitleLabel(mission.getName()),
-                new PrimaryLabel(mission.getCode()),
-                new SecondaryLabel(mission.getDescription()),
-                new Actions(
-                        new ActionButton("Show", e -> log.debug("Show event. mission='{}'", mission.getId())),
-                        new ActionButton("Report", e-> log.debug("Report event. mission='{}'", mission.getId()))
-                )
+                new TitleLabel(dispatch.getName()),
+                new PrimaryLabel(dispatch.getCode()),
+                new SecondaryLabel(dispatch.getDescription())
         );
 
         setCardDimensions(result);
-        result.setId("mission-" + mission.getId());
+        result.setId("dispatch-" + dispatch.getId());
 
         return result;
     }

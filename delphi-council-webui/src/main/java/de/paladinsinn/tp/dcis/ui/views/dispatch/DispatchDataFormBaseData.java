@@ -10,8 +10,13 @@
 
 package de.paladinsinn.tp.dcis.ui.views.dispatch;
 
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.wontlost.ckeditor.Constants;
+import com.wontlost.ckeditor.VaadinCKEditor;
+import com.wontlost.ckeditor.VaadinCKEditorBuilder;
 import de.paladinsinn.tp.dcis.model.Dispatch;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicTab;
 import lombok.Getter;
@@ -21,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * MissionDataFormBaseData -- The basic data to any mission.
@@ -36,15 +42,113 @@ import javax.inject.Inject;
 public class DispatchDataFormBaseData extends BasicTab<Dispatch> {
     private static final String I18N_KEY = "mission.form.tab.basedata";
 
+    private TextField dispatchId;
     private TextField code;
-    private TextField missionId;
     private TextField name;
 
-    private Image image;
+    // FIXME 2023-01-09 klenkes Add clearance to this form.
+
+    private NumberField xp;
+    private NumberField payment;
+
+    private VaadinCKEditor description;
+
+    private Image imageDisplay;
+    private TextField image;
+
 
     @Inject
     public DispatchDataFormBaseData(final DispatchPresenter presenter) {
         super(presenter);
+    }
+
+    @Override
+    public void onAttach(AttachEvent attachEvent) {
+        if (attachEvent.isInitialAttach()) {
+            createAndAttachId();
+            createAndAttachCode();
+            createAndAttachName();
+            createAndAttachDescription();
+            createAndAttachXp();
+            createAndAttachPayment();
+            createAndAttachImage();
+
+            attachFields();
+        }
+
+        updateFields(presenter.getLocale());
+    }
+
+    private void attachFields() {
+        layout.add(code, dispatchId, name,description,xp,payment);
+        layout.setColspan(dispatchId, 3);
+
+        layout.setColspan(name, 4);
+        layout.setColspan(description, 4);
+    }
+
+    private void createAndAttachId() {
+        dispatchId = new TextField();
+        binder.bind(dispatchId, "id");
+    }
+
+    private void createAndAttachCode() {
+        code = new TextField();
+        binder.bind(code, "code");
+    }
+
+    private void createAndAttachName() {
+        name = new TextField();
+        binder.bind(name, "name");
+    }
+
+    private void createAndAttachDescription() {
+        description = new VaadinCKEditorBuilder().with(builder -> {
+            builder.editorType = Constants.EditorType.CLASSIC;
+            builder.theme = Constants.ThemeType.DARK;
+        }).createVaadinCKEditor();
+        binder.bind(description, "description");
+    }
+
+    private void createAndAttachXp() {
+        xp = new NumberField();
+        binder.bind(xp, "xp");
+    }
+
+    private void createAndAttachPayment() {
+        payment = new NumberField();
+        binder.bind(payment, "payment");
+    }
+
+    private void createAndAttachImage() {
+        // TODO 2023-01-09 klenkes Implement image handling for detachments.
+    }
+
+    private void updateFields(final Locale locale) {
+        translate(locale, dispatchId, "input.id");
+        translate(locale, code, "dispatch.code");
+        translate(locale, name, "dispatch.title");
+        translate(locale, description, "dispatch.description");
+        translate(locale, xp, "input.xp");
+        translate(locale, payment, "input.payment");
+        translate(locale, image, "dispatch.cover_url");
+
+        log.trace("component translated. presenter={}, view={}, tab={}", presenter, view, this);
+    }
+
+    private void translate(final Locale locale, Component component, final String code) {
+        if (HasLabel.class.isAssignableFrom(component.getClass())) {
+            ((HasLabel)component).setLabel(getTranslation(locale, code + ".caption"));
+        }
+
+        if (HasHelper.class.isAssignableFrom(component.getClass())) {
+            ((HasHelper)component).setHelperText(getTranslation(locale, code + ".help"));
+        }
+    }
+
+    @Override
+    public void onDetach(DetachEvent detachEvent) {
+
     }
 
 

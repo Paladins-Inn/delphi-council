@@ -16,6 +16,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
+import com.vaadin.flow.data.binder.Binder;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 import lombok.*;
@@ -35,6 +36,7 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
     @ToString.Include
     @EqualsAndHashCode.Include
     protected final FrontendUser user;
+
     @ToString.Include
     @EqualsAndHashCode.Include
     protected T data;
@@ -73,8 +75,12 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
 
     protected void addTab(final BasicTab<T> tab) {
         log.trace("Adding tab to form. form={}, tab={}", this, tab);
+        tab.setForm(this);
+        tab.setBinder(getBinder());
         tabs.add(getTranslation(tab.getI18nKey() + ".caption"), tab);
     }
+
+    protected abstract Binder<T> getBinder();
 
     public String getTabTitle() {
         log.debug("retrieving tab title. selected={}, children={}", tabs.getSelectedIndex(), tabs.getElement().getChildCount());

@@ -216,10 +216,15 @@ quarkus:
       auth:
         basic: false
 
-    rest-client:
+    rest-client: &rest-client-dev
       logging:
         scope: request-response
         body-limit: 1024
+
+    opentelemetry: &opentelemetry-dev
+      tracer:
+        enabled: false
+      enabled: false
 
 
 "%test":
@@ -227,6 +232,8 @@ quarkus:
     log: *log-dev
     http: *http-dev
     tls: *tls-dev
+    rest-client: *rest-client-dev
+    opentelemetry: *opentelemetry-dev
 
 
 delphi-council:

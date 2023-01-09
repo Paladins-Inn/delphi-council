@@ -7,6 +7,7 @@
     "@polymer/iron-list": "3.1.0",
     "@polymer/iron-meta": "3.0.1",
     "@polymer/iron-resizable-behavior": "3.0.1",
+    "@polymer/paper-ripple": "3.0.2",
     "@polymer/polymer": "3.5.1",
     "@vaadin-component-factory/vcf-nav": "1.0.6",
     "@vaadin/accordion": "23.3.2",
@@ -108,7 +109,7 @@
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
     "line-awesome": "1.3.0",
-    "lit": "2.4.1"
+    "lit": "^2.3.0"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "3.1.0",
@@ -233,7 +234,8 @@
     "@vaadin/tabsheet": "$@vaadin/tabsheet",
     "@vaadin/tooltip": "$@vaadin/tooltip",
     "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
-    "line-awesome": "$line-awesome"
+    "line-awesome": "$line-awesome",
+    "@polymer/paper-ripple": "$@polymer/paper-ripple"
   },
   "vaadin": {
     "dependencies": {
@@ -242,6 +244,7 @@
       "@polymer/iron-list": "3.1.0",
       "@polymer/iron-meta": "3.0.1",
       "@polymer/iron-resizable-behavior": "3.0.1",
+      "@polymer/paper-ripple": "3.0.2",
       "@polymer/polymer": "3.5.1",
       "@vaadin-component-factory/vcf-nav": "1.0.6",
       "@vaadin/accordion": "23.3.2",
@@ -343,7 +346,7 @@
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
       "line-awesome": "1.3.0",
-      "lit": "2.4.1"
+      "lit": "^2.3.0"
     },
     "devDependencies": {
       "@rollup/plugin-replace": "3.1.0",
@@ -361,6 +364,6 @@
       "workbox-core": "6.5.4",
       "workbox-precaching": "6.5.4"
     },
-    "hash": "4ea031848b93be5b013e05c0da87255f132e5212338047250e62cf4f5b46aa62"
+    "hash": "463c9b3d25a3216a6bee895abf22d18931f89055c58323764456edc9977610b8"
   }
 }

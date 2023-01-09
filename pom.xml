@@ -149,12 +149,6 @@
         <groupId>de.paladins-inn.torganized</groupId>
         <artifactId>delphi-council-core</artifactId>
         <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>de.paladins-inn.torganized</groupId>
@@ -165,18 +159,20 @@
         <groupId>de.paladins-inn.torganized</groupId>
         <artifactId>delphi-council-client</artifactId>
         <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-mariadb</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>de.paladins-inn.torganized</groupId>
         <artifactId>delphi-council-webui</artifactId>
         <version>${project.version}</version>
       </dependency>
+
+
+      <dependency>
+        <groupId>de.kaiserpfalz-edv.fileserver</groupId>
+        <artifactId>kp-fileserver-client</artifactId>
+        <version>3.0.0</version>
+      </dependency>
+
 
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -842,10 +838,6 @@
 
 
         <!-- Security -->
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-oidc-client</artifactId>
-        </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-oidc-client-reactive-filter</artifactId>

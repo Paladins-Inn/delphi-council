@@ -39,18 +39,18 @@ import javax.inject.Inject;
 public class DispatchDataForm extends BasicDataForm<Dispatch> {
 
     private final DispatchDataFormBaseData baseData;
-    private final DispatchDataFormResultQuestionaire resultQuestionaire;
+    private final DispatchDataFormResultQuestionnaire resultQuestionnaire;
     private final DispatchDataFormResults results;
 
     private final DispatchDataFormDispatchedTeams dispatchedTeams;
 
-    private final Binder<Dispatch> binder = new BeanValidationBinder<>(Dispatch.class);
+    protected final Binder<Dispatch> binder = new BeanValidationBinder<>(Dispatch.class);
 
 
     @Inject
     public DispatchDataForm(
             final DispatchDataFormBaseData baseData,
-            final DispatchDataFormResultQuestionaire resultQuestionaire,
+            final DispatchDataFormResultQuestionnaire resultQuestionnaire,
             final DispatchDataFormResults results,
             final DispatchDataFormDispatchedTeams dispatchedTeams,
             final FrontendUser user
@@ -58,7 +58,7 @@ public class DispatchDataForm extends BasicDataForm<Dispatch> {
         super(user);
 
         this.baseData = baseData;
-        this.resultQuestionaire = resultQuestionaire;
+        this.resultQuestionnaire = resultQuestionnaire;
         this.results = results;
         this.dispatchedTeams = dispatchedTeams;
 
@@ -69,7 +69,7 @@ public class DispatchDataForm extends BasicDataForm<Dispatch> {
         super.onAttach(attachEvent);
 
         addTab(baseData);
-        addTab(resultQuestionaire);
+        addTab(resultQuestionnaire);
         addTab(results);
         addTab(dispatchedTeams);
     }

@@ -11,6 +11,7 @@
 package de.paladinsinn.tp.dcis.ui.views.dispatch;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -18,6 +19,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.tp.dcis.model.Dispatch;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicViewImpl;
+import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import de.paladinsinn.tp.dcis.ui.components.users.Roles;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +28,12 @@ import java.util.UUID;
 
 
 /**
- * MissionView -- Displays data of a single mission.
+ * DispatchView -- Displays data of a single mission.
  *
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-@Route(value = "/mission", layout = MainLayout.class)
+@Route(value = "/dispatch", layout = MainLayout.class)
 @UIScoped
 @Slf4j
 public class DispatchView extends BasicViewImpl<Dispatch> implements HasUrlParameter<UUID> {
@@ -43,11 +45,8 @@ public class DispatchView extends BasicViewImpl<Dispatch> implements HasUrlParam
     @Override
     protected void updateView() {
         remove(form);
-
         form.setData(data);
-
         add(form);
-        // FIXME 2022-12-30 rlichti This method needs to be implemented.
     }
 
     @Override
@@ -68,7 +67,7 @@ public class DispatchView extends BasicViewImpl<Dispatch> implements HasUrlParam
     }
 
     private void createNewDispatch() {
-        log.info("Open form for new mission. opening empty view.");
+        log.info("Open form for new dispath. opening empty view.");
         presenter.setData(de.paladinsinn.tp.dcis.model.client.Dispatch.builder()
                 .id(UUID.randomUUID())
                 .build()
@@ -79,11 +78,13 @@ public class DispatchView extends BasicViewImpl<Dispatch> implements HasUrlParam
         if (user.isInRole(Roles.gm)) {
             log.info("User is GM. Redirecting to Special Mission input form. user='{}', roles={}",
                     user.getName(), user.getRoles());
-            UI.getCurrent().getPage().setLocation("/specialmission");
+            UI.getCurrent().getPage().setLocation("/mission");
+            Notification.show(getTranslation("dispatch.create_no_permission_for_dispatches"));
         } else {
             log.warn("User is not member of the orga and is no gm. Can't create a new mession. user='{}', roles={}",
                     user.getName(), user.getRoles());
-            UI.getCurrent().getPage().setLocation("/missions");
+            UI.getCurrent().getPage().setLocation("/dispatches");
+            ErrorNotification.showMarkdown(getTranslation("dispatch.create.no_permission"));
         }
     }
 

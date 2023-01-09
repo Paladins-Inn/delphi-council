@@ -31,11 +31,11 @@ import javax.inject.Inject;
 @Getter
 @Setter
 @Slf4j
-public class DispatchDataFormResultQuestionaire extends BasicTab<Dispatch> {
+public class DispatchDataFormResultQuestionnaire extends BasicTab<Dispatch> {
     private static final String I18N_KEY = "mission.form.tab.questionnaire";
 
     @Inject
-    public DispatchDataFormResultQuestionaire(DispatchPresenter presenter) {
+    public DispatchDataFormResultQuestionnaire(DispatchPresenter presenter) {
         super(presenter);
     }
 

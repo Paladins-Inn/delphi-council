@@ -12,6 +12,7 @@ package de.paladinsinn.tp.dcis.ui.components.mvp;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.data.binder.Binder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,9 @@ import java.io.Serializable;
 @Data
 @Slf4j
 public abstract class BasicTab<T extends Serializable> extends Tab {
+    protected BasicDataForm<T> form;
+    protected Binder<T> binder;
+
     protected final BasicView<T> view;
 
     protected final BasicPresenter<T> presenter;

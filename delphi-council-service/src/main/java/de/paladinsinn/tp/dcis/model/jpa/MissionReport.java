@@ -12,23 +12,27 @@ package de.paladinsinn.tp.dcis.model.jpa;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
+import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
+import de.paladinsinn.tp.dcis.common.Language;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
- * MissionReport -- A report of the gaming results.
+ * SpecialMission -- A private table mission.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.1.0  2021-03-26
+ * @since 0.1.0  2021-04-18
  */
 @RegisterForReflection
 @Entity
@@ -36,39 +40,80 @@ import java.time.LocalDate;
 @Table(
         name = "MISSIONREPORTS",
         uniqueConstraints = {
-                @UniqueConstraint(name = "MISSIONREPORTS_ID_UK", columnNames = "ID")
+                @UniqueConstraint(name = "MISSIONS_CODE_UK", columnNames = "CODE"),
+                @UniqueConstraint(name = "MISSIONS_TITLE_UK", columnNames = "TITLE")
         }
 )
 @Jacksonized
 @SuperBuilder(toBuilder = true)
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
 @ToString(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Slf4j
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class MissionReport extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.MissionReport {
-    @ManyToOne(
-            cascade = {CascadeType.REFRESH},
-            fetch = FetchType.EAGER,
-            optional = false,
-            targetEntity = Mission.class
-    )
-    @JoinColumn(
-            name = "MISSION_ID",
-            referencedColumnName = "ID",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "REPORTS_MISSIONS_FK")
-    )
-    private Mission mission;
-
+    @Column(name = "LANGUAGE", length=3, nullable = false)
     @Audited
-    @Column(name = "GAME_MASTER", length = 100, nullable = false)
-    private String gameMaster;
+    @Enumerated(EnumType.STRING)
+    @Schema(
+            description = "Language of this mission",
+            minLength = 3,
+            maxLength = 3,
+            defaultValue = "DEU",
+            enumeration = {"DEU", "ENG", "FRA", "SPA", "NLD"},
+            required = true
+    )
+    @Builder.Default
+    @NotNull
+    private Language language = Language.DEU;
 
+    @Column(name = "CODE", length = 40, nullable = false, updatable = false, unique = true)
+    @Schema(description = "The unique code of this mission", maxLength = 40, minLength = 10, required = true)
+    @Builder.Default
+    @NotNull
+    private String code = UUID.randomUUID().toString();
+
+    @Column(name = "TITLE", length = 100, nullable = false)
+    @NotNull
+    private String name;
+
+    @Column(name = "IMAGE", length = 100)
+    @Audited
+    @Schema(description = "Image URL for this mission.", maxLength = 100, nullable = true)
+    private String image;
+
+    @Column(name = "CLEARANCE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private Clearance clearance;
+
+    @Column(name = "DESCRIPTION", length = 4000)
+    private String description;
+
+    @Column(name = "PAYMENT", nullable = false)
+    @NotNull
+    private int payment;
+
+    @Column(name = "XP", nullable = false)
+    @NotNull
+    private int xp;
+
+    @Column(name = "PUBLICATION")
+    private String publication;
+
+
+    @Column(name = "GAME_MASTER", length = 100, nullable = false)
+    @Setter
+    @Schema(description = "The GM of this mission", maxLength = 100, required = true)
+    @NotNull
+    private String gameMaster;
 
     @Column(name = "MISSION_DATE", nullable = false)
     @Audited
+    @NotNull
     private LocalDate date;
+
 
     @Enumerated(EnumType.STRING)
     @Audited
@@ -76,48 +121,23 @@ public class MissionReport extends AbstractRevisionedJPAEntity implements de.pal
     private SuccessState objectivesMet;
 
     @Column(name = "ACHIEVEMENTS", length = 4000)
-    @Audited
     private String achievements;
 
     @Column(name = "NOTES", length = 4000)
-    @Audited
     private String notes;
 
 
 
-    // FIXME 2023-01-06 klenkes Check if we need to load the data instead of copying it (I think _THIS_ implementation won't work).
-    @Override
-    public void setMission(de.paladinsinn.tp.dcis.model.Mission mission) {
-        mission = Mission.copyData(mission);
-    }
 
-
-    @Override
-    public
-    @Size(min = 3, max = 100, message = "The length of the string must be between 3 and 100 characters long.")
-    @Pattern(
-            regexp = "^[a-zA-Z][-a-zA-Z0-9]{1,61}(.[a-zA-Z][-a-zA-Z0-9]{1,61}){0,4}$",
-            message = "The string must match the pattern '^[a-zA-Z][-a-zA-Z0-9]{1,61}(.[a-zA-Z][-a-zA-Z0-9]{1,61}){0,4}$'"
-    )
-    String getName() {
-        if (mission == null || gameMaster == null || date == null) {
-            return getId().toString();
+    @PrePersist
+    public void prePersist() {
+        if (code == null) {
+            code = UUID.randomUUID().toString();
         }
-
-        return String.format("%s (%s, %s)", mission.getShortName(), gameMaster, date);
-    }
-
-    @Override
-    public String getCode() {
-        if (mission == null) {
-            return getId().toString();
-        }
-
-        return mission.getCode();
     }
 
 
-    public static MissionReport copyData(final de.paladinsinn.tp.dcis.model.MissionReport orig) {
+    public static MissionReport copyData(de.paladinsinn.tp.dcis.model.MissionReport orig) {
         if (MissionReport.class.isAssignableFrom(orig.getClass())) {
             return (MissionReport) orig;
         }
@@ -129,11 +149,23 @@ public class MissionReport extends AbstractRevisionedJPAEntity implements de.pal
                 .modified(orig.getModified())
                 .revisioned(orig.getRevisioned())
 
+                .code(orig.getCode())
+                .name(orig.getName())
 
+                .description(orig.getDescription())
+                .clearance(orig.getClearance())
+                .payment(orig.getPayment())
+                .xp(orig.getXp())
+
+                .publication(orig.getPublication())
+                .image(orig.getImage())
+
+                .objectivesMet(orig.getObjectivesMet())
+                .achievements(orig.getAchievements())
+                .notes(orig.getNotes())
 
                 .build();
     }
-
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override

@@ -10,7 +10,10 @@
 
 package de.paladinsinn.tp.dcis.common;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 public enum Language {
+    @JsonEnumDefaultValue
     DEU,
     ENG,
     FRA,

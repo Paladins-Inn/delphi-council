@@ -11,7 +11,6 @@
 package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -31,63 +30,49 @@ import java.time.LocalDate;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class MissionReport extends PersistedImpl implements de.paladinsinn.tp.dcis.model.MissionReport {
+public class DispatchReport extends PersistedImpl implements de.paladinsinn.tp.dcis.model.DispatchReport {
     private String code;
-
-    private String name;
+    private Dispatch dispatch;
     private String gameMaster;
     private LocalDate date;
 
-    private String image;
-
-    private Clearance clearance;
-
-    private String description;
-
-    private int xp;
-
-    private int payment;
 
     private SuccessState objectivesMet;
     private String achievements;
     private String notes;
 
-    private String publication;
+
+    public String getName() {
+        if (dispatch != null) {
+            return dispatch + " (" + gameMaster + ", " + date + ")";
+        } else {
+            return "Mission Dispatch #" + getId();
+        }
+    }
+
+    public void setDispatch(de.paladinsinn.tp.dcis.model.Dispatch orig) {
+        dispatch = Dispatch.copyData(orig);
+    }
 
 
-    @SneakyThrows
-    public static MissionReport copyData(de.paladinsinn.tp.dcis.model.MissionReport orig)  {
-        if (MissionReport.class.isAssignableFrom(orig.getClass())) {
-            return (MissionReport) orig;
+    public static DispatchReport copyData(de.paladinsinn.tp.dcis.model.DispatchReport report) {
+        if (DispatchReport.class.isAssignableFrom(report.getClass())) {
+            return (DispatchReport) report;
         }
 
-        return MissionReport.builder()
-                .id(orig.getId())
-                .version(orig.getVersion())
-                .created(orig.getCreated())
-                .modified(orig.getModified())
-
-                .code(orig.getCode())
-                .name(orig.getName())
-                .date(orig.getDate())
-                .image(orig.getImage())
-                .clearance(orig.getClearance())
-                .description(orig.getDescription())
-                .xp(orig.getXp())
-                .payment(orig.getPayment())
-
-                .objectivesMet(orig.getObjectivesMet())
-                .achievements(orig.getAchievements())
-                .notes(orig.getNotes())
-
-                .publication(orig.getPublication())
-                .gameMaster(orig.getGameMaster())
-
+        return DispatchReport.builder()
+                .dispatch(Dispatch.copyData(report.getDispatch()))
+                .date(report.getDate())
+                .gameMaster(report.getGameMaster())
+                .notes(report.getNotes())
+                .achievements(report.getAchievements())
                 .build();
     }
+
+
     @SneakyThrows
     @Override
-    public MissionReport clone() {
+    public DispatchReport clone() {
         return toBuilder().build();
     }
 }

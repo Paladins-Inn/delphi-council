@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2023. Roland T. Lichti
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.paladinsinn.tp.dcis.ui.views;
 
 import com.vaadin.componentfactory.IdleNotification;
@@ -26,7 +36,7 @@ import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import de.paladinsinn.tp.dcis.ui.views.about.AboutView;
 import de.paladinsinn.tp.dcis.ui.views.about.ImprintView;
-import de.paladinsinn.tp.dcis.ui.views.missions.MissionListView;
+import de.paladinsinn.tp.dcis.ui.views.dispatchlist.DispatchListView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -88,7 +98,7 @@ public class MainLayout extends AppLayout implements RouterLayout {
         AppNav nav = new AppNav();
 
         addViewToNavigation(nav, AboutView.class, "la la-file");
-        addViewToNavigation(nav, MissionListView.class, "la la-file");
+        addViewToNavigation(nav, DispatchListView.class, "la la-file");
         addViewToNavigation(nav, ImprintView.class, "la la-file");
 
         return nav;

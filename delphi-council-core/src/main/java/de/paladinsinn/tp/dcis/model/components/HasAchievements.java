@@ -11,6 +11,7 @@
 package de.paladinsinn.tp.dcis.model.components;
 
 import de.kaiserpfalzedv.commons.core.resources.HasId;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
  * HasNotes --
@@ -19,5 +20,6 @@ import de.kaiserpfalzedv.commons.core.resources.HasId;
  * @since 2.0.0  2023-01-06
  */
 public interface HasAchievements extends HasId {
+    @Schema(description = "The additional achievements of a dispatch or mission.", maxLength = 4000, nullable = true)
     String getAchievements();
 }

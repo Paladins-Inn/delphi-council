@@ -12,11 +12,9 @@ package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
-import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
+import de.paladinsinn.tp.dcis.common.Language;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
 
 /**
  * Mission -- The default implementation of a mission.
@@ -31,14 +29,18 @@ import java.time.LocalDate;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class MissionReport extends PersistedImpl implements de.paladinsinn.tp.dcis.model.MissionReport {
+public class Dispatch extends PersistedImpl implements de.paladinsinn.tp.dcis.model.Dispatch {
+
+    @ToString.Include
+    private Language language;
+
+    @ToString.Include
     private String code;
 
-    private String name;
-    private String gameMaster;
-    private LocalDate date;
-
     private String image;
+
+    @ToString.Include
+    private String name;
 
     private Clearance clearance;
 
@@ -48,46 +50,47 @@ public class MissionReport extends PersistedImpl implements de.paladinsinn.tp.dc
 
     private int payment;
 
-    private SuccessState objectivesMet;
-    private String achievements;
-    private String notes;
+    private String objectivesSuccess;
+
+    private String objectivesGood;
+
+    private String objectivesOutstanding;
 
     private String publication;
 
 
-    @SneakyThrows
-    public static MissionReport copyData(de.paladinsinn.tp.dcis.model.MissionReport orig)  {
-        if (MissionReport.class.isAssignableFrom(orig.getClass())) {
-            return (MissionReport) orig;
+    public static Dispatch copyData(final de.paladinsinn.tp.dcis.model.Dispatch orig) {
+        if (Dispatch.class.isAssignableFrom(orig.getClass())) {
+            return (Dispatch) orig;
         }
 
-        return MissionReport.builder()
+        return Dispatch.builder()
                 .id(orig.getId())
                 .version(orig.getVersion())
                 .created(orig.getCreated())
                 .modified(orig.getModified())
+                .revisioned(orig.getRevisioned())
 
                 .code(orig.getCode())
-                .name(orig.getName())
-                .date(orig.getDate())
                 .image(orig.getImage())
+                .name(orig.getName())
                 .clearance(orig.getClearance())
                 .description(orig.getDescription())
+
                 .xp(orig.getXp())
                 .payment(orig.getPayment())
-
-                .objectivesMet(orig.getObjectivesMet())
-                .achievements(orig.getAchievements())
-                .notes(orig.getNotes())
+                .objectivesSuccess(orig.getObjectivesSuccess())
+                .objectivesGood(orig.getObjectivesGood())
+                .objectivesOutstanding(orig.getObjectivesOutstanding())
 
                 .publication(orig.getPublication())
-                .gameMaster(orig.getGameMaster())
-
                 .build();
     }
+
+
     @SneakyThrows
     @Override
-    public MissionReport clone() {
+    public Dispatch clone() {
         return toBuilder().build();
     }
 }

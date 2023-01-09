@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright (c) 2022. Roland T. Lichti
+  ~ Copyright (c) 2022-2023. Roland T. Lichti
   ~
   ~ This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
   ~
@@ -848,11 +848,11 @@
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-oidc-client-filter</artifactId>
+          <artifactId>quarkus-oidc-client-reactive-filter</artifactId>
         </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-oidc-token-propagation</artifactId>
+          <artifactId>quarkus-oidc-token-propagation-reactive</artifactId>
         </dependency>
 
 

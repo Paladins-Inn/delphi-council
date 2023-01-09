@@ -8,18 +8,12 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.model.components;
+package de.paladinsinn.tp.dcis.missions;
 
-import de.kaiserpfalzedv.commons.core.resources.HasId;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import de.paladinsinn.tp.dcis.model.jpa.Dispatch;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- * HasNotes --
- *
- * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 2.0.0  2023-01-06
- */
-public interface HasNotes extends HasId {
-    @Schema(description = "Sdditional notes to the outcome of a dispatch or mission.", maxLength = 4000, nullable = true)
-    String getNotes();
+import java.util.UUID;
+
+public interface DispatchRepository extends JpaRepository<Dispatch, UUID> {
 }

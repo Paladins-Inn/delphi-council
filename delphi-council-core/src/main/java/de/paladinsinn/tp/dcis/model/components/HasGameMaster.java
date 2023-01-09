@@ -23,6 +23,6 @@ public interface HasGameMaster extends HasId {
     /**
      * @return the GM of this object.
      */
-    @Schema(description = "Der GM dieser Resource.")
+    @Schema(description = "Der GM dieser Resource.", maxLength = 100, required = true)
     String getGameMaster();
 }

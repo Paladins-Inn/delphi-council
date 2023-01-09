@@ -13,42 +13,41 @@ package de.paladinsinn.tp.dcis.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.commons.core.resources.HasName;
-import de.paladinsinn.tp.dcis.model.components.*;
+import de.paladinsinn.tp.dcis.model.components.HasNotes;
+import de.paladinsinn.tp.dcis.model.components.HasOperative;
+import de.paladinsinn.tp.dcis.model.components.Persisted;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import java.time.LocalDate;
-
 /**
- * SpecialMission -- A private table mission.
+ * OperativeSpecialReport -- The special report for a local table game.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.1.0  2021-04-18
+ * @since 0.3.0  2021-04-18
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface MissionReport
-        extends HasDisplayNames, HasName, HasDescription, HasGameMaster, HasClearance, HasOutcome,
-        Persisted, Comparable<MissionReport> {
+public interface OperativeMissionReport
+        extends HasName, HasOperative, HasNotes,
+        Persisted, Comparable<OperativeMissionReport> {
 
-    String getImage();
+    MissionReport getMission();
 
-    @Schema(description = "Payment for every storm knight taking this mission.")
-    int getPayment();
 
-    @Schema(description = "XP for every storm knight taking this mission.")
-    int getXp();
+    @Override
+    @JsonIgnore
+    default String getName() {
+        return getOperative().getName();
+    }
 
-    LocalDate getDate();
-
-    String getPublication();
 
 
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    default int compareTo(MissionReport o) {
+    default int compareTo(OperativeMissionReport o) {
         return new CompareToBuilder()
-                .append(getId(), o.getId())
+                .append(getMission(), o.getMission())
+                .append(getOperative(), o.getOperative())
                 .toComparison();
     }
 }

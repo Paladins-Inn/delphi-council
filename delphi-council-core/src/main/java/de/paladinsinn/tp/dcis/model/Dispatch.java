@@ -17,19 +17,11 @@ import de.paladinsinn.tp.dcis.model.components.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import java.time.LocalDate;
-
-/**
- * SpecialMission -- A private table mission.
- *
- * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.1.0  2021-04-18
- */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface MissionReport
-        extends HasDisplayNames, HasName, HasDescription, HasGameMaster, HasClearance, HasOutcome,
-        Persisted, Comparable<MissionReport> {
-
+@Schema(description = "Delphi Council Mission")
+public interface Dispatch
+        extends HasName, HasCode, HasDescription, HasDisplayNames, HasClearance, HasLanguage,
+        Persisted, Comparable<Dispatch> {
     String getImage();
 
     @Schema(description = "Payment for every storm knight taking this mission.")
@@ -38,17 +30,25 @@ public interface MissionReport
     @Schema(description = "XP for every storm knight taking this mission.")
     int getXp();
 
-    LocalDate getDate();
+    @Schema(description = "Objectives defined for a successful mission.", maxLength = 40000, nullable = true)
+    String getObjectivesSuccess();
 
+    @Schema(description = "Objectives defined for a good mission result.", maxLength = 40000, nullable = true)
+    String getObjectivesGood();
+
+    @Schema(description = "Objectives defined for an outstanding mission result.", maxLength = 4000, nullable = true)
+    String getObjectivesOutstanding();
+
+    @Schema(description = "The publication this mission is defined in.", maxLength = 100, nullable = true)
     String getPublication();
 
 
-    @Override
     @JsonIgnore
+    @Override
     @Schema(hidden = true)
-    default int compareTo(MissionReport o) {
+    default int compareTo(final Dispatch o) {
         return new CompareToBuilder()
-                .append(getId(), o.getId())
+                .append(getCode(), o.getCode())
                 .toComparison();
     }
 }

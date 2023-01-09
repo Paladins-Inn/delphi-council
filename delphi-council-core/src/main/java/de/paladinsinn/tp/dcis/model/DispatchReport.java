@@ -13,42 +13,41 @@ package de.paladinsinn.tp.dcis.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.commons.core.resources.HasName;
-import de.paladinsinn.tp.dcis.model.components.*;
+import de.paladinsinn.tp.dcis.model.components.HasDisplayNames;
+import de.paladinsinn.tp.dcis.model.components.HasGameMaster;
+import de.paladinsinn.tp.dcis.model.components.HasOutcome;
+import de.paladinsinn.tp.dcis.model.components.Persisted;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 /**
- * SpecialMission -- A private table mission.
+ * DispatchReport -- A report of the gaming results.
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.1.0  2021-04-18
+ * @since 2.0.0  2023-01-06
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface MissionReport
-        extends HasDisplayNames, HasName, HasDescription, HasGameMaster, HasClearance, HasOutcome,
-        Persisted, Comparable<MissionReport> {
+public interface DispatchReport
+        extends HasDisplayNames, HasName, HasGameMaster, HasOutcome,
+        Persisted, Comparable<DispatchReport> {
+    Dispatch getDispatch();
+    void setDispatch(@NotNull final Dispatch dispatch);
 
-    String getImage();
-
-    @Schema(description = "Payment for every storm knight taking this mission.")
-    int getPayment();
-
-    @Schema(description = "XP for every storm knight taking this mission.")
-    int getXp();
 
     LocalDate getDate();
-
-    String getPublication();
 
 
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    default int compareTo(MissionReport o) {
+    default int compareTo(DispatchReport o) {
         return new CompareToBuilder()
-                .append(getId(), o.getId())
+                .append(0, getDispatch().compareTo(o.getDispatch()))
+                .append(getDate(), o.getDate())
+                .append(getGameMaster(), o.getGameMaster())
                 .toComparison();
     }
 }

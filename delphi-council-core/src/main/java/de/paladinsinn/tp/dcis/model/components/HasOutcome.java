@@ -11,15 +11,14 @@
 package de.paladinsinn.tp.dcis.model.components;
 
 import de.kaiserpfalzedv.commons.core.resources.HasId;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
 
 /**
- * HasNotes --
+ * HasOutcome -- This Resource carries a default outcome.
  *
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2023-01-06
  */
-public interface HasNotes extends HasId {
-    @Schema(description = "Sdditional notes to the outcome of a dispatch or mission.", maxLength = 4000, nullable = true)
-    String getNotes();
+public interface HasOutcome extends HasId, HasAchievements, HasNotes {
+    SuccessState getObjectivesMet();
 }

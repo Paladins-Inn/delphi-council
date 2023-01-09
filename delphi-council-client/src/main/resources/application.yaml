@@ -6,13 +6,6 @@ delphi-council:
 
 quarkus:
   rest-client:
-    mission-api: *dc_data
+    dispatch-api: *dc_data
     mission-report-api: *dc_data
-    special-mission-api: *dc_data
     operative-api: *dc_data
-    operative-report-api: *dc_data
-    operative-special-report-api: *dc_data
-
-  datasource:
-    devservices:
-      enabled: tru

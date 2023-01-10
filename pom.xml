@@ -702,6 +702,11 @@
       </activation>
       <dependencies>
         <dependency>
+          <groupId>de.kaiserpfalz-edv.commons</groupId>
+          <artifactId>kp-commons-jpa</artifactId>
+        </dependency>
+
+        <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-hibernate-orm</artifactId>
         </dependency>
@@ -835,17 +840,11 @@
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
         </dependency>
-
-
-        <!-- Security -->
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-oidc-client-reactive-filter</artifactId>
-        </dependency>
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-oidc-token-propagation-reactive</artifactId>
         </dependency>
+
 
 
         <!-- testing -->
@@ -1017,6 +1016,17 @@
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-oidc</artifactId>
         </dependency>
+        <!-- Security -->
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-oidc-client-reactive-filter</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-oidc-token-propagation-reactive</artifactId>
+        </dependency>
+
+
 
 
         <!-- REST handling -->

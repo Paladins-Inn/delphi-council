@@ -35,10 +35,12 @@
 
 
         <!-- File Store -->
+<!--
         <dependency>
             <groupId>de.kaiserpfalz-edv.fileserver</groupId>
             <artifactId>kp-fileserver-client</artifactId>
         </dependency>
+-->
 
 
         <!-- vaadin components -->

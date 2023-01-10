@@ -11,7 +11,7 @@
 package de.paladinsinn.tp.dcis.model.jpa;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.commons.core.jpa.AbstractRevisionedJPAEntity;
+import de.kaiserpfalzedv.commons.jpa.AbstractRevisionedJPAEntity;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.tp.dcis.common.Language;
 import io.quarkus.runtime.annotations.RegisterForReflection;

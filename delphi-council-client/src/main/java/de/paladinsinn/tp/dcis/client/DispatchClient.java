@@ -13,6 +13,8 @@ package de.paladinsinn.tp.dcis.client;
 import de.paladinsinn.tp.dcis.model.Dispatch;
 import de.paladinsinn.tp.dcis.model.Outcome;
 import de.paladinsinn.tp.dcis.model.lists.BasicList;
+import io.quarkus.cache.CacheInvalidate;
+import io.quarkus.cache.CacheResult;
 import io.quarkus.oidc.token.propagation.reactive.AccessTokenRequestReactiveFilter;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -27,8 +29,13 @@ import java.util.UUID;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public interface DispatchClient {
+    final String CACHE_NAME = "dc-dispatches";
+    final long CACHE_LOCK_TIMEOUT = 10L;
+
+
     @POST
     @Path("/")
+    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     Dispatch create(final Dispatch data);
 
     /**
@@ -40,6 +47,7 @@ public interface DispatchClient {
      */
     @GET
     @Path("/")
+    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     BasicList retrieve(
             @QueryParam("start") long start,
             @QueryParam("size") long size
@@ -51,23 +59,28 @@ public interface DispatchClient {
      */
     @GET
     @Path("/")
+    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     BasicList retrieve();
 
     @GET
     @Path("/{id}")
+    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     Dispatch retrieve(@PathParam("id") UUID id);
 
 
     @GET
     @Path("/gm/{id}")
+    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     BasicList retrieveByGM(@PathParam("id") final String gm, @QueryParam("start") final int start, @QueryParam("size") final int size);
 
     @GET
     @Path("/operative/{id}")
+    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     BasicList retrieveByOperative(@PathParam("id") final String gm, @QueryParam("start") final int start, @QueryParam("size") final int size);
 
     @PUT
     @Path("/{mission}/operative/{operative}")
+    @CacheInvalidate(cacheName = CACHE_NAME)
     void addOperative(
             @PathParam("mission") final UUID mission,
             @PathParam("operative") final UUID operative,
@@ -76,6 +89,7 @@ public interface DispatchClient {
 
     @POST
     @Path("/{mission}/operative/{operative}")
+    @CacheInvalidate(cacheName = CACHE_NAME)
     void updateOperative(
             @PathParam("mission") final UUID mission,
             @PathParam("operative") final UUID operative,
@@ -85,6 +99,7 @@ public interface DispatchClient {
 
     @DELETE
     @Path("/{mission}/operative/{operative}")
+    @CacheInvalidate(cacheName = CACHE_NAME)
     void removeOperative(
             @PathParam("mission") final UUID mission,
             @PathParam("operative") final UUID operative
@@ -92,10 +107,12 @@ public interface DispatchClient {
 
     @PUT
     @Path("/{id}")
-    Dispatch update(@PathParam("id") final UUID id, final Dispatch data);
+    @CacheInvalidate(cacheName = CACHE_NAME)
+    void update(@PathParam("id") final UUID id, final Dispatch data);
 
 
     @DELETE
     @Path("/{id}")
+    @CacheInvalidate(cacheName = CACHE_NAME)
     void delete(@PathParam("id") final UUID id);
 }

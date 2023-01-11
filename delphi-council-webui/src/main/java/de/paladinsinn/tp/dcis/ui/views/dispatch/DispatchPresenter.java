@@ -69,8 +69,10 @@ public class DispatchPresenter extends BasicPresenterImpl<Dispatch> {
         if (data.getCode() != null) {
             data = form.getData();
 
+            log.trace("Updating dispatch. presenter={}, data={}", this, data);
             client.update(data.getId(), data);
         } else {
+            log.trace("Creating new dispatch. presenter={}, data={}", this, data);
             data = form.getData();
             client.create(data);
         }

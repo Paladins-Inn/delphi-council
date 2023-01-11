@@ -32,7 +32,7 @@ import javax.inject.Inject;
 @Setter
 @Slf4j
 public class DispatchDataFormResultQuestionnaire extends BasicTab<Dispatch> {
-    private static final String I18N_KEY = "mission.form.tab.questionnaire";
+    private static final String I18N_KEY = "dispatch.form.tab.questionnaire";
 
     @Inject
     public DispatchDataFormResultQuestionnaire(DispatchPresenter presenter) {

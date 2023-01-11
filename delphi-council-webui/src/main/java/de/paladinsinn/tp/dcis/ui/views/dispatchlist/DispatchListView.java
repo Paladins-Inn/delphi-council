@@ -16,10 +16,13 @@ import com.github.appreciated.card.label.SecondaryLabel;
 import com.github.appreciated.card.label.TitleLabel;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.tp.dcis.model.lists.BasicData;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListViewImpl;
+import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
+import de.paladinsinn.tp.dcis.ui.views.dispatch.DispatchView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,7 +76,25 @@ public class DispatchListView extends BasicListViewImpl {
 
     private ClickableCard generateNewCard(BasicData dispatch) {
         ClickableCard result = new ClickableCard(
-                e -> {},
+                e -> {
+                    log.debug("Clicked on card. id='{}', code='{}'", dispatch.getId(), dispatch.getCode());
+
+                    getUI().ifPresentOrElse(
+                            ui -> {
+                                log.trace("Navigating. class='{}', id='{}'", DispatchView.class, dispatch.getId());
+
+                                ui.navigate(
+                                        DispatchView.class,
+                                        new RouteParameters("id", dispatch.getId().toString())
+                                );
+                            },
+                            () -> {
+                                log.error("No UI found. Can't redirect to the dispatch. id='{}', code='{}'",
+                                        dispatch.getId(), dispatch.getCode());
+                                ErrorNotification.showMarkdown(getTranslation(user.getLocale(), "error.internal_system_failure"));
+                            }
+                    );
+                },
                 new TitleLabel(dispatch.getName()),
                 new PrimaryLabel(dispatch.getCode()),
                 new SecondaryLabel(dispatch.getDescription())

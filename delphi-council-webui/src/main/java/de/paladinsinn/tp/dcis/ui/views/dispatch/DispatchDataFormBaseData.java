@@ -40,7 +40,7 @@ import java.util.Locale;
 @Setter
 @Slf4j
 public class DispatchDataFormBaseData extends BasicTab<Dispatch> {
-    private static final String I18N_KEY = "mission.form.tab.basedata";
+    private static final String I18N_KEY = "dispatch.form.tab.basedata";
 
     private TextField dispatchId;
     private TextField code;
@@ -122,6 +122,8 @@ public class DispatchDataFormBaseData extends BasicTab<Dispatch> {
 
     private void createAndAttachImage() {
         // TODO 2023-01-09 klenkes Implement image handling for detachments.
+        image = new TextField();
+        binder.bind(image, "image");
     }
 
     private void updateFields(final Locale locale) {
@@ -137,6 +139,10 @@ public class DispatchDataFormBaseData extends BasicTab<Dispatch> {
     }
 
     private void translate(final Locale locale, Component component, final String code) {
+        if (component == null) {
+            return;
+        }
+
         if (HasLabel.class.isAssignableFrom(component.getClass())) {
             ((HasLabel)component).setLabel(getTranslation(locale, code + ".caption"));
         }

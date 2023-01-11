@@ -33,7 +33,7 @@ import java.util.UUID;
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2022-12-29
  */
-@Route(value = "/dispatch", layout = MainLayout.class)
+@Route(value = "/dispatch/:id?", layout = MainLayout.class)
 @UIScoped
 @Slf4j
 public class DispatchView extends BasicViewImpl<Dispatch> implements HasUrlParameter<UUID> {

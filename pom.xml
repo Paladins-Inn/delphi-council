@@ -979,6 +979,7 @@
       </activation>
 
       <dependencies>
+
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-hibernate-envers</artifactId>
@@ -1004,6 +1005,11 @@
       </activation>
 
       <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-hibernate-validator</artifactId>
+        </dependency>
+
         <!-- Configuration -->
         <dependency>
           <groupId>io.quarkus</groupId>

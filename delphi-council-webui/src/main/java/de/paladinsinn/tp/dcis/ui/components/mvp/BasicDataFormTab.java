@@ -10,43 +10,33 @@
 
 package de.paladinsinn.tp.dcis.ui.components.mvp;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.data.binder.Binder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 
-@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString
 @Data
 @Slf4j
-public abstract class BasicTab<T extends Serializable> extends Tab {
+public abstract class BasicDataFormTab<T extends Serializable> extends Tab {
     protected BasicDataForm<T> form;
-    protected Binder<T> binder;
-
-    protected final BasicView<T> view;
-
-    protected final BasicPresenter<T> presenter;
 
     protected final FormLayout layout = new FormLayout();
 
-    public BasicTab(final BasicPresenter<T> presenter) {
-        this.presenter = presenter;
-        this.view = presenter.getView();
-
-        setUpLayout();
-        add(layout);
-    }
 
     public abstract String getI18nKey();
 
-    private void setUpLayout() {
+
+    public void setForm(BasicDataForm<T> form) {
+        this.form = form;
+
         layout.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("100px", 1),
                 new FormLayout.ResponsiveStep("200px", 2),
@@ -54,5 +44,27 @@ public abstract class BasicTab<T extends Serializable> extends Tab {
         );
 
         layout.setSizeFull();
+    }
+
+
+    @Override
+    public void onAttach(AttachEvent e) {
+        super.onAttach(e);
+        log.trace("tab attached. initial={}, form={}, tab={}", e.isInitialAttach(), form, this);
+
+        add(layout);
+
+        attachFields();
+    }
+
+    protected abstract void attachFields();
+
+    @Override
+    public void onDetach(DetachEvent e) {
+        super.onDetach(e);
+        log.trace("tab detached. form={}, tab={}", form, this);
+
+        layout.removeAll();
+        remove(layout);
     }
 }

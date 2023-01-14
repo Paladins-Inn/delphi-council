@@ -26,9 +26,9 @@ import java.time.LocalDate;
  * @since 0.1.0  2021-04-18
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface MissionReport
+public interface Mission
         extends HasDisplayNames, HasName, HasDescription, HasGameMaster, HasClearance, HasOutcome,
-        Persisted, Comparable<MissionReport> {
+        Persisted, Comparable<Mission> {
 
     String getImage();
 
@@ -46,7 +46,7 @@ public interface MissionReport
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    default int compareTo(MissionReport o) {
+    default int compareTo(Mission o) {
         return new CompareToBuilder()
                 .append(getId(), o.getId())
                 .toComparison();

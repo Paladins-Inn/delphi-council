@@ -19,28 +19,35 @@ import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.data.binder.Binder;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Setter
-@Getter
 @Slf4j
 public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
     @ToString.Include
     @EqualsAndHashCode.Include
+    @Getter
     protected final FrontendUser user;
 
     @ToString.Include
     @EqualsAndHashCode.Include
+    @Getter
     protected T data;
 
+    @Getter
+    protected final Binder<T> binder;
+
+
+    @Getter
     protected TabSheet tabs;
     protected Component buttonBar;
 
@@ -49,8 +56,13 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
     protected Button delete;
     protected Button close;
 
-    @PostConstruct
-    public void init() {
+    public BasicDataForm(
+            @NotNull final FrontendUser user,
+            @NotNull final Binder<T> binder
+    ) {
+        this.user = user;
+        this.binder = binder;
+
         setResponsiveSteps(
                 new ResponsiveStep("200px", 1),
                 new ResponsiveStep("600px", 3)
@@ -58,8 +70,9 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
 
         tabs = createTabs();
         buttonBar = createButtonsLayout();
-
     }
+
+    protected abstract void bind();
 
     private TabSheet createTabs() {
         TabSheet result = new TabSheet();
@@ -73,14 +86,15 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
     }
 
 
-    protected void addTab(final BasicTab<T> tab) {
+    protected void addTab(final BasicDataFormTab<T> tab) {
         log.trace("Adding tab to form. form={}, tab={}", this, tab);
-        tab.setForm(this);
-        tab.setBinder(getBinder());
         tabs.add(getTranslation(tab.getI18nKey() + ".caption"), tab);
     }
 
-    protected abstract Binder<T> getBinder();
+    protected void clearTabs() {
+        tabs = createTabs();
+    }
+
 
     public String getTabTitle() {
         log.debug("retrieving tab title. selected={}, children={}", tabs.getSelectedIndex(), tabs.getElement().getChildCount());
@@ -121,12 +135,15 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
 
     @Override
     public void onAttach(AttachEvent attachEvent) {
-        log.trace("Form attached. form={}, event={}", this, attachEvent);
+        log.trace("Form attached. initial={}, form={}, event={}",
+                attachEvent.isInitialAttach(), this, attachEvent);
 
         super.onAttach(attachEvent);
 
+        tabs = createTabs();
         add(tabs, 3);
         add(buttonBar, 3);
+
 
         ComponentUtil.fireEvent(UI.getCurrent(), new MainLayout.PageTitleUpdateEvent(this, false));
     }
@@ -138,21 +155,24 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
         super.onDetach(detachEvent);
 
         removeAll();
-        tabs = createTabs();
     }
 
 
-    public T getData() {
-        return this.data;
+    protected void translate(Component component, final String code) {
+        if (component == null) {
+            return;
+        }
+
+        if (HasLabel.class.isAssignableFrom(component.getClass())) {
+            ((HasLabel)component).setLabel(getTranslation(user.getLocale(), code + ".caption"));
+        }
+
+        if (HasHelper.class.isAssignableFrom(component.getClass())) {
+            ((HasHelper)component).setHelperText(getTranslation(user.getLocale(), code + ".help"));
+        }
     }
 
-    public FrontendUser getUser() {
-        return this.user;
-    }
 
-    public TabSheet getTabs() {
-        return this.tabs;
-    }
 
     @Getter
     public static abstract class DataFormEvent<T extends Serializable> extends ComponentEvent<BasicDataForm<T>> {
@@ -225,4 +245,5 @@ public abstract class BasicDataForm<T extends Serializable> extends FormLayout {
             super(source, source.getData());
         }
     }
+
 }

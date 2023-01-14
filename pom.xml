@@ -1041,6 +1041,11 @@
           <artifactId>quarkus-resteasy-problem</artifactId>
         </dependency>
 
+        <dependency>
+          <groupId>de.kaiserpfalz-edv.commons</groupId>
+          <artifactId>kp-commons-rest</artifactId>
+        </dependency>
+
 
         <!-- Logging -->
         <dependency>

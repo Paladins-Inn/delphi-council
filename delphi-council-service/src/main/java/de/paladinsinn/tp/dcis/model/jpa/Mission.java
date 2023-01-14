@@ -52,7 +52,7 @@ import java.util.UUID;
 @Getter
 @Slf4j
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class MissionReport extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.MissionReport {
+public class Mission extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.Mission {
     @Column(name = "LANGUAGE", length=3, nullable = false)
     @Audited
     @Enumerated(EnumType.STRING)
@@ -137,12 +137,12 @@ public class MissionReport extends AbstractRevisionedJPAEntity implements de.pal
     }
 
 
-    public static MissionReport copyData(de.paladinsinn.tp.dcis.model.MissionReport orig) {
-        if (MissionReport.class.isAssignableFrom(orig.getClass())) {
-            return (MissionReport) orig;
+    public static Mission copyData(de.paladinsinn.tp.dcis.model.Mission orig) {
+        if (Mission.class.isAssignableFrom(orig.getClass())) {
+            return (Mission) orig;
         }
 
-        return MissionReport.builder()
+        return Mission.builder()
                 .id(orig.getId())
                 .version(orig.getVersion())
                 .created(orig.getCreated())
@@ -169,7 +169,7 @@ public class MissionReport extends AbstractRevisionedJPAEntity implements de.pal
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public MissionReport clone() {
+    public Mission clone() {
         return toBuilder().build();
     }
 }

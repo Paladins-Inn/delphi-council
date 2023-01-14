@@ -29,7 +29,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 public interface OperativeDispatchReport
         extends HasOperative, HasNotes, HasAchievements,
                 Persisted, Comparable<OperativeDispatchReport> {
-    DispatchReport getReport();
+    Engagment getReport();
 
 
     @Override

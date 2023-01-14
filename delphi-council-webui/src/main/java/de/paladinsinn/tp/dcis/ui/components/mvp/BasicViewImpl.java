@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022. Roland T. Lichti
+ * Copyright (c) 2022-2023. Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -39,9 +39,6 @@ import java.util.HashMap;
 @Data
 @Slf4j
 public abstract class BasicViewImpl<T extends Serializable> extends Div implements BasicView<T> {
-    @ToString.Include
-    protected T data;
-
     protected final BasicPresenter<T> presenter;
 
     @EqualsAndHashCode.Include
@@ -68,6 +65,10 @@ public abstract class BasicViewImpl<T extends Serializable> extends Div implemen
         form.setData(data);
 
         updateView();
+    }
+
+    public T getData() {
+        return form.getData();
     }
 
     @Override
@@ -107,17 +108,18 @@ public abstract class BasicViewImpl<T extends Serializable> extends Div implemen
         registerListener(BasicDataForm.ResetEvent.class, e-> presenter.reset());
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void registerListener(Class eventTypeClass, ComponentEventListener<?> listener) {
         busRegistration.put(
                 eventTypeClass.getCanonicalName(),
-                ComponentUtil.addListener(form, eventTypeClass, listener
-        ));
+                ComponentUtil.addListener(form, eventTypeClass, listener)
+        );
     }
 
     @Override
     public void onDetach(final DetachEvent detachEvent) {
         log.trace("view detached. view={}, event={}", this, detachEvent);
         super.onDetach(detachEvent);
-        busRegistration.values().forEach(r -> r.remove());
+        busRegistration.values().forEach(Registration::remove);
     }
 }

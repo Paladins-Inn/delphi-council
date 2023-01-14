@@ -30,9 +30,9 @@ import java.time.LocalDate;
  * @since 2.0.0  2023-01-06
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface DispatchReport
+public interface Engagment
         extends HasDisplayNames, HasName, HasGameMaster, HasOutcome,
-        Persisted, Comparable<DispatchReport> {
+        Persisted, Comparable<Engagment> {
     Dispatch getDispatch();
     void setDispatch(@NotNull final Dispatch dispatch);
 
@@ -43,7 +43,7 @@ public interface DispatchReport
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    default int compareTo(DispatchReport o) {
+    default int compareTo(Engagment o) {
         return new CompareToBuilder()
                 .append(0, getDispatch().compareTo(o.getDispatch()))
                 .append(getDate(), o.getDate())

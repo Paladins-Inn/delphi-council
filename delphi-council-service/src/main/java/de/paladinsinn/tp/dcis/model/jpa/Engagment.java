@@ -49,7 +49,7 @@ import java.time.LocalDate;
 @Getter
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class DispatchReport extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.DispatchReport {
+public class Engagment extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.Engagment {
     @ManyToOne(
             cascade = {CascadeType.REFRESH},
             fetch = FetchType.EAGER,
@@ -119,12 +119,12 @@ public class DispatchReport extends AbstractRevisionedJPAEntity implements de.pa
     }
 
 
-    public static DispatchReport copyData(final de.paladinsinn.tp.dcis.model.DispatchReport orig) {
-        if (DispatchReport.class.isAssignableFrom(orig.getClass())) {
-            return (DispatchReport) orig;
+    public static Engagment copyData(final de.paladinsinn.tp.dcis.model.Engagment orig) {
+        if (Engagment.class.isAssignableFrom(orig.getClass())) {
+            return (Engagment) orig;
         }
 
-        return DispatchReport.builder()
+        return Engagment.builder()
                 .id(orig.getId())
                 .version(orig.getVersion())
                 .created(orig.getCreated())
@@ -139,7 +139,7 @@ public class DispatchReport extends AbstractRevisionedJPAEntity implements de.pa
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public DispatchReport clone() {
+    public Engagment clone() {
         return toBuilder().build();
     }
 }

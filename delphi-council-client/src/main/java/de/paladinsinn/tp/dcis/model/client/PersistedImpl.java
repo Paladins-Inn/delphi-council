@@ -17,7 +17,9 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 
@@ -37,13 +39,23 @@ import java.util.UUID;
 public abstract class PersistedImpl implements Persisted {
     @ToString.Include
     @EqualsAndHashCode.Include
-    private UUID id;
+    @NotNull
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
+
     @ToString.Include
     @EqualsAndHashCode.Include
-    private Integer version;
-    private OffsetDateTime created;
+    @NotNull
+    @Builder.Default
+    private Integer version = 0;
+
+    @Builder.Default
+    @NotNull
+    private OffsetDateTime created = OffsetDateTime.now(ZoneOffset.UTC);
+
     @ToString.Include
     private OffsetDateTime modified;
+
     private OffsetDateTime revisioned;
 
     @SneakyThrows

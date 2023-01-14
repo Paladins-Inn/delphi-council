@@ -29,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class OperativeMissionReport extends PersistedImpl implements de.paladinsinn.tp.dcis.model.OperativeMissionReport {
 
-    private MissionReport mission;
+    private Mission mission;
 
     private Operative operative;
 
@@ -48,7 +48,7 @@ public class OperativeMissionReport extends PersistedImpl implements de.paladins
                 .created(orig.getCreated())
                 .modified(orig.getModified())
 
-                .mission(MissionReport.copyData(orig.getMission()))
+                .mission(Mission.copyData(orig.getMission()))
                 .operative(Operative.copyData(orig.getOperative()))
                 .notes(orig.getNotes())
 

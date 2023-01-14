@@ -66,7 +66,7 @@ public class OperativeDispatchReport extends AbstractRevisionedJPAEntity impleme
             optional = false
     )
     @JoinColumn(name = "DISPATCHREPORT_ID", nullable = false)
-    private DispatchReport report;
+    private Engagment report;
 
 
     @Override

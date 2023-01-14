@@ -19,10 +19,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
-@RegisterRestClient(configKey = "operative-api")
+@RegisterRestClient(configKey = "operatives-api")
 @RegisterProvider(value = AccessTokenRequestReactiveFilter.class, priority = 5000)
 @Path("/api/v1/operatives")
 public interface OperativeClient {
+    String CACHE_NAME = "dc-operatives";
+    long CACHE_LOCK_TIMEOUT = 10L;
+
     /**
      * Retrieves a page of data specified by the first element and the size of page.
      *

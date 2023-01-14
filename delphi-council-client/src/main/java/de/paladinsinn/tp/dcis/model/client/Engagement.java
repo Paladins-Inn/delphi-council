@@ -12,6 +12,7 @@ package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
+import de.paladinsinn.tp.dcis.model.Engagment;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -30,7 +31,7 @@ import java.time.LocalDate;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class DispatchReport extends PersistedImpl implements de.paladinsinn.tp.dcis.model.DispatchReport {
+public class Engagement extends PersistedImpl implements Engagment {
     private String code;
     private Dispatch dispatch;
     private String gameMaster;
@@ -55,12 +56,12 @@ public class DispatchReport extends PersistedImpl implements de.paladinsinn.tp.d
     }
 
 
-    public static DispatchReport copyData(de.paladinsinn.tp.dcis.model.DispatchReport report) {
-        if (DispatchReport.class.isAssignableFrom(report.getClass())) {
-            return (DispatchReport) report;
+    public static Engagement copyData(Engagment report) {
+        if (Engagement.class.isAssignableFrom(report.getClass())) {
+            return (Engagement) report;
         }
 
-        return DispatchReport.builder()
+        return Engagement.builder()
                 .dispatch(Dispatch.copyData(report.getDispatch()))
                 .date(report.getDate())
                 .gameMaster(report.getGameMaster())
@@ -72,7 +73,7 @@ public class DispatchReport extends PersistedImpl implements de.paladinsinn.tp.d
 
     @SneakyThrows
     @Override
-    public DispatchReport clone() {
+    public Engagement clone() {
         return toBuilder().build();
     }
 }

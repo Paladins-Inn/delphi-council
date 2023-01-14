@@ -22,7 +22,7 @@ import de.paladinsinn.tp.dcis.model.lists.BasicData;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicListViewImpl;
 import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
-import de.paladinsinn.tp.dcis.ui.views.dispatch.DispatchView;
+import de.paladinsinn.tp.dcis.ui.views.dispatch.DispatchEditView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,10 +81,10 @@ public class DispatchListView extends BasicListViewImpl {
 
                     getUI().ifPresentOrElse(
                             ui -> {
-                                log.trace("Navigating. class='{}', id='{}'", DispatchView.class, dispatch.getId());
+                                log.trace("Navigating. class='{}', id='{}'", DispatchEditView.class, dispatch.getId());
 
                                 ui.navigate(
-                                        DispatchView.class,
+                                        DispatchEditView.class,
                                         new RouteParameters("id", dispatch.getId().toString())
                                 );
                             },

@@ -8,7 +8,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.missions;
+package de.paladinsinn.tp.dcis.dispatches;
 
 import de.paladinsinn.tp.dcis.model.jpa.Dispatch;
 import org.springframework.data.jpa.repository.JpaRepository;

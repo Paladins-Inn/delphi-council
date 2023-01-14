@@ -55,7 +55,7 @@ public class OperativeMissionReport extends AbstractRevisionedJPAEntity implemen
             optional = false
     )
     @JoinColumn(name = "MISSIONREPORT_ID", nullable = false)
-    private MissionReport mission;
+    private Mission mission;
 
     @ManyToOne(
             fetch = FetchType.LAZY,

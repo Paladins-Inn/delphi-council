@@ -10,8 +10,7 @@
 
 package de.paladinsinn.tp.dcis.client;
 
-import de.paladinsinn.tp.dcis.model.Dispatch;
-import de.paladinsinn.tp.dcis.model.Outcome;
+import de.paladinsinn.tp.dcis.model.client.Dispatch;
 import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import io.quarkus.cache.CacheInvalidate;
 import io.quarkus.cache.CacheResult;
@@ -23,14 +22,14 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.UUID;
 
-@RegisterRestClient(configKey = "dispatch-api")
+@RegisterRestClient(configKey = "dispatches-api")
 @RegisterProvider(value = AccessTokenRequestReactiveFilter.class, priority = 5000)
 @Path("/api/v1/dispatches")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public interface DispatchClient {
-    final String CACHE_NAME = "dc-dispatches";
-    final long CACHE_LOCK_TIMEOUT = 10L;
+    String CACHE_NAME = "dc-dispatches";
+    long CACHE_LOCK_TIMEOUT = 10L;
 
 
     @POST
@@ -63,12 +62,6 @@ public interface DispatchClient {
     BasicList retrieve();
 
     @GET
-    @Path("/{id}")
-    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
-    Dispatch retrieve(@PathParam("id") UUID id);
-
-
-    @GET
     @Path("/gm/{id}")
     @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     BasicList retrieveByGM(@PathParam("id") final String gm, @QueryParam("start") final int start, @QueryParam("size") final int size);
@@ -78,32 +71,12 @@ public interface DispatchClient {
     @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
     BasicList retrieveByOperative(@PathParam("id") final String gm, @QueryParam("start") final int start, @QueryParam("size") final int size);
 
-    @PUT
-    @Path("/{mission}/operative/{operative}")
-    @CacheInvalidate(cacheName = CACHE_NAME)
-    void addOperative(
-            @PathParam("mission") final UUID mission,
-            @PathParam("operative") final UUID operative,
-            Outcome outcome
-    );
 
-    @POST
-    @Path("/{mission}/operative/{operative}")
-    @CacheInvalidate(cacheName = CACHE_NAME)
-    void updateOperative(
-            @PathParam("mission") final UUID mission,
-            @PathParam("operative") final UUID operative,
-            Outcome outcome
-    );
+    @GET
+    @Path("/{id}")
+    @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
+    Dispatch retrieve(@PathParam("id") UUID id);
 
-
-    @DELETE
-    @Path("/{mission}/operative/{operative}")
-    @CacheInvalidate(cacheName = CACHE_NAME)
-    void removeOperative(
-            @PathParam("mission") final UUID mission,
-            @PathParam("operative") final UUID operative
-    );
 
     @PUT
     @Path("/{id}")

@@ -8,8 +8,9 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.missions;
+package de.paladinsinn.tp.dcis.dispatches;
 
+import de.kaiserpfalzedv.commons.rest.HttpErrorGenerator;
 import de.paladinsinn.tp.dcis.model.jpa.Dispatch;
 import de.paladinsinn.tp.dcis.model.lists.BasicData;
 import de.paladinsinn.tp.dcis.model.lists.BasicList;
@@ -27,8 +28,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Schema(
@@ -47,6 +51,8 @@ public class DispatchResource {
     private static final String DEFAULT_INT_PARAM_STRING = "-1";
 
     private final DispatchRepository repository;
+
+    private final HttpErrorGenerator errorGenerator;
 
     @Schema(
             title = "Retrieve all missions",
@@ -131,5 +137,31 @@ public class DispatchResource {
 
         log.trace("Dataset converted. result={}", result);
         return result;
+    }
+
+    @Schema(
+            title = "Retrieve a single dispatch",
+            description = "Retrieves the dispatch by ID."
+    )
+    @APIResponses({
+            @APIResponse(responseCode = "200", description = "Returns the requested dispatch."),
+            @APIResponse(responseCode = "403", description = "Not logged in. Please log in."),
+            @APIResponse(responseCode = "404", description = "There is no dispatch with the given ID available."),
+    })
+    @GET
+    @Path("/{id}")
+    public Dispatch index(
+            @Schema(description = "ID of the dispatch to load.", nullable = false, required = true)
+            final UUID id
+            ) {
+        return repository.findById(id).orElseThrow(() -> {
+            return errorGenerator.throwHttpProblem(
+                    Response.Status.NOT_FOUND,
+                    "There is no dispatch with this id.",
+                    Map.of(
+                            "id", id.toString()
+                    )
+            );
+        });
     }
 }

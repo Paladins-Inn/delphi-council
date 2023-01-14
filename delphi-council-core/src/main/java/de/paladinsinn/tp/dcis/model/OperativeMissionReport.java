@@ -30,7 +30,7 @@ public interface OperativeMissionReport
         extends HasName, HasOperative, HasNotes,
         Persisted, Comparable<OperativeMissionReport> {
 
-    MissionReport getMission();
+    Mission getMission();
 
 
     @Override

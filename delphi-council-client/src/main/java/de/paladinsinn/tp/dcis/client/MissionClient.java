@@ -19,10 +19,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
-@RegisterRestClient(configKey = "mission-report-api")
+@RegisterRestClient(configKey = "missions-api")
 @RegisterProvider(value = AccessTokenRequestReactiveFilter.class, priority = 5000)
-@Path("/api/v1/missions/special")
-public interface MissionReportClient {
+@Path("/api/v1/missions")
+public interface MissionClient {
+    String CACHE_NAME = "dc-missions";
+    long CACHE_LOCK_TIMEOUT = 10L;
+
     /**
      * Retrieves a page of data specified by the first element and the size of page.
      *

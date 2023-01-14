@@ -31,7 +31,7 @@ import java.time.LocalDate;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class MissionReport extends PersistedImpl implements de.paladinsinn.tp.dcis.model.MissionReport {
+public class Mission extends PersistedImpl implements de.paladinsinn.tp.dcis.model.Mission {
     private String code;
 
     private String name;
@@ -56,12 +56,12 @@ public class MissionReport extends PersistedImpl implements de.paladinsinn.tp.dc
 
 
     @SneakyThrows
-    public static MissionReport copyData(de.paladinsinn.tp.dcis.model.MissionReport orig)  {
-        if (MissionReport.class.isAssignableFrom(orig.getClass())) {
-            return (MissionReport) orig;
+    public static Mission copyData(de.paladinsinn.tp.dcis.model.Mission orig)  {
+        if (Mission.class.isAssignableFrom(orig.getClass())) {
+            return (Mission) orig;
         }
 
-        return MissionReport.builder()
+        return Mission.builder()
                 .id(orig.getId())
                 .version(orig.getVersion())
                 .created(orig.getCreated())
@@ -87,7 +87,7 @@ public class MissionReport extends PersistedImpl implements de.paladinsinn.tp.dc
     }
     @SneakyThrows
     @Override
-    public MissionReport clone() {
+    public Mission clone() {
         return toBuilder().build();
     }
 }

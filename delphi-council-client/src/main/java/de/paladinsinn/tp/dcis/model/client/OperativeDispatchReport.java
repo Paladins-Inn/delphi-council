@@ -28,7 +28,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class OperativeDispatchReport extends PersistedImpl implements de.paladinsinn.tp.dcis.model.OperativeDispatchReport {
-    private DispatchReport report;
+    private Engagement report;
 
     private Operative operative;
 
@@ -48,7 +48,7 @@ public class OperativeDispatchReport extends PersistedImpl implements de.paladin
                 .modified(orig.getModified())
                 .revisioned(orig.getRevisioned())
 
-                .report(DispatchReport.copyData(orig.getReport()))
+                .report(Engagement.copyData(orig.getReport()))
                 .operative(Operative.copyData(orig.getOperative()))
                 .achievements(orig.getAchievements())
                 .notes(orig.getNotes())

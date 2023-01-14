@@ -15,7 +15,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.quarkus.annotation.UIScoped;
 import de.paladinsinn.tp.dcis.client.DispatchClient;
-import de.paladinsinn.tp.dcis.model.Dispatch;
+import de.paladinsinn.tp.dcis.model.client.Dispatch;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicPresenterImpl;
 import de.paladinsinn.tp.dcis.ui.components.notifications.ErrorNotification;
 import lombok.EqualsAndHashCode;
@@ -40,7 +40,7 @@ import java.util.UUID;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Slf4j
-public class DispatchPresenter extends BasicPresenterImpl<Dispatch> {
+public class DispatchEditPresenter extends BasicPresenterImpl<Dispatch> {
     @Inject
     @RestClient
     @SuppressWarnings("LSPLocalInspectionTool")
@@ -52,7 +52,7 @@ public class DispatchPresenter extends BasicPresenterImpl<Dispatch> {
         Dispatch data = client.retrieve(id);
 
         if (data == null) {
-            log.error("mission with ID '{}' not found!", id);
+            log.error("dispatch with ID '{}' not found!", id);
             return;
         }
 

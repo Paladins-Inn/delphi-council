@@ -12,14 +12,16 @@ package de.paladinsinn.tp.dcis.model.lists;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.kaiserpfalzedv.commons.core.api.Paging;
 import de.kaiserpfalzedv.commons.core.resources.HasKind;
-import de.paladinsinn.tp.dcis.model.meta.Paging;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

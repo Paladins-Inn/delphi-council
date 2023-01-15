@@ -12,42 +12,40 @@ package de.paladinsinn.tp.dcis.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.commons.core.resources.HasName;
-import de.paladinsinn.tp.dcis.model.components.HasNotes;
-import de.paladinsinn.tp.dcis.model.components.HasOperative;
-import de.paladinsinn.tp.dcis.model.components.Persisted;
+import de.paladinsinn.tp.dcis.model.components.HasClearance;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * OperativeSpecialReport -- The special report for a local table game.
+ * <p>Operation -- A pre-defined operation of Torganized Play.</p>
  *
- * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 0.3.0  2021-04-18
+ * <p>Operations are the default games of the Torganized Play. They are defined and GMs play them at conventions in
+ * person or online.</p>
+ *
+ * <p>The results drive the shared campaign.</p>
+ *
+ * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 2.0.0  2023-01-15
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface OperativeMissionReport
-        extends HasName, HasOperative, HasNotes,
-        Persisted, Comparable<OperativeMissionReport> {
+@Schema(description = "Delphi Council Mission")
+public interface Operation extends Dispatch, HasClearance, Comparable<Operation> {
+    @Schema(description = "Objectives defined for a successful mission.", maxLength = 40000, nullable = true)
+    String getObjectivesSuccess();
 
-    Mission getMission();
+    @Schema(description = "Objectives defined for a good mission result.", maxLength = 40000, nullable = true)
+    String getObjectivesGood();
+
+    @Schema(description = "Objectives defined for an outstanding mission result.", maxLength = 4000, nullable = true)
+    String getObjectivesOutstanding();
 
 
-    @Override
     @JsonIgnore
-    default String getName() {
-        return getOperative().getName();
-    }
-
-
-
     @Override
-    @JsonIgnore
     @Schema(hidden = true)
-    default int compareTo(OperativeMissionReport o) {
+    default int compareTo(final Operation o) {
         return new CompareToBuilder()
-                .append(getMission(), o.getMission())
-                .append(getOperative(), o.getOperative())
+                .append(getCode(), o.getCode())
                 .toComparison();
     }
 }

@@ -13,6 +13,8 @@ package de.paladinsinn.tp.dcis.model.jpa;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.commons.jpa.AbstractRevisionedJPAEntity;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
+import de.paladinsinn.tp.dcis.model.DispatchReport;
+import de.paladinsinn.tp.dcis.model.Operation;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,12 +51,12 @@ import java.time.LocalDate;
 @Getter
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class Engagment extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.Engagment {
+public class Engagment extends AbstractRevisionedJPAEntity implements DispatchReport {
     @ManyToOne(
             cascade = {CascadeType.REFRESH},
             fetch = FetchType.EAGER,
             optional = false,
-            targetEntity = Dispatch.class
+            targetEntity = de.paladinsinn.tp.dcis.model.jpa.Operation.class
     )
     @JoinColumn(
             name = "DISPATCH_ID",
@@ -62,7 +64,7 @@ public class Engagment extends AbstractRevisionedJPAEntity implements de.paladin
             nullable = false,
             foreignKey = @ForeignKey(name = "REPORTS_DISPATCHES_FK")
     )
-    private Dispatch dispatch;
+    private de.paladinsinn.tp.dcis.model.jpa.Operation dispatch;
 
     @Audited
     @Column(name = "GAME_MASTER", length = 100, nullable = false)
@@ -89,8 +91,8 @@ public class Engagment extends AbstractRevisionedJPAEntity implements de.paladin
 
 
     // FIXME 2023-01-06 klenkes Check if we need to load the data instead of copying it (I think _THIS_ implementation won't work).
-    public void setDispatch(de.paladinsinn.tp.dcis.model.Dispatch dispatch) {
-        dispatch = Dispatch.copyData(dispatch);
+    public void setDispatch(Operation operation) {
+        operation = de.paladinsinn.tp.dcis.model.jpa.Operation.copyData(operation);
     }
 
 
@@ -119,7 +121,7 @@ public class Engagment extends AbstractRevisionedJPAEntity implements de.paladin
     }
 
 
-    public static Engagment copyData(final de.paladinsinn.tp.dcis.model.Engagment orig) {
+    public static Engagment copyData(final DispatchReport orig) {
         if (Engagment.class.isAssignableFrom(orig.getClass())) {
             return (Engagment) orig;
         }

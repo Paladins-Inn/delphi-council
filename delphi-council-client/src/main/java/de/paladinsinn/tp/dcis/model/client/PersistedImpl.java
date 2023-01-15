@@ -12,7 +12,7 @@ package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.paladinsinn.tp.dcis.model.components.Persisted;
+import de.kaiserpfalzedv.commons.core.resources.Persisted;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;

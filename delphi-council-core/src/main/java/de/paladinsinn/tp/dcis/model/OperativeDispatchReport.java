@@ -12,24 +12,28 @@ package de.paladinsinn.tp.dcis.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.kaiserpfalzedv.commons.core.resources.Persisted;
 import de.paladinsinn.tp.dcis.model.components.HasAchievements;
 import de.paladinsinn.tp.dcis.model.components.HasNotes;
 import de.paladinsinn.tp.dcis.model.components.HasOperative;
-import de.paladinsinn.tp.dcis.model.components.Persisted;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /**
- * OperativeReport --
+ * <p>OperativeDispatchReport -- The report of a single operative for an {@link DispatchReport}.</p>
+ *
+ * <p>In addition to the {@link DispatchReport} which describes the outcome of a {@link Dispatch} for the whole group,
+ * the {@link} is the part of the personal file of the {@link Operative} for this single {@link Dispatch}. These are the
+ * personal achievements and notes to a single Storm Knight.</p>
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-04
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public interface OperativeDispatchReport
-        extends HasOperative, HasNotes, HasAchievements,
+        extends HasOperative, HasAchievements, HasNotes,
                 Persisted, Comparable<OperativeDispatchReport> {
-    Engagment getReport();
+    DispatchReport getReport();
 
 
     @Override

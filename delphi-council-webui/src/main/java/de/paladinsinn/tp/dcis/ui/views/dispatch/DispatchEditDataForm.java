@@ -23,7 +23,7 @@ import com.wontlost.ckeditor.VaadinCKEditor;
 import com.wontlost.ckeditor.VaadinCKEditorBuilder;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.paladinsinn.tp.dcis.common.Language;
-import de.paladinsinn.tp.dcis.model.client.Dispatch;
+import de.paladinsinn.tp.dcis.model.client.Operation;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicDataForm;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicDataFormTab;
 import de.paladinsinn.tp.dcis.ui.components.users.FrontendUser;
@@ -49,7 +49,7 @@ import static de.kaiserpfalzedv.rpg.torg.model.actors.Clearance.*;
 @Setter
 @Getter
 @Slf4j
-public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
+public class DispatchEditDataForm extends BasicDataForm<Operation> {
 
     private final DispatchEditDataFormBaseData baseData = new DispatchEditDataFormBaseData();
     private final DispatchEditDataFormResultQuestionnaire resultQuestionnaire = new DispatchEditDataFormResultQuestionnaire();
@@ -77,7 +77,7 @@ public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
     public DispatchEditDataForm(
             final FrontendUser user
     ) {
-        super(user, new BeanValidationBinder<>(Dispatch.class));
+        super(user, new BeanValidationBinder<>(Operation.class));
 
         baseData.setForm(this);
         resultQuestionnaire.setForm(this);
@@ -99,7 +99,7 @@ public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
     }
 
 
-    public void setData(Dispatch data) {
+    public void setData(Operation data) {
         super.setData(data);
 
 
@@ -123,7 +123,7 @@ public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
 
     protected void bind() {
         if (data == null) {
-            data = Dispatch.builder().build();
+            data = Operation.builder().build();
         }
         binder.setBean(data);
     }
@@ -238,7 +238,7 @@ public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
      * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
      * @since 2.0.0  2023-01-05
      */
-    private class DispatchEditDataFormBaseData extends BasicDataFormTab<Dispatch> {
+    private class DispatchEditDataFormBaseData extends BasicDataFormTab<Operation> {
         private static final String I18N_KEY = "dispatch.form.tab.base_data";
 
         private Image imageDisplay;
@@ -264,7 +264,7 @@ public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
      * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
      * @since 2.0.0  2023-01-05
      */
-    private class DispatchEditDataFormDispatchedTeams extends BasicDataFormTab<Dispatch> {
+    private class DispatchEditDataFormDispatchedTeams extends BasicDataFormTab<Operation> {
         private static final String I18N_KEY = "dispatch.form.tab.dispatches";
 
         @Override
@@ -284,7 +284,7 @@ public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
      * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
      * @since 2.0.0  2023-01-05
      */
-    private class DispatchEditDataFormResultQuestionnaire extends BasicDataFormTab<Dispatch> {
+    private class DispatchEditDataFormResultQuestionnaire extends BasicDataFormTab<Operation> {
         private static final String I18N_KEY = "dispatch.form.tab.questionnaire";
 
         @Override
@@ -308,7 +308,7 @@ public class DispatchEditDataForm extends BasicDataForm<Dispatch> {
      * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
      * @since 2.0.0  2023-01-05
      */
-    private class DispatchEditDataFormResults extends BasicDataFormTab<Dispatch> {
+    private class DispatchEditDataFormResults extends BasicDataFormTab<Operation> {
         private static final String I18N_KEY = "dispatch.form.tab.results";
 
 

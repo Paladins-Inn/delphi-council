@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023. Roland T. Lichti
+ * Copyright (c) 2023. Roland T. Lichti
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -10,19 +10,33 @@
 
 package de.paladinsinn.tp.dcis.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.commons.core.resources.HasName;
-import de.paladinsinn.tp.dcis.model.components.*;
-import org.apache.commons.lang3.builder.CompareToBuilder;
+import de.kaiserpfalzedv.commons.core.resources.Persisted;
+import de.paladinsinn.tp.dcis.common.HasLanguage;
+import de.paladinsinn.tp.dcis.model.components.HasCode;
+import de.paladinsinn.tp.dcis.model.components.HasDescription;
+import de.paladinsinn.tp.dcis.model.components.HasDisplayNames;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
-@Schema(description = "Delphi Council Mission")
+/**
+ * <p>Dispatch -- Dispatches are the engagements of Storm Knights in the possibility wars.</p>
+ *
+ * <p>A dispatch is either a {@link Mission} or an {@link Operation} of the Delphi Council.</p>
+ *
+ * <p>Operations are the torganized games which drive the shared campaign and the development of the game world. The
+ * operations are pre-defined and the GM registers with the standardized success definitions. So their outcome influence
+ * the shared world of the Torganized Play world.</p>
+ *
+ * <p>Missions are games with torganized play characters on private tables where the GM of the game register the
+ * development of the Storm Knights so they can take part in torganized play events. Normally the outcome of missions
+ * don't influence the shared world.</p>
+ *
+ * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 2.0.0  2023-01-15
+ */
 public interface Dispatch
-        extends HasName, HasCode, HasDescription, HasDisplayNames, HasClearance, HasLanguage,
-        Persisted, Comparable<Dispatch> {
-    String getImage();
+        extends HasName, HasCode, HasDescription, HasDisplayNames,
+        HasLanguage, Persisted {
 
     @Schema(description = "Payment for every storm knight taking this mission.")
     int getPayment();
@@ -30,25 +44,8 @@ public interface Dispatch
     @Schema(description = "XP for every storm knight taking this mission.")
     int getXp();
 
-    @Schema(description = "Objectives defined for a successful mission.", maxLength = 40000, nullable = true)
-    String getObjectivesSuccess();
-
-    @Schema(description = "Objectives defined for a good mission result.", maxLength = 40000, nullable = true)
-    String getObjectivesGood();
-
-    @Schema(description = "Objectives defined for an outstanding mission result.", maxLength = 4000, nullable = true)
-    String getObjectivesOutstanding();
-
-    @Schema(description = "The publication this mission is defined in.", maxLength = 100, nullable = true)
     String getPublication();
 
+    String getImage();
 
-    @JsonIgnore
-    @Override
-    @Schema(hidden = true)
-    default int compareTo(final Dispatch o) {
-        return new CompareToBuilder()
-                .append(getCode(), o.getCode())
-                .toComparison();
-    }
 }

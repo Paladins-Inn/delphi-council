@@ -12,36 +12,25 @@ package de.paladinsinn.tp.dcis.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.commons.core.resources.HasName;
-import de.paladinsinn.tp.dcis.model.components.*;
+import de.paladinsinn.tp.dcis.model.components.HasGameMaster;
+import de.paladinsinn.tp.dcis.model.components.HasOutcome;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
- * SpecialMission -- A private table mission.
+ * <p>Mission -- A private table mission.</p>
+ *
+ * <p>A mission is the registration of a private play with Torganized Play to register the results for the compaign and
+ * character development.</p>
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 0.1.0  2021-04-18
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface Mission
-        extends HasDisplayNames, HasName, HasDescription, HasGameMaster, HasClearance, HasOutcome,
-        Persisted, Comparable<Mission> {
-
-    String getImage();
-
-    @Schema(description = "Payment for every storm knight taking this mission.")
-    int getPayment();
-
-    @Schema(description = "XP for every storm knight taking this mission.")
-    int getXp();
-
-    LocalDate getDate();
-
-    String getPublication();
-
+public interface Mission extends Dispatch, HasOutcome, HasGameMaster, Comparable<Mission> {
+    OffsetDateTime getDate();
 
     @Override
     @JsonIgnore

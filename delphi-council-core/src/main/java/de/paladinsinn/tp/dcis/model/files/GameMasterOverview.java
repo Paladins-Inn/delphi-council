@@ -10,7 +10,7 @@
 
 package de.paladinsinn.tp.dcis.model.files;
 
-import de.paladinsinn.tp.dcis.model.meta.Paging;
+import de.kaiserpfalzedv.commons.core.api.Paging;
 
 public class GameMasterOverview {
     private Paging page;

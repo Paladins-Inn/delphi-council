@@ -12,6 +12,7 @@ package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
+import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
 import de.paladinsinn.tp.dcis.common.Language;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -25,22 +26,18 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Dispatch extends PersistedImpl implements de.paladinsinn.tp.dcis.model.Dispatch {
-
-    @ToString.Include
-    private Language language;
-
-    @ToString.Include
     private String code;
 
-    private String image;
-
-    @ToString.Include
     private String name;
+
+    private Language language;
+
+    private String image;
 
     private Clearance clearance;
 
@@ -50,16 +47,15 @@ public class Dispatch extends PersistedImpl implements de.paladinsinn.tp.dcis.mo
 
     private int payment;
 
-    private String objectivesSuccess;
-
-    private String objectivesGood;
-
-    private String objectivesOutstanding;
+    private SuccessState objectivesMet;
+    private String achievements;
+    private String notes;
 
     private String publication;
 
 
-    public static Dispatch copyData(final de.paladinsinn.tp.dcis.model.Dispatch orig) {
+    @SneakyThrows
+    public static Dispatch copyData(de.paladinsinn.tp.dcis.model.Dispatch orig)  {
         if (Dispatch.class.isAssignableFrom(orig.getClass())) {
             return (Dispatch) orig;
         }
@@ -69,25 +65,18 @@ public class Dispatch extends PersistedImpl implements de.paladinsinn.tp.dcis.mo
                 .version(orig.getVersion())
                 .created(orig.getCreated())
                 .modified(orig.getModified())
-                .revisioned(orig.getRevisioned())
 
                 .code(orig.getCode())
-                .image(orig.getImage())
                 .name(orig.getName())
-                .clearance(orig.getClearance())
+                .image(orig.getImage())
                 .description(orig.getDescription())
-
                 .xp(orig.getXp())
                 .payment(orig.getPayment())
-                .objectivesSuccess(orig.getObjectivesSuccess())
-                .objectivesGood(orig.getObjectivesGood())
-                .objectivesOutstanding(orig.getObjectivesOutstanding())
 
                 .publication(orig.getPublication())
+
                 .build();
     }
-
-
     @SneakyThrows
     @Override
     public Dispatch clone() {

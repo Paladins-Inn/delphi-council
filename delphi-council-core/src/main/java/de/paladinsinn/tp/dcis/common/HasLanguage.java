@@ -8,15 +8,16 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.model.components;
+package de.paladinsinn.tp.dcis.common;
 
 import de.kaiserpfalzedv.commons.core.resources.HasId;
 
 /**
- * PersistetResource -- The base interface for all resources that are persisted.
+ * HasLanguage -- This resource is language dependent.
  *
  * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
- * @since 2.0.0  2023-01-06
+ * @since 2.0.0  2023-01-08
  */
-public interface Persisted extends HasId, HasRevision, Cloneable {
+public interface HasLanguage extends HasId {
+    Language getLanguage();
 }

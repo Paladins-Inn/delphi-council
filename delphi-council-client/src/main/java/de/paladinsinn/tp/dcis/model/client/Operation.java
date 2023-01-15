@@ -11,12 +11,9 @@
 package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
-import de.paladinsinn.tp.dcis.model.Engagment;
+import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
 
 /**
  * Mission -- The default implementation of a mission.
@@ -31,49 +28,51 @@ import java.time.LocalDate;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class Engagement extends PersistedImpl implements Engagment {
-    private String code;
-    private Dispatch dispatch;
-    private String gameMaster;
-    private LocalDate date;
+public class Operation extends Dispatch implements de.paladinsinn.tp.dcis.model.Operation {
+
+    private Clearance clearance;
+
+    private String objectivesSuccess;
+
+    private String objectivesGood;
+
+    private String objectivesOutstanding;
+
+    private String publication;
 
 
-    private SuccessState objectivesMet;
-    private String achievements;
-    private String notes;
-
-
-    public String getName() {
-        if (dispatch != null) {
-            return dispatch + " (" + gameMaster + ", " + date + ")";
-        } else {
-            return "Mission Dispatch #" + getId();
-        }
-    }
-
-    public void setDispatch(de.paladinsinn.tp.dcis.model.Dispatch orig) {
-        dispatch = Dispatch.copyData(orig);
-    }
-
-
-    public static Engagement copyData(Engagment report) {
-        if (Engagement.class.isAssignableFrom(report.getClass())) {
-            return (Engagement) report;
+    public static Operation copyData(final de.paladinsinn.tp.dcis.model.Operation orig) {
+        if (Operation.class.isAssignableFrom(orig.getClass())) {
+            return (Operation) orig;
         }
 
-        return Engagement.builder()
-                .dispatch(Dispatch.copyData(report.getDispatch()))
-                .date(report.getDate())
-                .gameMaster(report.getGameMaster())
-                .notes(report.getNotes())
-                .achievements(report.getAchievements())
+        return Operation.builder()
+                .id(orig.getId())
+                .version(orig.getVersion())
+                .created(orig.getCreated())
+                .modified(orig.getModified())
+                .revisioned(orig.getRevisioned())
+
+                .code(orig.getCode())
+                .image(orig.getImage())
+                .name(orig.getName())
+                .clearance(orig.getClearance())
+                .description(orig.getDescription())
+
+                .xp(orig.getXp())
+                .payment(orig.getPayment())
+                .objectivesSuccess(orig.getObjectivesSuccess())
+                .objectivesGood(orig.getObjectivesGood())
+                .objectivesOutstanding(orig.getObjectivesOutstanding())
+
+                .publication(orig.getPublication())
                 .build();
     }
 
 
     @SneakyThrows
     @Override
-    public Engagement clone() {
+    public Operation clone() {
         return toBuilder().build();
     }
 }

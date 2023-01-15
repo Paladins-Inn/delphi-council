@@ -11,7 +11,7 @@
 package de.paladinsinn.tp.dcis.model.files;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.paladinsinn.tp.dcis.model.meta.Paging;
+import de.kaiserpfalzedv.commons.core.api.Paging;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

@@ -10,8 +10,8 @@
 
 package de.paladinsinn.tp.dcis.client;
 
-import de.paladinsinn.tp.dcis.model.client.Dispatch;
-import de.paladinsinn.tp.dcis.model.client.Engagement;
+import de.paladinsinn.tp.dcis.model.client.DispatchReport;
+import de.paladinsinn.tp.dcis.model.client.Operation;
 import de.paladinsinn.tp.dcis.model.client.Outcome;
 import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import io.quarkus.cache.CacheInvalidate;
@@ -44,9 +44,9 @@ public interface EngagementClient {
     @POST
     @Path("/{dispatch}")
     @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
-    Dispatch create(
+    Operation create(
             @PathParam("dispatch") final UUID dispatch,
-            final Engagement data
+            final DispatchReport data
     );
 
 
@@ -78,7 +78,7 @@ public interface EngagementClient {
     @GET
     @Path("/{dispatch}/{engagement}")
     @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
-    Engagement retrieve(@PathParam("dispatch") final UUID dispatch, @PathParam("engagement") final UUID engagement);
+    DispatchReport retrieve(@PathParam("dispatch") final UUID dispatch, @PathParam("engagement") final UUID engagement);
 
 
     @GET
@@ -138,7 +138,7 @@ public interface EngagementClient {
     void update(
             @PathParam("dispatch") final UUID dispatch,
             @PathParam("engagement") final UUID engagement,
-            final Dispatch data
+            final Operation data
     );
 
 

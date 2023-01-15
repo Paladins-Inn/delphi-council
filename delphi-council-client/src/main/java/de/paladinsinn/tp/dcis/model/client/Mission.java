@@ -11,12 +11,11 @@
 package de.paladinsinn.tp.dcis.model.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.rpg.torg.model.actors.Clearance;
 import de.kaiserpfalzedv.rpg.torg.model.core.SuccessState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
  * Mission -- The default implementation of a mission.
@@ -31,22 +30,10 @@ import java.time.LocalDate;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class Mission extends PersistedImpl implements de.paladinsinn.tp.dcis.model.Mission {
-    private String code;
-
-    private String name;
+public class Mission extends Dispatch implements de.paladinsinn.tp.dcis.model.Mission {
     private String gameMaster;
-    private LocalDate date;
 
-    private String image;
-
-    private Clearance clearance;
-
-    private String description;
-
-    private int xp;
-
-    private int payment;
+    private OffsetDateTime date;
 
     private SuccessState objectivesMet;
     private String achievements;
@@ -71,7 +58,6 @@ public class Mission extends PersistedImpl implements de.paladinsinn.tp.dcis.mod
                 .name(orig.getName())
                 .date(orig.getDate())
                 .image(orig.getImage())
-                .clearance(orig.getClearance())
                 .description(orig.getDescription())
                 .xp(orig.getXp())
                 .payment(orig.getPayment())

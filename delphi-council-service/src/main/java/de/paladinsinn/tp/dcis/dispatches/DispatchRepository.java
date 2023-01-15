@@ -10,10 +10,10 @@
 
 package de.paladinsinn.tp.dcis.dispatches;
 
-import de.paladinsinn.tp.dcis.model.jpa.Dispatch;
+import de.paladinsinn.tp.dcis.model.jpa.Operation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface DispatchRepository extends JpaRepository<Dispatch, UUID> {
+public interface DispatchRepository extends JpaRepository<Operation, UUID> {
 }

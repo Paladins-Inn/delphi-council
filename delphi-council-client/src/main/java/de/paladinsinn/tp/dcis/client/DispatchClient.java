@@ -10,7 +10,7 @@
 
 package de.paladinsinn.tp.dcis.client;
 
-import de.paladinsinn.tp.dcis.model.client.Dispatch;
+import de.paladinsinn.tp.dcis.model.client.Operation;
 import de.paladinsinn.tp.dcis.model.lists.BasicList;
 import io.quarkus.cache.CacheInvalidate;
 import io.quarkus.cache.CacheResult;
@@ -35,7 +35,7 @@ public interface DispatchClient {
     @POST
     @Path("/")
     @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
-    Dispatch create(final Dispatch data);
+    Operation create(final Operation data);
 
     /**
      * Retrieves a page of data specified by the first element and the size of page.
@@ -75,13 +75,13 @@ public interface DispatchClient {
     @GET
     @Path("/{id}")
     @CacheResult(cacheName = CACHE_NAME, lockTimeout = CACHE_LOCK_TIMEOUT)
-    Dispatch retrieve(@PathParam("id") UUID id);
+    Operation retrieve(@PathParam("id") UUID id);
 
 
     @PUT
     @Path("/{id}")
     @CacheInvalidate(cacheName = CACHE_NAME)
-    void update(@PathParam("id") final UUID id, final Dispatch data);
+    void update(@PathParam("id") final UUID id, final Operation data);
 
 
     @DELETE

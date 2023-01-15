@@ -40,7 +40,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @Schema(description = "Delphi Council Mission")
-public class Dispatch extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.Dispatch {
+public class Operation extends AbstractRevisionedJPAEntity implements de.paladinsinn.tp.dcis.model.Operation {
     @Column(name = "LANGUAGE", length=3, nullable = false)
     @Audited
     @Enumerated(EnumType.STRING)
@@ -104,12 +104,12 @@ public class Dispatch extends AbstractRevisionedJPAEntity implements de.paladins
     private String publication;
 
 
-    public static Dispatch copyData(de.paladinsinn.tp.dcis.model.Dispatch orig) {
-        if (Dispatch.class.isAssignableFrom(orig.getClass())) {
-            return (Dispatch) orig;
+    public static Operation copyData(de.paladinsinn.tp.dcis.model.Operation orig) {
+        if (Operation.class.isAssignableFrom(orig.getClass())) {
+            return (Operation) orig;
         }
 
-        return Dispatch.builder()
+        return Operation.builder()
                 .id(orig.getId())
                 .version(orig.getVersion())
                 .created(orig.getCreated())
@@ -136,7 +136,7 @@ public class Dispatch extends AbstractRevisionedJPAEntity implements de.paladins
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @SneakyThrows
     @Override
-    public Dispatch clone() {
+    public Operation clone() {
         return toBuilder().build();
     }
 }

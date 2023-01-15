@@ -10,11 +10,11 @@
 
 package de.paladinsinn.tp.dcis.dispatches;
 
+import de.kaiserpfalzedv.commons.core.api.Paging;
 import de.kaiserpfalzedv.commons.rest.HttpErrorGenerator;
-import de.paladinsinn.tp.dcis.model.jpa.Dispatch;
+import de.paladinsinn.tp.dcis.model.jpa.Operation;
 import de.paladinsinn.tp.dcis.model.lists.BasicData;
 import de.paladinsinn.tp.dcis.model.lists.BasicList;
-import de.paladinsinn.tp.dcis.model.meta.Paging;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -79,7 +79,7 @@ public class DispatchResource {
             return index();
         }
 
-        Page<Dispatch> raw = repository.findAll(PageRequest.of(start * size, size));
+        Page<Operation> raw = repository.findAll(PageRequest.of(start * size, size));
         log.info("Retrieved list of missions. total={}, count={}", raw.getTotalElements(), raw.getNumber());
 
         log.debug("missions loaded. count={}, total={}, data.size={}",
@@ -100,7 +100,7 @@ public class DispatchResource {
 
 
     private BasicList index() {
-        Iterator<Dispatch> raw = repository.findAll().iterator();
+        Iterator<Operation> raw = repository.findAll().iterator();
 
         ArrayList<BasicData> data = new ArrayList<>();
         while (raw.hasNext()) {
@@ -122,7 +122,7 @@ public class DispatchResource {
                 .build();
     }
 
-    private BasicData mapMission(Dispatch orig) {
+    private BasicData mapMission(Operation orig) {
         BasicData result = BasicData.builder()
                 .id(orig.getId())
                 .created(orig.getCreated())
@@ -150,7 +150,7 @@ public class DispatchResource {
     })
     @GET
     @Path("/{id}")
-    public Dispatch index(
+    public Operation index(
             @Schema(description = "ID of the dispatch to load.", nullable = false, required = true)
             final UUID id
             ) {

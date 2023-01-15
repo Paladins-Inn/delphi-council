@@ -12,40 +12,63 @@ package de.paladinsinn.tp.dcis.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.commons.core.resources.HasName;
-import de.paladinsinn.tp.dcis.model.components.HasDisplayNames;
+import de.kaiserpfalzedv.commons.core.resources.Persisted;
 import de.paladinsinn.tp.dcis.model.components.HasGameMaster;
 import de.paladinsinn.tp.dcis.model.components.HasOutcome;
-import de.paladinsinn.tp.dcis.model.components.Persisted;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 /**
- * DispatchReport -- A report of the gaming results.
+ * <p>DispatchReport -- Outcome of a {@link Dispatch}.</p>
+ *
+ * <p>Every dispatch needs a report so the campaign can keep track of the development of the world and the Storm Knights
+ * in the Torganized Play. The report belongs either to one mission or is one of many reports for an {@link Operation}.
+ * The outcomes of all DispatchReports of an {@link Operation} will be analyzed and determine the development of the
+ * shared campaign world.</p>
  *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2.0.0  2023-01-06
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public interface Engagment
-        extends HasDisplayNames, HasName, HasGameMaster, HasOutcome,
-        Persisted, Comparable<Engagment> {
-    Dispatch getDispatch();
-    void setDispatch(@NotNull final Dispatch dispatch);
+public interface DispatchReport
+        extends HasGameMaster, HasOutcome,
+                Persisted, Comparable<DispatchReport> {
+    /**
+     * @return The date of the deployment.
+     */
+    OffsetDateTime getDate();
 
+    /**
+     * @return The ID of the {@link Operation} describing the deployment.
+     */
+    Optional<UUID> getOperation();
 
-    LocalDate getDate();
+    /**
+     * @return The ID of the {@link Mission} describing the deployment.
+     */
+    Optional<UUID> getMission();
+
+    /**
+     *
+     * @return The Storm Knights of this report.
+     */
+    Set<UUID> getOperatives();
 
 
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    default int compareTo(Engagment o) {
-        return new CompareToBuilder()
-                .append(0, getDispatch().compareTo(o.getDispatch()))
+    default int compareTo(DispatchReport o) {
+        CompareToBuilder result = new CompareToBuilder();
+
+        return result
+                .append(getOperation(), o.getOperation())
+                .append(getMission(), o.getMission())
                 .append(getDate(), o.getDate())
                 .append(getGameMaster(), o.getGameMaster())
                 .toComparison();

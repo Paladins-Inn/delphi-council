@@ -13,12 +13,21 @@ package de.paladinsinn.tp.dcis.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.kaiserpfalzedv.commons.core.resources.HasName;
+import de.kaiserpfalzedv.commons.core.resources.Persisted;
 import de.paladinsinn.tp.dcis.model.components.*;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.time.OffsetDateTime;
 
+/**
+ * <p>Operative -- The Storm Knights.</p>
+ *
+ * <p>Operatives are the Storm Knights fighting in the Possibility Wars.</p>
+ *
+ * @author klenkes {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 1.0.0
+ */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public interface Operative
         extends HasName, HasDisplayNames, HasCosm, HasClearance, HasPlayer, HasAvatar, HasToken,

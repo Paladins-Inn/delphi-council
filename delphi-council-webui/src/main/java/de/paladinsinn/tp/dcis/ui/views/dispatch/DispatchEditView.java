@@ -12,7 +12,7 @@ package de.paladinsinn.tp.dcis.ui.views.dispatch;
 
 import com.vaadin.flow.router.*;
 import com.vaadin.quarkus.annotation.UIScoped;
-import de.paladinsinn.tp.dcis.model.client.Dispatch;
+import de.paladinsinn.tp.dcis.model.client.Operation;
 import de.paladinsinn.tp.dcis.ui.components.mvp.BasicViewImpl;
 import de.paladinsinn.tp.dcis.ui.views.MainLayout;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ import java.util.UUID;
 @UIScoped
 @Slf4j
 @RolesAllowed({"orga", "judge", "admin"})
-public class DispatchEditView extends BasicViewImpl<Dispatch> implements HasUrlParameter<UUID>, BeforeEnterObserver {
+public class DispatchEditView extends BasicViewImpl<Operation> implements HasUrlParameter<UUID>, BeforeEnterObserver {
 
     public DispatchEditView(final DispatchEditPresenter presenter, final DispatchEditDataForm form) {
         super(presenter, form);
@@ -70,7 +70,7 @@ public class DispatchEditView extends BasicViewImpl<Dispatch> implements HasUrlP
 
     private void createNewDispatch() {
         log.info("Open form for new dispatch. Opening empty view.");
-        presenter.setData(de.paladinsinn.tp.dcis.model.client.Dispatch.builder().build()
+        presenter.setData(Operation.builder().build()
         );
     }
 

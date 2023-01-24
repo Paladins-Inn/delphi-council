@@ -23,7 +23,7 @@
     <name>PI :: Torganized Play :: Delphi Council WebUI</name>
 
     <properties>
-        <vaadin.version>23.3.3</vaadin.version>
+        <vaadin.version>23.3.5</vaadin.version>
         <debug.port>5005</debug.port>
     </properties>
 

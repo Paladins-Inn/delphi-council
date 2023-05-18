@@ -25,6 +25,7 @@ nb-configuration.xml
 
 # Node.js
 generated/
+node_modules/
 vite.generated.ts
 /delphi-council-webui/frontend/index.html
 /delphi-council-webui/node_modules/

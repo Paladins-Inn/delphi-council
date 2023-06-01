@@ -12,7 +12,7 @@ package de.paladinsinn.tp.dcis.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.kaiserpfalzedv.commons.core.resources.Persisted;
+import de.kaiserpfalzedv.commons.api.resources.Persisted;
 import de.paladinsinn.tp.dcis.model.components.HasGameMaster;
 import de.paladinsinn.tp.dcis.model.components.HasOutcome;
 import org.apache.commons.lang3.builder.CompareToBuilder;

@@ -10,11 +10,11 @@
 
 package de.paladinsinn.tp.dcis.ui;
 
+import com.github.rjeschke.txtmark.Processor;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.Theme;
-import de.kaiserpfalzedv.commons.core.text.MarkdownConverter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -39,5 +39,11 @@ public class Application implements AppShellConfigurator {
     @Produces
     public MarkdownConverter markdownConverter() {
         return new MarkdownConverter();
+    }
+
+    public static class MarkdownConverter {
+        public String convert(final String text) {
+            return Processor.process(text);
+        }
     }
 }

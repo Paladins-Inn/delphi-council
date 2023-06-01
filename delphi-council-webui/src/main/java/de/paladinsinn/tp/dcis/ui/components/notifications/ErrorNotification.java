@@ -20,7 +20,7 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.quarkus.annotation.VaadinServiceEnabled;
-import de.kaiserpfalzedv.commons.core.text.MarkdownConverter;
+import de.paladinsinn.tp.dcis.ui.Application;
 import lombok.extern.slf4j.Slf4j;
 
 @VaadinServiceEnabled
@@ -51,6 +51,6 @@ public class ErrorNotification extends Notification {
     }
 
     public static ErrorNotification showMarkdown(final String markdown) {
-        return show(new MarkdownConverter().convert(markdown));
+        return show(new Application.MarkdownConverter().convert(markdown));
     }
 }

@@ -10,8 +10,9 @@
 
 package de.paladinsinn.tp.dcis.model;
 
-import de.kaiserpfalzedv.commons.core.resources.HasName;
-import de.kaiserpfalzedv.commons.core.resources.Persisted;
+
+import de.kaiserpfalzedv.commons.api.resources.HasName;
+import de.kaiserpfalzedv.commons.api.resources.Persisted;
 import de.paladinsinn.tp.dcis.common.HasLanguage;
 import de.paladinsinn.tp.dcis.model.components.HasCode;
 import de.paladinsinn.tp.dcis.model.components.HasDescription;

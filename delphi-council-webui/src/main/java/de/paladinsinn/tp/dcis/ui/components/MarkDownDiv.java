@@ -11,10 +11,10 @@
 package de.paladinsinn.tp.dcis.ui.components;
 
 import com.vaadin.flow.component.html.Div;
-import de.kaiserpfalzedv.commons.core.text.MarkdownConverter;
+import de.paladinsinn.tp.dcis.ui.Application;
 
 public class MarkDownDiv extends Div {
-    private final MarkdownConverter converter = new MarkdownConverter();
+    private final Application.MarkdownConverter converter = new Application.MarkdownConverter();
 
     public MarkDownDiv(final String text) {
         setText(text);

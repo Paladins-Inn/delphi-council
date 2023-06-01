@@ -10,7 +10,7 @@
 
 package de.paladinsinn.tp.dcis.model.components;
 
-import de.kaiserpfalzedv.commons.core.resources.HasId;
+import de.kaiserpfalzedv.commons.api.resources.HasId;
 import de.paladinsinn.tp.dcis.model.Operative;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 

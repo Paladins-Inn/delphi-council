@@ -23,3 +23,4 @@ webpack.generated.js
 /package.json
 /package-lock.json
 /.env
+/values.yaml

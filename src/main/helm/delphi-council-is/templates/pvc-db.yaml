@@ -17,4 +17,3 @@ spec:
   resources:
     requests:
       storage: "{{ .Values.db.storagesize }}"
-  storageClassName: local-hdd

@@ -1,5 +1,6 @@
 ---
 app:
+  ingressClass: openshift-default
   route: www.delphi-council.org
   image:
     repo: quay.io/klenkes74
@@ -13,9 +14,31 @@ app:
     cpu: 1000m
     memory: 2Gi
 
+podSecurityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+serviceAccount:
+  name: dcis
+  create: yes
+  annotations: {}
+
+podAnnotations:
+  alpha.image.policy.openshift.io/resolve-names: '*'
+
+
+tls:
+  duration: 2160h
+  renewBefore: 1800h
+
 db:
   image:
-    repo: docker-registry.default.svc:5000/openshift
+    repo: image-registry.openshift-image-registry.svc:5000/openshift
     name: mariadb
     tag: latest
     pullPolicy: IfNotPresent

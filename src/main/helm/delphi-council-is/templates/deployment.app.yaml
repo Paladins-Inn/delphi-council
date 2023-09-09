@@ -23,6 +23,10 @@ spec:
   template:
     metadata:
       name: "{{ .Chart.Name }}-app"
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: "{{ .Chart.Name }}"
         app.kubernetes.io/part-of: "{{ .Chart.Name }}"
@@ -30,6 +34,10 @@ spec:
         app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     spec:
       terminationGracePeriodSeconds: 30
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      automountServiceAccountToken: false
       containers:
       - name: "{{ .Chart.Name }}-app"
         image: 'docker-registry.default.svc:5000/{{ .Release.Namespace }}/delphi-council-is:{{ .Chart.AppVersion }}'

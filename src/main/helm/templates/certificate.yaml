@@ -1,7 +1,7 @@
 # FIXME 2022-12-27 rlichti Needs to be converted from v1alpha1
 ---
-apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
+apiVersion: cert-manager.io/v1
 metadata:
   namespace: "{{ .Release.Namespace }}"
   name: "{{ .Chart.Name }}-app-cert"
@@ -10,18 +10,16 @@ metadata:
     app.kubernetes.io/component: "app"
     app.kubernetes.io/part-of: "{{ .Chart.Name }}"
 spec:
-  acme:
-    config:
-      - dns01:
-          provider: kaiserpfalz-edv
-        domains:
-          - "{{ .Values.app.route }}"
-          - "{{ .Values.api.route }}"
   commonName: "{{ .Values.app.route }}"
   dnsNames:
     - "{{ .Values.app.route }}"
-    - "{{ .Values.api.route }}"
+  uris:
+    - "{{ .Values.app.route }}"
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-prod
-  secretName: "{{ .Chart.Name }}-tls"
+  secretName: "{{ .Chart.Name }}-app-tls"
+  duration: {{ .Values.tls.duration }}
+  renewBefore: {{ .Values.tls.renewBefore }}
+  usages:
+  - server auth

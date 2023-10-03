@@ -31,3 +31,4 @@ vite.generated.ts
 
 # Temporary download
 dcis-vaadin/
+node_modules

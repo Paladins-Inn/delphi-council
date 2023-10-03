@@ -1,0 +1,23 @@
+---
+app:
+  route: www.delphi-council.org
+  image:
+    repo: quay.io/klenkes74
+    name: delphi-council-is
+    tag: 1.2.0-SNAPSHOT
+
+db:
+  name: dcis
+  rootpassword: loo9Kohk9aeghoh6
+  user: dcis
+  password: loo9Kohk9aeghoh6
+
+mail:
+  host:
+    name: smtp.kaiserpfalz-edv.de
+    port: 587
+  user:
+    name: Quin Sebastian
+    address: quin.sebastian@delphi-council.org
+    user: clerk@delphi-council.org
+    password: BsNHse49XAjumqe
